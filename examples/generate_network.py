@@ -1,12 +1,13 @@
 # import libraries
+from classes.cbnetwork import CBN
 
-import cbn
 
 # pass the parameters
-num_of_local_networks = 5
-num_of_input_relations = 2
-num_relations_fixed = True
+n_local_networks = 5
+n_var_network = 5
+n_relations = 2
+relations_fixed = False
 
 # create a Coupled Boolean Network with the parameters
-o_cbn = cbn(num_of_local_networks, num_of_input_relations, num_relations_fixed)
-
+o_cbn = CBN.generate_aleatory_cbn(n_local_networks= n_local_networks, n_var_network=n_var_network,
+                                  n_relations=n_relations, relations_fixed=relations_fixed)
