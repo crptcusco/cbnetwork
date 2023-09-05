@@ -1,6 +1,5 @@
 import re  # analysis of regular expressions
 import operator  # unary operator management
-import sys  # allows to use functions for interaction with the system
 
 from string import ascii_lowercase, ascii_uppercase  # import the list of uppercase and lowercase letters
 from itertools import product  # generate combinations of numbers

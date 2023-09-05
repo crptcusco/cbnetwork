@@ -12,3 +12,6 @@ class LocalNetwork:
         for o_signal in self.l_signals:
             o_signal.show()
         pass
+
+    def process_parameters(self):
+        pass
