@@ -18,10 +18,8 @@ o_cbn = CBN.generate_aleatory_cbn(n_local_networks=n_local_networks, n_var_netwo
 # Find attractors fields
 o_cbn.find_attractor_fields()
 
-print('hola')
-
 # Show attractor fields
 o_cbn.show_attractors_fields()
 
-
+print("END")
 

@@ -5,6 +5,7 @@ from classes.localnetwork import LocalNetwork
 from classes.couplingsignal import CouplingSignal
 import random  # generate random numbers
 import networkx as nx
+import heapq
 
 
 class CBN:
@@ -18,6 +19,8 @@ class CBN:
     @staticmethod
     def generate_aleatory_cbn(n_local_networks, n_var_network, n_relations, n_output_variables, n_clauses_function,
                               relations_fixed=False):
+        print("Generating the CBN")
+        print("==================")
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
         l_local_networks = []
         l_coupling_signals = []
@@ -108,7 +111,10 @@ class CBN:
             o_local_network.process_parameters()
             o_local_network.show()
             print("Local network created")
+            print("---------------------")
         o_cbn = CBN(l_local_networks, l_coupling_signals)
+        print("Coupled Boolean Network created")
+        print("===============================")
         return o_cbn
 
     def find_attractor_fields(self):
@@ -118,8 +124,8 @@ class CBN:
         # add edges to the graph
         for o_local_network in self.l_local_networks:
             for o_input_signal in o_local_network.l_input_signals:
-                print("Edge:", o_input_signal.local_network_output,"-", o_input_signal.local_network_input)
-                o_graph.add_edge(o_input_signal.local_network_output, o_input_signal.local_network_input)
+                print("Add edge:", o_input_signal.local_network_output, "-", o_input_signal.local_network_input, ':', 0)
+                o_graph.add_edge(o_input_signal.local_network_output, o_input_signal.local_network_input, weight=0)
 
         # graph have cycles or not
         is_acyclic = nx.is_directed_acyclic_graph(o_graph)
@@ -130,6 +136,32 @@ class CBN:
         else:
             print("The graph is cycled you have to use other strategy")
 
+            # Function to update the priority of an edge
+            def update_priority(graph, start_node, end_node, new_weight):
+                if graph.has_edge(start_node, end_node):
+                    graph[start_node][end_node]['weight'] = new_weight
+                    # Show the graph with weight attribute
+                    print("Updated Graph:")
+                    for node_begin, node_end, a_weight in o_graph.edges(data="weight"):
+                        print(node_begin, '-', node_end, ':', a_weight)
+                else:
+                    print("The edge dont exist in this graph")
+
+            # Print the resulting labeled graph dictionary
+            print("Initial Graph")
+            for u, v, weight in o_graph.edges(data="weight"):
+                print(u, '-', v, ':', weight)
+
+            kind_coupling_signals = {
+                0: "not compute",
+                1: "restricted",
+                2: "stable",
+                3: "not stable"
+            }
+
+            # Update the priority of the edge ('1', '2') to 3
+            update_priority(o_graph, 1, 2, 3)
+
     def show_attractors_fields(self):
         pass
 
@@ -137,4 +169,3 @@ class CBN:
     # # find the number of input Coupling Signals
     # for o_local_network in self.l_local_networks:
     #     print(len(o_local_network.l_input_signals))
-
