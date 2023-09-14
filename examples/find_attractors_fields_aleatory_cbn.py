@@ -14,12 +14,13 @@ n_clauses_function = 2
 o_cbn = CBN.generate_aleatory_cbn(n_local_networks=n_local_networks, n_var_network=n_var_network,
                                   n_relations=n_relations, relations_fixed=relations_fixed,
                                   n_output_variables=n_output_variables, n_clauses_function=n_clauses_function)
-
+# Find attractors
+l_attractors = o_cbn.find_attractors()
 # Find attractors fields
-o_cbn.find_attractor_fields()
+# o_cbn.find_attractor_fields()
 
 # Show attractor fields
-o_cbn.show_attractors_fields()
+# o_cbn.show_attractors_fields()
 
 print("END")
 

@@ -1,3 +1,6 @@
+from itertools import product
+
+
 class LocalNetwork:
     def __init__(self, num_local_network, l_var_intern, l_input_signals=None, description_variables=None):
         if l_input_signals is None:
@@ -23,5 +26,19 @@ class LocalNetwork:
             o_variable.show()
 
     def process_parameters(self):
+        pass
+
+    @staticmethod
+    def find_local_scenery_attractors(o_local_network, values_input_signals=None):
+
+        l_scenery_attractors = []
+        if values_input_signals is None:
+            values_input_signals = []
+        for scenery in values_input_signals:
+            l_scenery_attractors.append(LocalNetwork.find_local_attractors(o_local_network, scenery))
+        return l_scenery_attractors
+
+    @staticmethod
+    def find_local_attractors(cls, o_local_network, scenery):
         pass
 
