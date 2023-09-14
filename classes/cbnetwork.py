@@ -108,6 +108,7 @@ class CBN:
 
     def find_attractors(self):
         print("Find Attractors using optimized method")
+        print("-------------------------")
         print("Begin of the initial loop")
         # Defined the kind for every coupling signal: stable 1, not compute 2
         kind_of_coupled_signal = [2] * len(self.l_coupling_signals)
@@ -128,7 +129,7 @@ class CBN:
         # find the local network information
         o_local_network = self.find_network_by_index(lowest_weight_node.index)
         # calculate the local scenarios
-        values_input_signals = list(product([0, 1], repeat=len(o_local_network.l_input_signals)))
+        values_input_signals = product(list('01'), repeat=len(o_local_network.l_input_signals))
         print(values_input_signals)
         # calculate the attractors for the node in the top of the  heap
         l_scenery_attractors = LocalNetwork.find_local_scenery_attractors(o_local_network, values_input_signals)
@@ -139,6 +140,7 @@ class CBN:
         # Update the weights of the nodes
 
         print("end of the initial loop")
+        print("-----------------------")
 
         # Verify if the attractors are not compute
         while o_custom_heap.get_size() > 1:

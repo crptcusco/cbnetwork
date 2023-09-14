@@ -1,4 +1,6 @@
 from itertools import product
+from satispy import Variable  # Library to resolve SAT
+from satispy.solver import Minisat  # Library to resolve SAT
 
 
 class LocalNetwork:
@@ -13,6 +15,10 @@ class LocalNetwork:
 
         self.l_input_signals = l_input_signals
         self.description_variables = description_variables
+        self.l_var_exterm = []
+        self.l_var_total = []
+        self.num_var_total = 0
+        self.dic_var_cnf = {}
 
     def show(self):
         print('Local Network', self.index)
@@ -21,11 +27,17 @@ class LocalNetwork:
             o_signal.show()
         pass
         # Description variables
-
         for o_variable in self.description_variables:
             o_variable.show()
 
     def process_parameters(self):
+        # Processing the input of local network
+        for v_signal in self.l_input_signals:
+            self.l_var_exterm.append(v_signal.index_variable_signal)
+        # update the value of list_variables
+        self.l_var_total.extend(self.l_var_intern.copy())
+        self.l_var_total.extend(self.l_var_exterm.copy())
+        self.num_var_total = len(self.l_var_total)
         pass
 
     @staticmethod
@@ -35,10 +47,262 @@ class LocalNetwork:
         if values_input_signals is None:
             values_input_signals = []
         for scenery in values_input_signals:
-            l_scenery_attractors.append(LocalNetwork.find_local_attractors(o_local_network, scenery))
+            l_scenery_attractors.append(LocalNetwork.find_local_attractors(o_local_network, ''.join(scenery)))
         return l_scenery_attractors
 
     @staticmethod
-    def find_local_attractors(cls, o_local_network, scenery):
-        pass
+    def gen_boolean_formulation_satispy(o_local_network, number_of_transitions, l_attractors_clauses, l_signal_coupling):
+        # create dictionary of cnf variables!!
+        for variable in o_local_network.l_var_total:
+            for transition_c in range(0, number_of_transitions):
+                o_local_network.dic_var_cnf[str(variable) + "_" + str(transition_c)] = Variable(
+                    str(variable) + "_" + str(transition_c))
+
+        # transition_aux = 0
+        cont_transition = 0
+        boolean_function = Variable("0_0")
+        for transition in range(1, number_of_transitions):
+            # transition_aux = transition
+            cont_clausula_global = 0
+            boolean_expresion_equivalence = Variable("0_0")
+            for oVariableModel in o_local_network.description_variables:
+                cont_clausula = 0
+                boolean_expresion_clausule_global = Variable("0_0")
+                for clausula in oVariableModel.cnf_function:
+                    boolean_expresion_clausule = Variable("0_0")
+                    cont_termino = 0
+                    for termino in clausula:
+                        termino_aux = abs(int(termino))
+                        if (cont_termino == 0):
+                            if (str(termino)[0] != "-"):
+                                boolean_expresion_clausule = o_local_network.dic_var_cnf[
+                                    str(termino_aux) + "_" + str(transition - 1)]
+                            else:
+                                boolean_expresion_clausule = -o_local_network.dic_var_cnf[
+                                    str(termino_aux) + "_" + str(transition - 1)]
+                        else:
+                            if (str(termino)[0] != "-"):
+                                boolean_expresion_clausule = o_local_network.dic_var_cnf[str(termino_aux) + "_" + str(
+                                    transition - 1)] | boolean_expresion_clausule
+                            else:
+                                boolean_expresion_clausule = -o_local_network.dic_var_cnf[
+                                    str(termino_aux) + "_" + str(transition - 1)] | boolean_expresion_clausule
+                        cont_termino = cont_termino + 1
+                    if (cont_clausula) == 0:
+                        boolean_expresion_clausule_global = boolean_expresion_clausule
+                    else:
+                        boolean_expresion_clausule_global = boolean_expresion_clausule_global & boolean_expresion_clausule
+                    cont_clausula = cont_clausula + 1
+                if cont_clausula_global == 0:
+                    boolean_expresion_equivalence = o_local_network.dic_var_cnf[str(oVariableModel.variable_name) + "_" + str(
+                        transition)] >> boolean_expresion_clausule_global
+                    boolean_expresion_equivalence = boolean_expresion_equivalence & (
+                            boolean_expresion_clausule_global >> o_local_network.dic_var_cnf[
+                        str(oVariableModel.variable_name) + "_" + str(transition)])
+                else:
+                    boolean_expresion_equivalence = boolean_expresion_equivalence & (o_local_network.dic_var_cnf[
+                                                                                         str(oVariableModel.variable_name) + "_" + str(
+                                                                                             transition)] >> boolean_expresion_clausule_global)
+                    boolean_expresion_equivalence = boolean_expresion_equivalence & (
+                            boolean_expresion_clausule_global >> o_local_network.dic_var_cnf[
+                        str(oVariableModel.variable_name) + "_" + str(transition)])
+                if oVariableModel.cnf_function == []:
+                    print("ENTRO CASO ATIPICO")
+                    boolean_function = boolean_function & (
+                            o_local_network.dic_var_cnf[str(oVariableModel.variable_name) + "_" + str(transition)] | -
+                    o_local_network.dic_var_cnf[str(oVariableModel.variable_name) + "_" + str(transition)])
+                cont_clausula_global = cont_clausula_global + 1
+            if cont_transition == 0:
+                boolean_function = boolean_expresion_equivalence
+            else:
+                boolean_function = boolean_function & boolean_expresion_equivalence
+            # VALIDAR LOS GENES EN BLANCO
+            cont_transition = cont_transition + 1
+
+        # ASSING VALUES FOR PERMUTATIONS
+        cont_permutacion = 0
+        for elemento in o_local_network.l_var_exterm:
+            # print oRDD.list_of_v_exterm
+            for v_transition in range(0, number_of_transitions):
+                # print l_signal_coupling[cont_permutacion]
+                if l_signal_coupling[cont_permutacion] == "0":
+                    boolean_function = boolean_function & -o_local_network.dic_var_cnf[str(elemento) + "_" + str(v_transition)]
+                    # print (str(elemento) +"_"+ str(v_transition))
+                else:
+                    boolean_function = boolean_function & o_local_network.dic_var_cnf[str(elemento) + "_" + str(v_transition)]
+                    # print (str(elemento) +"_"+ str(v_transition))
+            cont_permutacion = cont_permutacion + 1
+
+        # add atractors to boolean function
+        if (len(l_attractors_clauses) > 0):
+            boolean_function_of_atractors = Variable("0_0")
+            cont_clausula = 0
+            for clausula in l_attractors_clauses:
+                boolean_expresion_clausule_of_atractors = Variable("0_0")
+                cont_termino = 0
+                for termino in clausula:
+                    termino_aux = abs(int(termino))
+                    # print str(termino_aux) + "_" + str(number_of_transitions-1)
+                    if (cont_termino == 0):
+                        if (termino[0] != "-"):
+                            boolean_expresion_clausule_of_atractors = o_local_network.dic_var_cnf[
+                                str(termino_aux) + "_" + str(number_of_transitions - 1)]
+                        else:
+                            boolean_expresion_clausule_of_atractors = -o_local_network.dic_var_cnf[
+                                str(termino_aux) + "_" + str(number_of_transitions - 1)]
+                    else:
+                        if (termino[0] != "-"):
+                            boolean_expresion_clausule_of_atractors = boolean_expresion_clausule_of_atractors & \
+                                                                      o_local_network.dic_var_cnf[str(termino_aux) + "_" + str(
+                                                                          number_of_transitions - 1)]
+                        else:
+                            boolean_expresion_clausule_of_atractors = boolean_expresion_clausule_of_atractors & - \
+                                o_local_network.dic_var_cnf[str(termino_aux) + "_" + str(number_of_transitions - 1)]
+                    cont_termino = cont_termino + 1
+                if (cont_clausula) == 0:
+                    boolean_function_of_atractors = -boolean_expresion_clausule_of_atractors
+                else:
+                    boolean_function_of_atractors = boolean_function_of_atractors & - boolean_expresion_clausule_of_atractors
+                cont_clausula = cont_clausula + 1
+            boolean_function = boolean_function & boolean_function_of_atractors
+
+        # Add all the variables of the position 0 to the booblean function
+        for variable in o_local_network.l_var_total:
+            boolean_function = boolean_function & (
+                    o_local_network.dic_var_cnf[str(variable) + "_0"] | - o_local_network.dic_var_cnf[str(variable) + "_0"])
+        # print(boolean_function)
+        return boolean_function
+
+    @staticmethod
+    def find_local_attractors(o_local_network, scenery):
+        def count_state_repeat(v_estate, path_candidate):
+            # input type [[],[],...[]]
+            number_of_times = 0
+            for v_element in path_candidate:
+                if v_element == v_estate:
+                    number_of_times = number_of_times + 1
+            return number_of_times
+
+        # print "BEGIN TO FIND ATTRACTORS"
+        print("NETWORK NUMBER : " + str(o_local_network.index) + " PERMUTATION SIGNAL COUPLING: " + scenery)
+        # create boolean expression initial with "n" transitions
+        o_local_network.set_of_attractors = []
+        v_num_transitions = 3
+        l_attractors = []
+        l_attractors_clauses = []
+
+        # REPEAT CODE
+        v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
+                                                                          l_attractors_clauses, scenery)
+        m_response_sat = []
+        o_solver = Minisat()
+        o_solution = o_solver.solve(v_bool_function)
+
+        # print(o_local_network.number_of_v_total)
+        if o_solution.success:
+            for j in range(0, v_num_transitions):
+                m_response_sat.append([])
+                for i in o_local_network.l_var_total:
+                    # print("_________________________________________")
+                    # print("Variable de Error:", f"{i}_{j}")
+                    # print(v_bool_function)
+                    m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
+        else:
+            print("The expression cannot be satisfied")
+
+        # BLOCK ATRACTORS
+        m_aux_sat = []
+        if (len(m_response_sat) != 0):
+            # TRANFORM BOOLEAN TO MATRIZ BOOLEAN RESPONSE
+            for j in range(0, v_num_transitions):
+                matriz_aux_sat = []
+                for i in range(0, o_local_network.num_var_total):
+                    if m_response_sat[j][i] == True:
+                        matriz_aux_sat.append("1")
+                    else:
+                        matriz_aux_sat.append("0")
+                m_aux_sat.append(matriz_aux_sat)
+            # m_resp_boolean = m_aux_sat
+        m_resp_boolean = m_aux_sat
+        # BLOCK ATRACTORS
+        # REPEAT CODE
+
+        while (len(m_resp_boolean) > 0):
+            # print ("path")
+            # print (m_resp_boolean)
+            # print ("path")
+            path_solution = []
+            for path_trasition in m_resp_boolean:
+                path_solution.append(path_trasition)
+
+            # new list of state attractors
+            l_news_estates_atractor = []
+            # check atractors
+            for v_state in path_solution:
+                v_state_count = count_state_repeat(v_state, path_solution)
+                if (v_state_count > 1):
+                    atractor_begin = path_solution.index(v_state) + 1
+                    atractor_end = path_solution[atractor_begin:].index(v_state)
+                    l_news_estates_atractor = path_solution[atractor_begin - 1:(atractor_begin + atractor_end)]
+                    l_attractors = l_attractors + l_news_estates_atractor
+                    # add atractors like list of list
+                    o_local_network.set_of_attractors.append(l_news_estates_atractor)
+                    break
+
+            # print o_local_network.set_of_attractors
+            if len(l_news_estates_atractor) == 0:
+                # print ("DOBLANDO")
+                v_num_transitions = v_num_transitions * 2
+
+            # TRANFORM LIST OF ATRACTORS TO CLAUSULES
+            for clausule_atractor in l_attractors:
+                clausule_variable = []
+                cont_variable = 0
+                for estate_atractor in clausule_atractor:
+                    if (estate_atractor == "0"):
+                        clausule_variable.append("-" + str(o_local_network.l_var_total[cont_variable]))
+                    else:
+                        clausule_variable.append(str(o_local_network.l_var_total[cont_variable]))
+                    cont_variable = cont_variable + 1
+                l_attractors_clauses.append(clausule_variable)
+
+            # print l_atractors_clausules
+            # REPEAT CODE
+            v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
+                                                                              l_attractors_clauses, scenery)
+            m_response_sat = []
+            o_solver = Minisat()
+            o_solution = o_solver.solve(v_bool_function)
+
+            if o_solution.success:
+                for j in range(0, v_num_transitions):
+                    m_response_sat.append([])
+                    for i in o_local_network.l_var_total:
+                        m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
+            else:
+                # print(" ")
+                print("The expression cannot be satisfied")
+
+            # BLOCK ATTRACTORS
+            m_aux_sat = []
+            if len(m_response_sat) != 0:
+                # TRANSFORM BOOLEAN TO MATRIZ BOOLEAN RESPONSE
+                for j in range(0, v_num_transitions):
+                    matriz_aux_sat = []
+                    for i in range(0, o_local_network.num_var_total):
+                        if m_response_sat[j][i]:
+                            matriz_aux_sat.append("1")
+                        else:
+                            matriz_aux_sat.append("0")
+                    m_aux_sat.append(matriz_aux_sat)
+                # m_resp_boolean = m_aux_sat
+            m_resp_boolean = m_aux_sat
+            # BLOCK ATTRACTORS
+            # REPEAT CODE
+
+        # print o_local_network.set_of_attractors
+        # print(" ")
+        # print ("END OF FIND ATTRACTORS")
+        return [scenery, o_local_network.set_of_attractors]
+
 
