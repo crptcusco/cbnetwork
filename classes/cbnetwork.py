@@ -10,13 +10,55 @@ from classes.couplingsignal import CouplingSignal
 from classes.utils.heap import Node, CustomHeap
 
 
+class DirectedEdge:
+    def __init__(self, index, input_network, output_network):
+        self.index = index
+        self.input_network = input_network
+        self.output_network = output_network
+
+
 class CBN:
-    def __init__(self, l_local_networks, l_coupling_signals):
+    def __init__(self, l_local_networks, l_directed_edges):
         self.l_local_networks = l_local_networks
-        self.l_coupling_signals = l_coupling_signals
+        self.l_directed_edges = l_directed_edges
+
+        #DEJAR LAS SENHALES DE ACOPLAMIENTO AFUERA de la red local??? EN CBN????
+
+        # Calculated properties
+        self.l_attractor_fields = []
 
     def show(self):
+        print("CBN description")
+        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
+        print("Local Networks:", l_local_networks_indexes)
+        print("Directed edges:")
+        for o_relation in self.l_directed_edges:
+            o_relation.show()
+            
+    def show_attractors_fields(self):
         pass
+
+    def process_output_signals(self):
+        # update output signals for every local network
+        for o_local_network in self.l_local_networks:
+            for t_relation in self.l_directed_edges:
+                if o_local_network.index == t_relation[1]:
+                    o_local_network.l_output_signals.append(t_relation)
+                    print(t_relation)
+
+    def find_network_by_index(self, index):
+        for o_local_network in self.l_local_networks:
+            if o_local_network.index == index:
+                return o_local_network
+
+    def update_network_by_index(self, index, o_local_network_update):
+        for o_local_network in self.l_local_networks:
+            if o_local_network.index == index:
+                o_local_network = o_local_network_update
+                print("MESSAGE:", "Local Network updated")
+                return True
+        print("ERROR:", "Local Network not found")
+        return False
 
     @staticmethod
     def generate_aleatory_cbn(n_local_networks, n_var_network, n_relations, n_output_variables, n_clauses_function,
@@ -25,7 +67,7 @@ class CBN:
         print("==================")
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
         l_local_networks = []
-        l_coupling_signals = []
+        l_directed_edges = []
         v_cont_var = 1
         for v_num_network in range(1, n_local_networks + 1):
             # generate a local network
@@ -55,7 +97,8 @@ class CBN:
                 o_coupling_signal = CouplingSignal(o_local_network.index, o_local_network_co.index,
                                                    l_output_variables, v_cont_var, coupling_function)
                 l_signals.append(o_coupling_signal)
-                l_coupling_signals.append(o_coupling_signal)
+                o_directed_edge = DirectedEdge(v_cont_var, o_local_network.index, o_local_network_co.index)
+                l_directed_edges.append(o_directed_edge)
                 v_cont_var = v_cont_var + 1
             o_local_network.l_input_signals = l_signals.copy()
 
@@ -77,7 +120,7 @@ class CBN:
             l_aux_variables.extend(o_local_network.l_var_intern)
 
             # generate the function description of the variables
-            description_variables = []
+            des_funct_variables = []
             # generate clauses
             for v_description_variable in o_local_network.l_var_intern:
                 l_clauses_node = []
@@ -88,20 +131,25 @@ class CBN:
                     l_clauses_node.append(l_literals_variables)
                 # adding the description of variable in form of object
                 o_variable_model = InternalVariable(v_description_variable, l_clauses_node)
-                description_variables.append(o_variable_model)
+                des_funct_variables.append(o_variable_model)
                 # adding the description in functions of every variable
             # adding the local network to list of local networks
-            o_local_network.description_variables = description_variables.copy()
+            o_local_network.des_funct_variables = des_funct_variables.copy()
             aux2_l_local_networks.append(o_local_network)
             # actualized the list of local networks
         l_local_networks = aux2_l_local_networks.copy()
 
+        # Process the input signals
         for o_local_network in l_local_networks:
-            o_local_network.process_parameters()
+            o_local_network.process_input_signals()
+        # Process the output signals
+        for o_local_network in l_local_networks:
+            o_local_network.process_output_signals()
             o_local_network.show()
             print("Local network created")
             print("---------------------")
-        o_cbn = CBN(l_local_networks, l_coupling_signals)
+
+        o_cbn = CBN(l_local_networks, l_directed_edges)
         print("Coupled Boolean Network created")
         print("===============================")
         return o_cbn
@@ -110,34 +158,80 @@ class CBN:
         print("Find Attractors using optimized method")
         print("-------------------------")
         print("Begin of the initial loop")
-        # Defined the kind for every coupling signal: stable 1, not compute 2
-        kind_of_coupled_signal = [2] * len(self.l_coupling_signals)
-        print(kind_of_coupled_signal)
 
-        # Create an empty heap
+        # Defined the kind for every coupling signal: stable 1, not compute 2
+        #     1: "restricted",
+        #     2: "not compute",
+        #     3: "stable",
+        #     4: "not stable"
+
+        # Assigning the king of the relations, all the relations are not computed
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.kind_relation = 2
+            # print(o_relation.kind_relation)
+
+        # calculate the initial weights for every node (local network)
+        # create an empty heap
         o_custom_heap = CustomHeap()
-        # calculate the initial weights for every node
         for o_local_network in self.l_local_networks:
             # initial graph only have not computed signals
-            aux_weight = len(o_local_network.l_input_signals) * 2
-            # add edge to the heap
-            o_node = Node(o_local_network.index, aux_weight)
+            weight = 0
+            for o_directed_edge in self.l_directed_edges:
+                if o_directed_edge.input_network == o_local_network.index:
+                    weight = weight + o_directed_edge.kind_relation
+            # add node to the heap with computed weight
+            o_node = Node(o_local_network.index, weight)
             o_custom_heap.add_node(o_node)
 
+        # PROCESS THE FIRST NODE - FIND ATTRACTORS
         # find the node in the top  of the heap
         lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
         # find the local network information
         o_local_network = self.find_network_by_index(lowest_weight_node.index)
         # calculate the local scenarios
-        values_input_signals = product(list('01'), repeat=len(o_local_network.l_input_signals))
-        print(values_input_signals)
+        l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_input_signals)))
         # calculate the attractors for the node in the top of the  heap
-        l_scenery_attractors = LocalNetwork.find_local_scenery_attractors(o_local_network, values_input_signals)
-        for l_attractor_scene in l_scenery_attractors:
-            print("Local scenery :", l_attractor_scene[0])
-            print(l_attractor_scene[1])
+        o_local_network = LocalNetwork.find_local_scenery_attractors(o_local_network, l_local_scenes)
+        # update the network in the CBN
+        self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
-        # Update the weights of the nodes
+        # validate if the output variables by attractor send a fixed value
+        for o_local_scene in o_local_network.l_local_scenes:
+            # print("Scene: ", str(o_local_scene.l_values))
+            for o_output_signal in o_local_network.l_output_signals:
+                print(o_output_signal.true_table())
+
+
+
+        # for l_attractor_scene in l_scenery_attractors:
+        #     print("Local scenery :", l_attractor_scene[0])
+        #     print(l_attractor_scene[1])
+        #     # evaluate the kind of coupling signal that the attractor send
+        #     for o_signal in o_local_network.l_input_signals:
+        #         print("hola")
+        #         print(o_signal.l_output_variables)
+        #         print(o_signal.index_variable_signal)
+        #         print(o_signal.coupling_function)
+        #         print(o_signal.true_table)
+
+        # update the table of kinds of coupling signals
+        # o_relation.kind_relation
+
+        # update the weights of the nodes
+
+        print("Update the weights of the nodes")
+        # o_custom_heap = CustomHeap()
+        # calculate the initial weights for every node
+        for o_local_network_index in o_custom_heap.get_indexes():
+            o_local_network = self.find_network_by_index(o_local_network_index)
+            weight = 0
+            # for o_signal in o_local_network.l_input_signals:
+
+            # initial graph only have not computed signals
+            weight = len(o_local_network.l_input_signals) * 2
+            # add edge to the heap
+            o_node = Node(o_local_network.index, weight)
+            o_custom_heap.add_node(o_node)
 
         print("end of the initial loop")
         print("-----------------------")
@@ -157,7 +251,7 @@ class CBN:
             # Find Local Network
             o_local_network = self.find_network_by_index(lowest_weight_node.index)
             # Find attractors with the minimum weight
-            LocalNetwork.find_local_scenery_attractors(o_local_network, values_input_signals)
+            LocalNetwork.find_local_scenery_attractors(o_local_network, l_local_scenes)
             print(lowest_weight_node.index, lowest_weight_node.weight)
 
             # Update the weights
@@ -184,6 +278,35 @@ class CBN:
         # o_input_signal.local_network_input, ':', 0) o_graph.add_edge(o_input_signal.local_network_output,
         # o_input_signal.local_network_input, weight=0)
 
+        # @staticmethod
+        # def calculate_weight(l_signals_status):
+        #     # l_signals_status = [0, 0, 1, 2]
+        #     res = sum(l_signals_status)
+        #     return res
+
+        # # Types Coupling Signals
+        # kind_coupling_signals = {
+        #     1: "not compute",
+        #     2: "restricted",
+        #     3: "stable",
+        #     4: "not stable"
+        # }
+
+        # # How to compute the weight
+        # dict_weight = {
+        #     1: "stable",
+        #     2: "not compute"
+        # }
+
+        # # Evaluate the signals that don't have input coupling signals
+        # l_local_network_without_signals = []
+        # for o_local_network in self.l_local_networks:
+        #     if not o_local_network.l_input_signals:
+        #         l_local_network_without_signals.append(o_local_network.index)
+        # print(l_local_network_without_signals)
+
+        # print(heap)
+
     def evaluate_cbn_topology(self):
         # Find attractors
         # create a directed graph
@@ -203,11 +326,3 @@ class CBN:
             print("The graph is no cycled - Topological order:", topological_order)
         else:
             print("The graph is cycled - you have to use other strategy ... using heaps")
-
-    def show_attractors_fields(self):
-        pass
-
-    def find_network_by_index(self, index):
-        for o_local_network in self.l_local_networks:
-            if o_local_network.index == index:
-                return o_local_network

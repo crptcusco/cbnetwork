@@ -9,11 +9,13 @@ from collections import namedtuple  # structures like trees
 class CouplingSignal:
     def __init__(self, local_network_input, local_network_output, l_output_variables, index_variable_signal,
                  coupling_function):
+        self.index_variable_signal = index_variable_signal
         self.local_network_input = local_network_input
         self.local_network_output = local_network_output
         self.l_output_variables = l_output_variables
-        self.index_variable_signal = index_variable_signal
         self.coupling_function = coupling_function
+
+        # Calculated properties
         self.true_table = self.process_true_table()
 
     def show(self):

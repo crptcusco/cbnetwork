@@ -27,31 +27,8 @@ class CustomHeap:
     def get_size(self):
         return len(self.heap)
 
-    # @staticmethod
-    # def calculate_weight(l_signals_status):
-    #     # l_signals_status = [0, 0, 1, 2]
-    #     res = sum(l_signals_status)
-    #     return res
-
-    # # Types Coupling Signals
-    # kind_coupling_signals = {
-    #     1: "not compute",
-    #     2: "restricted",
-    #     3: "stable",
-    #     4: "not stable"
-    # }
-
-    # # How to compute the weight
-    # dict_weight = {
-    #     1: "stable",
-    #     2: "not compute"
-    # }
-
-    # # Evaluate the signals that don't have input coupling signals
-    # l_local_network_without_signals = []
-    # for o_local_network in self.l_local_networks:
-    #     if not o_local_network.l_input_signals:
-    #         l_local_network_without_signals.append(o_local_network.index)
-    # print(l_local_network_without_signals)
-
-    # print(heap)
+    def get_indexes(self):
+        indexes = []
+        for node in self.heap:
+            indexes.append(node.index)
+        return indexes
