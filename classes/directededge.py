@@ -6,12 +6,12 @@ from itertools import product  # generate combinations of numbers
 from collections import namedtuple  # structures like trees
 
 
-class CouplingSignal:
-    def __init__(self, local_network_input, local_network_output, l_output_variables, index_variable_signal,
+class DirectedEdge:
+    def __init__(self, input_local_network, output_local_network, l_output_variables, index_variable_signal,
                  coupling_function):
         self.index_variable_signal = index_variable_signal
-        self.local_network_input = local_network_input
-        self.local_network_output = local_network_output
+        self.input_local_network = input_local_network
+        self.output_local_network = output_local_network
         self.l_output_variables = l_output_variables
         self.coupling_function = coupling_function
 
@@ -19,12 +19,12 @@ class CouplingSignal:
         self.true_table = self.process_true_table()
 
     def show(self):
-        print("Network Input : " + str(self.local_network_input) + "\n"
-              + "Network Output : " + str(self.local_network_output) + "\n"
-              + "Variables : " + str(self.l_output_variables) + "\n"
-              + "Name Variable : " + str(self.index_variable_signal) + "\n"
-              + "Coupling Function : " + str(self.coupling_function) + "\n"
-              + "Truth Table: " + str(self.true_table))
+        print("Input Local Network:", str(self.input_local_network) + "\n"
+              + "Network Output:", str(self.output_local_network) + "\n"
+              + "Variables:", str(self.l_output_variables) + "\n"
+              + "Name Variable:", str(self.index_variable_signal) + "\n"
+              + "Coupling Function:", str(self.coupling_function) + "\n"
+              + "Truth Table:", str(self.true_table))
 
     def process_true_table(self):
         r_true_table = {}

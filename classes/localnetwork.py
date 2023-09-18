@@ -16,48 +16,46 @@ class LocalAttractor:
 
 
 class LocalNetwork:
-    def __init__(self, num_local_network, l_var_intern, l_input_signals=None, des_funct_variables=None):
-        if l_input_signals is None:
-            l_input_signals = []
+    def __init__(self, num_local_network, l_var_intern, des_funct_variables=None):
         if des_funct_variables is None:
             des_funct_variables = []
-
         self.index = num_local_network
         self.l_var_intern = l_var_intern
-
-        self.l_input_signals = l_input_signals
         self.des_funct_variables = des_funct_variables
+
+        # Processed properties
+        self.l_input_signals = []
+        self.l_output_signals = []
         self.l_var_exterm = []
         self.l_var_total = []
         self.num_var_total = 0
         self.dic_var_cnf = {}
 
+        # Calculated properties
         self.l_local_scenes = []
         # self.l_local_attractors = []
-
-        self.l_output_signals = []
 
     def show(self):
         print('Local Network', self.index)
         print('Variables intern : ', self.l_var_intern)
+        print('Input Signals:')
         for o_signal in self.l_input_signals:
             o_signal.show()
-        pass
-        # Description variables
+            # Description variables
         for o_variable in self.des_funct_variables:
             o_variable.show()
+        print('Output Signals:')
+        for o_signal in self.l_output_signals:
+            o_signal.show()
 
     def process_input_signals(self):
-        # Processing the input of local network
-        for v_signal in self.l_input_signals:
-            self.l_var_exterm.append(v_signal.index_variable_signal)
+        # Processing the input signals of local network
+        for o_signal in self.l_input_signals:
+            self.l_var_exterm.append(o_signal.index_variable_signal)
         # update the value of list_variables
         self.l_var_total.extend(self.l_var_intern.copy())
         self.l_var_total.extend(self.l_var_exterm.copy())
         self.num_var_total = len(self.l_var_total)
-
-    def process_output_signals(self):
-        pass
 
     @staticmethod
     def find_local_scenery_attractors(o_local_network, l_local_scenes=None):
@@ -329,5 +327,3 @@ class LocalNetwork:
         # print(" ")
         # print ("END OF FIND ATTRACTORS")
         return [scenery, o_local_network.set_of_attractors]
-
-

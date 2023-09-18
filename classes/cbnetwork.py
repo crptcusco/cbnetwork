@@ -6,23 +6,21 @@ import networkx as nx  # generate networks
 
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
-from classes.couplingsignal import CouplingSignal
+from classes.directededge import DirectedEdge
 from classes.utils.heap import Node, CustomHeap
 
 
-class DirectedEdge:
-    def __init__(self, index, input_network, output_network):
-        self.index = index
-        self.input_network = input_network
-        self.output_network = output_network
+# class DirectedEdge:
+#     def __init__(self, index, input_network, output_network):
+#         self.index = index
+#         self.input_network = input_network
+#         self.output_network = output_network
 
 
 class CBN:
     def __init__(self, l_local_networks, l_directed_edges):
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
-
-        #DEJAR LAS SENHALES DE ACOPLAMIENTO AFUERA de la red local??? EN CBN????
 
         # Calculated properties
         self.l_attractor_fields = []
@@ -32,9 +30,9 @@ class CBN:
         l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
         print("Local Networks:", l_local_networks_indexes)
         print("Directed edges:")
-        for o_relation in self.l_directed_edges:
-            o_relation.show()
-            
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.show()
+
     def show_attractors_fields(self):
         pass
 
@@ -94,16 +92,23 @@ class CBN:
                     coupling_function = l_output_variables[0]
                 else:
                     coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
-                o_coupling_signal = CouplingSignal(o_local_network.index, o_local_network_co.index,
-                                                   l_output_variables, v_cont_var, coupling_function)
-                l_signals.append(o_coupling_signal)
-                o_directed_edge = DirectedEdge(v_cont_var, o_local_network.index, o_local_network_co.index)
+                o_directed_edge = DirectedEdge(o_local_network.index, o_local_network_co.index,
+                                               l_output_variables, v_cont_var, coupling_function)
                 l_directed_edges.append(o_directed_edge)
                 v_cont_var = v_cont_var + 1
-            o_local_network.l_input_signals = l_signals.copy()
-
             aux1_l_local_networks.append(o_local_network)
         l_local_networks = aux1_l_local_networks.copy()
+
+        # Process the input and output signals for local_network
+        for o_local_network in l_local_networks:
+            # l_input_signals = []
+            # l_output_signals = []
+            for o_directed_edge in l_directed_edges:
+                if o_directed_edge.input_local_network == o_local_network.index:
+                    o_local_network.l_input_signals.append(o_directed_edge)
+                if o_directed_edge.output_local_network == o_local_network.index:
+                    o_local_network.l_output_signals.append(o_directed_edge)
+            o_local_network.process_input_signals()
 
         # GENERATE THE DYNAMICS OF EACH RDD
         number_max_of_clauses = n_clauses_function
@@ -136,18 +141,10 @@ class CBN:
             # adding the local network to list of local networks
             o_local_network.des_funct_variables = des_funct_variables.copy()
             aux2_l_local_networks.append(o_local_network)
-            # actualized the list of local networks
-        l_local_networks = aux2_l_local_networks.copy()
-
-        # Process the input signals
-        for o_local_network in l_local_networks:
-            o_local_network.process_input_signals()
-        # Process the output signals
-        for o_local_network in l_local_networks:
-            o_local_network.process_output_signals()
-            o_local_network.show()
             print("Local network created")
             print("---------------------")
+            # actualized the list of local networks
+        l_local_networks = aux2_l_local_networks.copy()
 
         o_cbn = CBN(l_local_networks, l_directed_edges)
         print("Coupled Boolean Network created")
@@ -177,7 +174,7 @@ class CBN:
             # initial graph only have not computed signals
             weight = 0
             for o_directed_edge in self.l_directed_edges:
-                if o_directed_edge.input_network == o_local_network.index:
+                if o_directed_edge.input_local_network == o_local_network.index:
                     weight = weight + o_directed_edge.kind_relation
             # add node to the heap with computed weight
             o_node = Node(o_local_network.index, weight)
@@ -196,12 +193,11 @@ class CBN:
         self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
         # validate if the output variables by attractor send a fixed value
-        for o_local_scene in o_local_network.l_local_scenes:
-            # print("Scene: ", str(o_local_scene.l_values))
-            for o_output_signal in o_local_network.l_output_signals:
-                print(o_output_signal.true_table())
 
-
+        for o_output_signal in o_local_network.l_output_signals:
+            print(str(o_output_signal.true_table))
+            for o_local_scene in o_local_network.l_local_scenes:
+                print("Scene: ", str(o_local_scene.l_values))
 
         # for l_attractor_scene in l_scenery_attractors:
         #     print("Local scenery :", l_attractor_scene[0])
@@ -315,8 +311,8 @@ class CBN:
         # add edges to the graph
         for o_local_network in self.l_local_networks:
             for o_input_signal in o_local_network.l_input_signals:
-                print("Add edge:", o_input_signal.local_network_output, "-", o_input_signal.local_network_input, ':', 0)
-                o_graph.add_edge(o_input_signal.local_network_output, o_input_signal.local_network_input, weight=0)
+                print("Add edge:", o_input_signal.output_local_network, "-", o_input_signal.input_local_network, ':', 0)
+                o_graph.add_edge(o_input_signal.output_local_network, o_input_signal.input_local_network, weight=0)
 
         # graph have cycles or not
         is_acyclic = nx.is_directed_acyclic_graph(o_graph)
@@ -326,3 +322,6 @@ class CBN:
             print("The graph is no cycled - Topological order:", topological_order)
         else:
             print("The graph is cycled - you have to use other strategy ... using heaps")
+
+
+
