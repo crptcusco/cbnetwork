@@ -188,16 +188,34 @@ class CBN:
         # calculate the local scenarios
         l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_input_signals)))
         # calculate the attractors for the node in the top of the  heap
-        o_local_network = LocalNetwork.find_local_scenery_attractors(o_local_network, l_local_scenes)
+        o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
         # update the network in the CBN
         self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
         # validate if the output variables by attractor send a fixed value
-
         for o_output_signal in o_local_network.l_output_signals:
+            signal_value = 2
+            print("Index variable output signal:", o_output_signal.index_variable_signal)
+            print("Output variables:", o_output_signal.l_output_variables)
             print(str(o_output_signal.true_table))
             for o_local_scene in o_local_network.l_local_scenes:
                 print("Scene: ", str(o_local_scene.l_values))
+                for o_attractor in o_local_scene.l_attractors:
+                    for o_state in o_attractor.l_states:
+                        print(o_local_network.l_var_total)
+                        print(o_local_network.l_var_intern)
+                        print(o_state.l_variable_values)
+                        # select the values of the output variables
+                        true_table_index = ""
+                        for v_output_variable in o_output_signal.l_output_variables:
+                            pos = o_local_network.l_var_total.index(v_output_variable)
+                            value = o_state.l_variable_values[pos]
+                            true_table_index = true_table_index + str(value)
+                        print(o_output_signal.l_output_variables)
+                        print(true_table_index)
+                        output_value_state = o_output_signal.true_table[true_table_index]
+                        print("OutPutValue Exit:", output_value_state)
+
 
         # for l_attractor_scene in l_scenery_attractors:
         #     print("Local scenery :", l_attractor_scene[0])
@@ -213,115 +231,117 @@ class CBN:
         # update the table of kinds of coupling signals
         # o_relation.kind_relation
 
+        # COMENTADO!!!!
+
         # update the weights of the nodes
 
-        print("Update the weights of the nodes")
-        # o_custom_heap = CustomHeap()
-        # calculate the initial weights for every node
-        for o_local_network_index in o_custom_heap.get_indexes():
-            o_local_network = self.find_network_by_index(o_local_network_index)
-            weight = 0
-            # for o_signal in o_local_network.l_input_signals:
-
-            # initial graph only have not computed signals
-            weight = len(o_local_network.l_input_signals) * 2
-            # add edge to the heap
-            o_node = Node(o_local_network.index, weight)
-            o_custom_heap.add_node(o_node)
-
-        print("end of the initial loop")
-        print("-----------------------")
-
-        # Verify if the attractors are not compute
-        while o_custom_heap.get_size() > 1:
-            # calculate the weight of coupling signals
-            # calculate the kind for every local network an every coupling signal
-
-            # for o_signal in o_local_network.l_input_signals:
-            #     print(o_signal.index_variable_signal)
-
-            # Update the weight for every local network in the heap
-            # local_weight = Node.calculate_weight(l_signal_status)
-
-            lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
-            # Find Local Network
-            o_local_network = self.find_network_by_index(lowest_weight_node.index)
-            # Find attractors with the minimum weight
-            LocalNetwork.find_local_scenery_attractors(o_local_network, l_local_scenes)
-            print(lowest_weight_node.index, lowest_weight_node.weight)
-
-            # Update the weights
-            for o_node in o_custom_heap.heap:
-                print(o_node)
-
-        print("All the attractors are computed")
-        print("===============================")
-
-        # Remove a node from the heap
-
-        # Update the weight of the nodes
-
-        # Stop criteria
-        # if weight  == 3 or weight = 0
-
-        # weight = 0
-        # kind_coupling_flag = False
-        # while not kind_coupling_flag:
-
-        # Crear un heap con el numero de sinais de acoplamento que tem while weigth == 0 or weigth  == 3 :
-        # self.l_attractors = [] for o_local_network in self.l_local_networks: for o_input_signal in
-        # o_local_network.l_input_signals: print("Add edge:", o_input_signal.local_network_output, "-",
-        # o_input_signal.local_network_input, ':', 0) o_graph.add_edge(o_input_signal.local_network_output,
-        # o_input_signal.local_network_input, weight=0)
-
-        # @staticmethod
-        # def calculate_weight(l_signals_status):
-        #     # l_signals_status = [0, 0, 1, 2]
-        #     res = sum(l_signals_status)
-        #     return res
-
-        # # Types Coupling Signals
-        # kind_coupling_signals = {
-        #     1: "not compute",
-        #     2: "restricted",
-        #     3: "stable",
-        #     4: "not stable"
-        # }
-
-        # # How to compute the weight
-        # dict_weight = {
-        #     1: "stable",
-        #     2: "not compute"
-        # }
-
-        # # Evaluate the signals that don't have input coupling signals
-        # l_local_network_without_signals = []
-        # for o_local_network in self.l_local_networks:
-        #     if not o_local_network.l_input_signals:
-        #         l_local_network_without_signals.append(o_local_network.index)
-        # print(l_local_network_without_signals)
-
-        # print(heap)
-
-    def evaluate_cbn_topology(self):
-        # Find attractors
-        # create a directed graph
-        o_graph = nx.DiGraph()
-
-        # add edges to the graph
-        for o_local_network in self.l_local_networks:
-            for o_input_signal in o_local_network.l_input_signals:
-                print("Add edge:", o_input_signal.output_local_network, "-", o_input_signal.input_local_network, ':', 0)
-                o_graph.add_edge(o_input_signal.output_local_network, o_input_signal.input_local_network, weight=0)
-
-        # graph have cycles or not
-        is_acyclic = nx.is_directed_acyclic_graph(o_graph)
-        if is_acyclic:
-            # make topological order
-            topological_order = list(nx.topological_sort(o_graph))
-            print("The graph is no cycled - Topological order:", topological_order)
-        else:
-            print("The graph is cycled - you have to use other strategy ... using heaps")
-
-
-
+    #     print("Update the weights of the nodes")
+    #     # o_custom_heap = CustomHeap()
+    #     # calculate the initial weights for every node
+    #     for o_local_network_index in o_custom_heap.get_indexes():
+    #         o_local_network = self.find_network_by_index(o_local_network_index)
+    #         weight = 0
+    #         # for o_signal in o_local_network.l_input_signals:
+    #
+    #         # initial graph only have not computed signals
+    #         weight = len(o_local_network.l_input_signals) * 2
+    #         # add edge to the heap
+    #         o_node = Node(o_local_network.index, weight)
+    #         o_custom_heap.add_node(o_node)
+    #
+    #     print("end of the initial loop")
+    #     print("-----------------------")
+    #
+    #     # Verify if the attractors are not compute
+    #     while o_custom_heap.get_size() > 1:
+    #         # calculate the weight of coupling signals
+    #         # calculate the kind for every local network an every coupling signal
+    #
+    #         # for o_signal in o_local_network.l_input_signals:
+    #         #     print(o_signal.index_variable_signal)
+    #
+    #         # Update the weight for every local network in the heap
+    #         # local_weight = Node.calculate_weight(l_signal_status)
+    #
+    #         lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
+    #         # Find Local Network
+    #         o_local_network = self.find_network_by_index(lowest_weight_node.index)
+    #         # Find attractors with the minimum weight
+    #         LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
+    #         print(lowest_weight_node.index, lowest_weight_node.weight)
+    #
+    #         # Update the weights
+    #         for o_node in o_custom_heap.heap:
+    #             print(o_node)
+    #
+    #     print("All the attractors are computed")
+    #     print("===============================")
+    #
+    #     # Remove a node from the heap
+    #
+    #     # Update the weight of the nodes
+    #
+    #     # Stop criteria
+    #     # if weight  == 3 or weight = 0
+    #
+    #     # weight = 0
+    #     # kind_coupling_flag = False
+    #     # while not kind_coupling_flag:
+    #
+    #     # Crear un heap con el numero de sinais de acoplamento que tem while weigth == 0 or weigth  == 3 :
+    #     # self.l_attractors = [] for o_local_network in self.l_local_networks: for o_input_signal in
+    #     # o_local_network.l_input_signals: print("Add edge:", o_input_signal.local_network_output, "-",
+    #     # o_input_signal.local_network_input, ':', 0) o_graph.add_edge(o_input_signal.local_network_output,
+    #     # o_input_signal.local_network_input, weight=0)
+    #
+    #     # @staticmethod
+    #     # def calculate_weight(l_signals_status):
+    #     #     # l_signals_status = [0, 0, 1, 2]
+    #     #     res = sum(l_signals_status)
+    #     #     return res
+    #
+    #     # # Types Coupling Signals
+    #     # kind_coupling_signals = {
+    #     #     1: "not compute",
+    #     #     2: "restricted",
+    #     #     3: "stable",
+    #     #     4: "not stable"
+    #     # }
+    #
+    #     # # How to compute the weight
+    #     # dict_weight = {
+    #     #     1: "stable",
+    #     #     2: "not compute"
+    #     # }
+    #
+    #     # # Evaluate the signals that don't have input coupling signals
+    #     # l_local_network_without_signals = []
+    #     # for o_local_network in self.l_local_networks:
+    #     #     if not o_local_network.l_input_signals:
+    #     #         l_local_network_without_signals.append(o_local_network.index)
+    #     # print(l_local_network_without_signals)
+    #
+    #     # print(heap)
+    #
+    # def evaluate_cbn_topology(self):
+    #     # Find attractors
+    #     # create a directed graph
+    #     o_graph = nx.DiGraph()
+    #
+    #     # add edges to the graph
+    #     for o_local_network in self.l_local_networks:
+    #         for o_input_signal in o_local_network.l_input_signals:
+    #             print("Add edge:", o_input_signal.output_local_network, "-", o_input_signal.input_local_network, ':', 0)
+    #             o_graph.add_edge(o_input_signal.output_local_network, o_input_signal.input_local_network, weight=0)
+    #
+    #     # graph have cycles or not
+    #     is_acyclic = nx.is_directed_acyclic_graph(o_graph)
+    #     if is_acyclic:
+    #         # make topological order
+    #         topological_order = list(nx.topological_sort(o_graph))
+    #         print("The graph is no cycled - Topological order:", topological_order)
+    #     else:
+    #         print("The graph is cycled - you have to use other strategy ... using heaps")
+    #
+    #
+    #

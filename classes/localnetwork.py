@@ -2,17 +2,7 @@ from itertools import product
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
 
-
-class LocalScene:
-    def __init__(self, l_values=None):
-        self.l_values = l_values
-        # Calculated properties
-        self.l_attractors = []
-
-
-class LocalAttractor:
-    def __init__(self, l_values):
-        self.l_values = l_values
+from classes.LocalScene import LocalScene, LocalAttractor, LocalState
 
 
 class LocalNetwork:
@@ -58,14 +48,14 @@ class LocalNetwork:
         self.num_var_total = len(self.l_var_total)
 
     @staticmethod
-    def find_local_scenery_attractors(o_local_network, l_local_scenes=None):
+    def find_local_attractors(o_local_network, l_local_scenes=None):
         if l_local_scenes is None:
             o_local_scene = LocalScene()
-            o_local_scene.l_attractors = LocalNetwork.find_local_attractors(o_local_network)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network)
             o_local_network.l_local_scenes.append(o_local_scene)
         for scenery in l_local_scenes:
             o_local_scene = LocalScene(scenery)
-            o_local_scene.l_attractors = LocalNetwork.find_local_attractors(o_local_network, ''.join(scenery))
+            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, ''.join(scenery))
             o_local_network.l_local_scenes.append(o_local_scene)
         return o_local_network
 
@@ -196,8 +186,8 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
-    def find_local_attractors(o_local_network, scenery=None):
-        # MEJORAR EL METODO PARA QUE ADMITA
+    def find_local_scenary_attractors(o_local_network, scenery=None):
+        # MEJORAR EL METODO PARA QUE ADMITA UN OBJETO ATRACTOR
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
             number_of_times = 0
@@ -206,10 +196,10 @@ class LocalNetwork:
                     number_of_times = number_of_times + 1
             return number_of_times
 
-        # print "BEGIN TO FIND ATTRACTORS"
+        print("BEGIN TO FIND ATTRACTORS")
         print("NETWORK NUMBER : " + str(o_local_network.index) + " PERMUTATION SIGNAL COUPLING: " + scenery)
         # create boolean expression initial with "n" transitions
-        o_local_network.set_of_attractors = []
+        set_of_attractors = []
         v_num_transitions = 3
         l_attractors = []
         l_attractors_clauses = []
@@ -269,10 +259,10 @@ class LocalNetwork:
                     l_news_estates_attractor = path_solution[atractor_begin - 1:(atractor_begin + atractor_end)]
                     l_attractors = l_attractors + l_news_estates_attractor
                     # add attractors like list of list
-                    o_local_network.set_of_attractors.append(l_news_estates_attractor)
+                    set_of_attractors.append(l_news_estates_attractor)
                     break
 
-            # print o_local_network.set_of_attractors
+            # print set_of_attractors
             if len(l_news_estates_attractor) == 0:
                 # print ("duplicating")
                 v_num_transitions = v_num_transitions * 2
@@ -323,7 +313,15 @@ class LocalNetwork:
             # BLOCK ATTRACTORS
             # REPEAT CODE
 
-        # print o_local_network.set_of_attractors
-        # print(" ")
-        # print ("END OF FIND ATTRACTORS")
-        return [scenery, o_local_network.set_of_attractors]
+        # Creating the objects of the attractor
+        res = []
+        for o_attractor in set_of_attractors:
+            l_local_states = []
+            for o_state in o_attractor:
+                o_local_state = LocalState(o_state)
+                l_local_states.append(o_local_state)
+            o_local_attractor = LocalAttractor(l_local_states)
+            res.append(o_local_attractor)
+
+        print("END OF FIND ATTRACTORS")
+        return res
