@@ -194,13 +194,16 @@ class CBN:
 
         # validate if the output variables by attractor send a fixed value
         for o_output_signal in o_local_network.l_output_signals:
-            signal_value = 2
             print("Index variable output signal:", o_output_signal.index_variable_signal)
             print("Output variables:", o_output_signal.l_output_variables)
             print(str(o_output_signal.true_table))
+            l_signals_for_output = []
             for o_local_scene in o_local_network.l_local_scenes:
                 print("Scene: ", str(o_local_scene.l_values))
+                l_signals_in_local_scene = []
                 for o_attractor in o_local_scene.l_attractors:
+                    print("ATTRACTOR RRRRR")
+                    l_signals_in_attractor = []
                     for o_state in o_attractor.l_states:
                         print(o_local_network.l_var_total)
                         print(o_local_network.l_var_intern)
@@ -214,22 +217,31 @@ class CBN:
                         print(o_output_signal.l_output_variables)
                         print(true_table_index)
                         output_value_state = o_output_signal.true_table[true_table_index]
-                        print("OutPutValue Exit:", output_value_state)
-
-
-        # for l_attractor_scene in l_scenery_attractors:
-        #     print("Local scenery :", l_attractor_scene[0])
-        #     print(l_attractor_scene[1])
-        #     # evaluate the kind of coupling signal that the attractor send
-        #     for o_signal in o_local_network.l_input_signals:
-        #         print("hola")
-        #         print(o_signal.l_output_variables)
-        #         print(o_signal.index_variable_signal)
-        #         print(o_signal.coupling_function)
-        #         print(o_signal.true_table)
-
-        # update the table of kinds of coupling signals
-        # o_relation.kind_relation
+                        # print("OutPutValue Exit:", output_value_state)
+                        l_signals_in_attractor.append(output_value_state)
+                    if len(set(l_signals_in_attractor)) == 1:
+                        l_signals_in_local_scene.append(l_signals_in_attractor[0])
+                        print("message:", "the attractor signal value is stable")
+                    else:
+                        print("message:", "the attractor signal is not stable")
+                if len(set(l_signals_in_local_scene)) == 1:
+                    l_signals_for_output.append(l_signals_in_local_scene[0])
+                    print("message:", "the scene signal is restricted")
+                else:
+                    if len(set(l_signals_in_local_scene)) == 2:
+                        l_signals_for_output.extend(l_signals_in_local_scene)
+                        print("message:", "the scene signal value is stable")
+                    else:
+                        print("warning:", "the scene signal is not stable")
+            if len(set(l_signals_for_output)) == 1:
+                o_output_signal.kind_signal = 1
+                print("message:", "the output signal is restricted")
+            elif len(set(l_signals_for_output)) == 2:
+                o_output_signal.kind_signal = 3
+                print("message:", "the output signal is stable")
+            else:
+                o_output_signal.kind_signal = 4
+                print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
 
         # COMENTADO!!!!
 

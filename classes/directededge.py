@@ -17,6 +17,12 @@ class DirectedEdge:
 
         # Calculated properties
         self.true_table = self.process_true_table()
+        # Defined the kind for every coupling signal: stable 1, not compute 2
+        #     1: "restricted",
+        #     2: "not compute",
+        #     3: "stable",
+        #     4: "not stable"
+        self.kind_signal = 2
 
     def show(self):
         print("Input Local Network:", str(self.input_local_network) + "\n"
