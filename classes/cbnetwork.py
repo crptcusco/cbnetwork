@@ -101,14 +101,8 @@ class CBN:
 
         # Process the input and output signals for local_network
         for o_local_network in l_local_networks:
-            # l_input_signals = []
-            # l_output_signals = []
-            for o_directed_edge in l_directed_edges:
-                if o_directed_edge.input_local_network == o_local_network.index:
-                    o_local_network.l_input_signals.append(o_directed_edge)
-                if o_directed_edge.output_local_network == o_local_network.index:
-                    o_local_network.l_output_signals.append(o_directed_edge)
-            o_local_network.process_input_signals()
+            l_input_signals = DirectedEdge.find_edges_by_network_index(o_local_network.index, l_directed_edges)
+            o_local_network.process_input_signals(l_input_signals)
 
         # GENERATE THE DYNAMICS OF EACH RDD
         number_max_of_clauses = n_clauses_function
@@ -119,7 +113,8 @@ class CBN:
             # Create a list of all RDDAs variables
             l_aux_variables = []
             # Add the variables of the coupling signals
-            for o_signal in o_local_network.l_input_signals:
+            l_input_signals = DirectedEdge.find_edges_by_network_index(o_local_network.index, l_directed_edges)
+            for o_signal in l_input_signals:
                 l_aux_variables.append(o_signal.index_variable_signal)
             # add local variables
             l_aux_variables.extend(o_local_network.l_var_intern)
@@ -163,13 +158,14 @@ class CBN:
         #     4: "not stable"
 
         # Assigning the king of the relations, all the relations are not computed
+        # print("Initial kind of directed edges")
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.kind_relation = 2
-            # print(o_relation.kind_relation)
+            # print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_relation)
 
-        # calculate the initial weights for every node (local network)
-        # create an empty heap
+        # create an empty heap to organize the local networks by weight
         o_custom_heap = CustomHeap()
+        # calculate the initial weights for every node (local network)
         for o_local_network in self.l_local_networks:
             # initial graph only have not computed signals
             weight = 0
@@ -186,14 +182,18 @@ class CBN:
         # find the local network information
         o_local_network = self.find_network_by_index(lowest_weight_node.index)
         # calculate the local scenarios
-        l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_input_signals)))
+        l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
         # calculate the attractors for the node in the top of the  heap
         o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
         # update the network in the CBN
         self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
+        # # Update kind signals
+        # self.l_directed_edges
+
         # validate if the output variables by attractor send a fixed value
-        for o_output_signal in o_local_network.l_output_signals:
+        l_directed_edges = DirectedEdge.find_edges_by_network_index(o_local_network.index, self.l_directed_edges)
+        for o_output_signal in l_directed_edges:
             print("Index variable output signal:", o_output_signal.index_variable_signal)
             print("Output variables:", o_output_signal.l_output_variables)
             print(str(o_output_signal.true_table))
@@ -202,9 +202,10 @@ class CBN:
                 print("Scene: ", str(o_local_scene.l_values))
                 l_signals_in_local_scene = []
                 for o_attractor in o_local_scene.l_attractors:
-                    print("ATTRACTOR RRRRR")
+                    print("ATTRACTOR")
                     l_signals_in_attractor = []
                     for o_state in o_attractor.l_states:
+                        print("STATE")
                         print(o_local_network.l_var_total)
                         print(o_local_network.l_var_intern)
                         print(o_state.l_variable_values)
@@ -217,7 +218,7 @@ class CBN:
                         print(o_output_signal.l_output_variables)
                         print(true_table_index)
                         output_value_state = o_output_signal.true_table[true_table_index]
-                        # print("OutPutValue Exit:", output_value_state)
+                        print("Output value :", output_value_state)
                         l_signals_in_attractor.append(output_value_state)
                     if len(set(l_signals_in_attractor)) == 1:
                         l_signals_in_local_scene.append(l_signals_in_attractor[0])
@@ -243,7 +244,10 @@ class CBN:
                 o_output_signal.kind_signal = 4
                 print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
 
-        # COMENTADO!!!!
+        # print all the kinds of the signals
+        print("message:", "Resume")
+        for o_output_signal in o_local_network.l_output_signals:
+            print(o_output_signal.index_variable_signal, ":", o_output_signal.kind_signal)
 
         # update the weights of the nodes
 

@@ -214,3 +214,13 @@ class DirectedEdge:
         # sys.exit()
 
         return r_true_table
+
+    @classmethod
+    def find_edges_by_network_index(cls, index, l_directed_edges):
+        res = []
+        for o_directed_edge in l_directed_edges:
+            if o_directed_edge.input_local_network == index:
+                res.append(o_directed_edge)
+        return res
+        # if o_directed_edge.output_local_network == index:
+        #     res.append(o_directed_edge)

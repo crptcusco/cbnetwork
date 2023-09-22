@@ -1,4 +1,3 @@
-from itertools import product
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
 
@@ -14,8 +13,8 @@ class LocalNetwork:
         self.des_funct_variables = des_funct_variables
 
         # Processed properties
-        self.l_input_signals = []
-        self.l_output_signals = []
+        # self.l_input_signals = []
+        # self.l_output_signals = []
         self.l_var_exterm = []
         self.l_var_total = []
         self.num_var_total = 0
@@ -28,19 +27,20 @@ class LocalNetwork:
     def show(self):
         print('Local Network', self.index)
         print('Variables intern : ', self.l_var_intern)
-        print('Input Signals:')
-        for o_signal in self.l_input_signals:
-            o_signal.show()
-            # Description variables
+        # Description variables
         for o_variable in self.des_funct_variables:
             o_variable.show()
-        print('Output Signals:')
-        for o_signal in self.l_output_signals:
-            o_signal.show()
 
-    def process_input_signals(self):
+        # print('Input Signals:')
+        # for o_signal in self.l_input_signals:
+        #     o_signal.show()
+        # print('Output Signals:')
+        # for o_signal in self.l_output_signals:
+        #     o_signal.show()
+
+    def process_input_signals(self, l_input_signals):
         # Processing the input signals of local network
-        for o_signal in self.l_input_signals:
+        for o_signal in l_input_signals:
             self.l_var_exterm.append(o_signal.index_variable_signal)
         # update the value of list_variables
         self.l_var_total.extend(self.l_var_intern.copy())
