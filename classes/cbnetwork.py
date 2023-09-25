@@ -10,13 +10,6 @@ from classes.directededge import DirectedEdge
 from classes.utils.heap import Node, CustomHeap
 
 
-# class DirectedEdge:
-#     def __init__(self, index, input_network, output_network):
-#         self.index = index
-#         self.input_network = input_network
-#         self.output_network = output_network
-
-
 class CBN:
     def __init__(self, l_local_networks, l_directed_edges):
         self.l_local_networks = l_local_networks
@@ -101,8 +94,11 @@ class CBN:
 
         # Process the input and output signals for local_network
         for o_local_network in l_local_networks:
-            l_input_signals = DirectedEdge.find_edges_by_network_index(o_local_network.index, l_directed_edges)
+            l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
             o_local_network.process_input_signals(l_input_signals)
+            # l_output_signals = DirectedEdge.find_output_edges_by_network_index(o_local_network.index,
+            # l_directed_edges)
+            # o_local_network.process_output_signals(l_input_signals)
 
         # GENERATE THE DYNAMICS OF EACH RDD
         number_max_of_clauses = n_clauses_function
@@ -113,7 +109,7 @@ class CBN:
             # Create a list of all RDDAs variables
             l_aux_variables = []
             # Add the variables of the coupling signals
-            l_input_signals = DirectedEdge.find_edges_by_network_index(o_local_network.index, l_directed_edges)
+            l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
             for o_signal in l_input_signals:
                 l_aux_variables.append(o_signal.index_variable_signal)
             # add local variables
@@ -192,7 +188,8 @@ class CBN:
         # self.l_directed_edges
 
         # validate if the output variables by attractor send a fixed value
-        l_directed_edges = DirectedEdge.find_edges_by_network_index(o_local_network.index, self.l_directed_edges)
+        l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
+        print("local_network:", o_local_network.index)
         for o_output_signal in l_directed_edges:
             print("Index variable output signal:", o_output_signal.index_variable_signal)
             print("Output variables:", o_output_signal.l_output_variables)
@@ -212,6 +209,9 @@ class CBN:
                         # select the values of the output variables
                         true_table_index = ""
                         for v_output_variable in o_output_signal.l_output_variables:
+                            print("Variables list:", o_local_network.l_var_total)
+                            print("Output variables list:", o_output_signal.l_output_variables)
+                            print("Output variable:", v_output_variable)
                             pos = o_local_network.l_var_total.index(v_output_variable)
                             value = o_state.l_variable_values[pos]
                             true_table_index = true_table_index + str(value)
@@ -246,8 +246,8 @@ class CBN:
 
         # print all the kinds of the signals
         print("message:", "Resume")
-        for o_output_signal in o_local_network.l_output_signals:
-            print(o_output_signal.index_variable_signal, ":", o_output_signal.kind_signal)
+        for o_directed_edge in self.l_directed_edges:
+            print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
 
         # update the weights of the nodes
 
