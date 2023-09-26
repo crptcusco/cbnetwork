@@ -32,3 +32,13 @@ class CustomHeap:
         for node in self.heap:
             indexes.append(node.index)
         return indexes
+
+    def update_node(self, index, new_weight):
+        # Find the node with the specified index
+        for i, node in enumerate(self.heap):
+            if node.index == index:
+                # Update the weight of the node
+                node.weight = new_weight
+
+                # Reorganize the heap to maintain the heap property
+                heapq.heapify(self.heap)

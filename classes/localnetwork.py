@@ -1,7 +1,7 @@
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
 
-from classes.LocalScene import LocalScene, LocalAttractor, LocalState
+from classes.localscene import LocalScene, LocalAttractor, LocalState
 
 
 class LocalNetwork:

@@ -215,16 +215,16 @@ class DirectedEdge:
 
         return r_true_table
 
-    @classmethod
-    def find_output_edges_by_network_index(cls, index, l_directed_edges):
+    @staticmethod
+    def find_output_edges_by_network_index(index, l_directed_edges):
         res = []
         for o_directed_edge in l_directed_edges:
             if o_directed_edge.output_local_network == index:
                 res.append(o_directed_edge)
         return res
 
-    @classmethod
-    def find_input_edges_by_network_index(cls, index, l_directed_edges):
+    @staticmethod
+    def find_input_edges_by_network_index(index, l_directed_edges):
         res = []
         for o_directed_edge in l_directed_edges:
             if o_directed_edge.input_local_network == index:
