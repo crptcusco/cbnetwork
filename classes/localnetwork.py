@@ -186,7 +186,7 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
-    def find_local_scenary_attractors(o_local_network, scenery=None):
+    def find_local_scenary_attractors(o_local_network, scene=None):
         # MEJORAR EL METODO PARA QUE ADMITA UN OBJETO ATRACTOR
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
@@ -197,7 +197,7 @@ class LocalNetwork:
             return number_of_times
 
         print("BEGIN TO FIND ATTRACTORS")
-        print("NETWORK NUMBER : " + str(o_local_network.index) + " PERMUTATION SIGNAL COUPLING: " + scenery)
+        print("NETWORK NUMBER : " + str(o_local_network.index) + " PERMUTATION SIGNAL COUPLING: " + scene)
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
         v_num_transitions = 3
@@ -206,7 +206,7 @@ class LocalNetwork:
 
         # REPEAT CODE
         v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
-                                                                          l_attractors_clauses, scenery)
+                                                                          l_attractors_clauses, scene)
         m_response_sat = []
         o_solver = Minisat()
         o_solution = o_solver.solve(v_bool_function)
@@ -282,7 +282,7 @@ class LocalNetwork:
             # print l_attractors_clauses
             # REPEAT CODE
             v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
-                                                                              l_attractors_clauses, scenery)
+                                                                              l_attractors_clauses, scene)
             m_response_sat = []
             o_solver = Minisat()
             o_solution = o_solver.solve(v_bool_function)

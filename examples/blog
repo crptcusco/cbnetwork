@@ -1,0 +1,36 @@
+#
+    #     print("All the attractors are computed")
+    #     print("===============================")
+
+    #     # # Evaluate the signals that don't have input coupling signals
+    #     # l_local_network_without_signals = []
+    #     # for o_local_network in self.l_local_networks:
+    #     #     if not o_local_network.l_input_signals:
+    #     #         l_local_network_without_signals.append(o_local_network.index)
+    #     # print(l_local_network_without_signals)
+    #
+    #     # print(heap)
+    #
+    # def evaluate_cbn_topology(self):
+    #     # Find attractors
+    #     # create a directed graph
+    #     o_graph = nx.DiGraph()
+    #
+    #     # add edges to the graph
+    #     for o_local_network in self.l_local_networks:
+    #         for o_input_signal in o_local_network.l_input_signals:
+    #             print("Add edge:", o_input_signal.output_local_network, "-", o_input_signal.input_local_network, ':', 0)
+    #             o_graph.add_edge(o_input_signal.output_local_network, o_input_signal.input_local_network, weight=0)
+    #
+    #     # graph have cycles or not
+    #     is_acyclic = nx.is_directed_acyclic_graph(o_graph)
+    #     if is_acyclic:
+    #         # make topological order
+    #         topological_order = list(nx.topological_sort(o_graph))
+    #         print("The graph is no cycled - Topological order:", topological_order)
+    #     else:
+    #         print("The graph is cycled - you have to use other strategy ... using heaps")
+    #
+    #
+    #
+

@@ -18,6 +18,43 @@ class CBN:
         # Calculated properties
         self.l_attractor_fields = []
 
+    @staticmethod
+    def show_allowed_topologies():
+        # allowed topologies
+        allowed_topologies = {
+            1: "complete_graph",
+            2: "binomial_tree",
+            3: "cycle_graph",
+            4: "path_graph"
+        }
+        for number, topology in allowed_topologies.items():
+            print(number, ":", topology)
+
+    @staticmethod
+    def generate_cbn_topology_classic(l_networks, v_topology=1):
+        # We create a graph beginning in 1
+        n_nodes = len(l_networks)
+        G = nx.DiGraph()
+        if v_topology == 1:
+            G = nx.complete_graph(n_nodes, nx.DiGraph())
+        elif v_topology == 2:
+            G = nx.binomial_tree(n_nodes, nx.DiGraph())
+        elif v_topology == 3:
+            G = nx.cycle_graph(n_nodes, nx.DiGraph())
+        elif v_topology == 4:
+            G = nx.path_graph(n_nodes, nx.DiGraph())
+        else:
+            G = nx.complete_graph(n_nodes, nx.DiGraph())
+
+        # G = nx.balanced_tree(n_nodes, 1, nx.DiGraph())
+        # G = nx.circulant_graph(n, [1, 2], nx.DiGraph())
+        # G = nx.full_rary_tree(2, n, nx.DiGraph())
+
+        # Renaming the label of the nodes for beginning in 1
+        mapping = {node: node + 1 for node in G.nodes()}
+        G = nx.relabel_nodes(G, mapping)
+        return list(G.edges)
+
     def show(self):
         print("CBN description")
         l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
@@ -51,9 +88,19 @@ class CBN:
         print("ERROR:", "Local Network not found")
         return False
 
+    def generate_graph(self):
+        G = nx.DiGraph()
+        l_networks = []
+        for o_edge in self.l_directed_edges:
+            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
+        G.add_edges_from(l_networks)
+        print(l_networks)
+        nx.draw(G)
+        # nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
+
     @staticmethod
-    def generate_aleatory_cbn(n_local_networks, n_var_network, n_relations, n_output_variables, n_clauses_function,
-                              relations_fixed=False):
+    def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function,
+                     relations_fixed=False):
         print("Generating the CBN")
         print("==================")
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
@@ -67,17 +114,16 @@ class CBN:
             l_local_networks.append(o_local_network)
             v_cont_var = v_cont_var + n_var_network
 
-        # GENERATE COUPLING SIGNALS IN ONE AUXILIARY LIST
+        # GENERATE THE TOPOLOGY
+        l_relations = CBN.generate_cbn_topology_classic(l_local_networks, v_topology)
         aux1_l_local_networks = []
         for o_local_network in l_local_networks:
-            if relations_fixed:
-                n_signals_local_network = n_relations
-            else:
-                n_signals_local_network = randint(1, n_relations)
+            l_local_networks_co = []
+            for t_relation in l_relations:
+                if t_relation[1] == o_local_network.index:
+                    o_local_network_aux = next(filter(lambda x: x.index == t_relation[0], l_local_networks), None)
+                    l_local_networks_co.append(o_local_network_aux)
 
-            l_aux_local_networks = l_local_networks.copy()
-            l_aux_local_networks.remove(o_local_network)
-            l_local_networks_co = random.sample(l_aux_local_networks, n_signals_local_network)
             l_signals = []
             for o_local_network_co in l_local_networks_co:
                 l_output_variables = random.sample(o_local_network_co.l_var_intern, n_output_variables)
@@ -172,9 +218,9 @@ class CBN:
             o_node = Node(o_local_network.index, weight)
             o_custom_heap.add_node(o_node)
 
-        print("INITIAL HEAP")
+        # print("INITIAL HEAP")
         initial_heap = o_custom_heap.get_indexes()
-        print(initial_heap)
+        # print(initial_heap)
 
         # PROCESS THE FIRST NODE - FIND ATTRACTORS
         # find the node in the top  of the heap
@@ -191,11 +237,11 @@ class CBN:
         # # Update kind signals
         # validate if the output variables by attractor send a fixed value
         l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-        print("Local network:", o_local_network.index)
+        # print("Local network:", o_local_network.index)
         for o_output_signal in l_directed_edges:
-            print("Index variable output signal:", o_output_signal.index_variable_signal)
-            print("Output variables:", o_output_signal.l_output_variables)
-            print(str(o_output_signal.true_table))
+            # print("Index variable output signal:", o_output_signal.index_variable_signal)
+            # print("Output variables:", o_output_signal.l_output_variables)
+            # print(str(o_output_signal.true_table))
             l_signals_for_output = []
             for o_local_scene in o_local_network.l_local_scenes:
                 print("Scene: ", str(o_local_scene.l_values))
@@ -367,41 +413,26 @@ class CBN:
             print(initial_heap)
             print("UPDATE HEAP")
             print(o_custom_heap.get_indexes())
-
+            print("empty heap")
+            print("=========================")
     print("END")
 
-    #
-    #     print("All the attractors are computed")
-    #     print("===============================")
+    def get_index_networks(self):
+        indexes_networks = []
+        for i_network in self.l_local_networks:
+            indexes_networks.append(i_network)
+        return indexes_networks
 
-    #     # # Evaluate the signals that don't have input coupling signals
-    #     # l_local_network_without_signals = []
-    #     # for o_local_network in self.l_local_networks:
-    #     #     if not o_local_network.l_input_signals:
-    #     #         l_local_network_without_signals.append(o_local_network.index)
-    #     # print(l_local_network_without_signals)
-    #
-    #     # print(heap)
-    #
-    # def evaluate_cbn_topology(self):
-    #     # Find attractors
-    #     # create a directed graph
-    #     o_graph = nx.DiGraph()
-    #
-    #     # add edges to the graph
-    #     for o_local_network in self.l_local_networks:
-    #         for o_input_signal in o_local_network.l_input_signals:
-    #             print("Add edge:", o_input_signal.output_local_network, "-", o_input_signal.input_local_network, ':', 0)
-    #             o_graph.add_edge(o_input_signal.output_local_network, o_input_signal.input_local_network, weight=0)
-    #
-    #     # graph have cycles or not
-    #     is_acyclic = nx.is_directed_acyclic_graph(o_graph)
-    #     if is_acyclic:
-    #         # make topological order
-    #         topological_order = list(nx.topological_sort(o_graph))
-    #         print("The graph is no cycled - Topological order:", topological_order)
-    #     else:
-    #         print("The graph is cycled - you have to use other strategy ... using heaps")
-    #
-    #
-    #
+    def show_attractors(self):
+        for o_network in self.l_local_networks:
+            print("==============")
+            print("Network:", o_network.index)
+            for o_scene in o_network.l_local_scenes:
+                print("--------------")
+                print("Scene:", o_scene.l_values)
+                print("Attractors number:", len(o_scene.l_attractors))
+                for o_attractor in o_scene.l_attractors:
+                    print("--------------")
+                    for o_state in o_attractor.l_states:
+                        print(o_state.l_variable_values)
+
