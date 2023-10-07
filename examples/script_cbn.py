@@ -20,7 +20,7 @@ n_var_network = 4
 # relations_fixed = True
 n_output_variables = 2
 n_clauses_function = 2
-v_topology = 6
+v_topology = 1
 
 # create a Coupled Boolean Network with the parameters
 o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,

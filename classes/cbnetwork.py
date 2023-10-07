@@ -244,7 +244,7 @@ class CBN:
             l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
 
         # calculate the attractors for the node in the top of the  heap
-        o_local_network = LocalNetwork.find_local_attractors(o_local_network)
+        o_local_network = LocalNetwork.find_local_attractors(o_local_network,l_local_scenes)
         # # update the network in the CBN
         # self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
