@@ -51,17 +51,17 @@ class LocalNetwork:
     def find_local_attractors(o_local_network, l_local_scenes=None):
         if l_local_scenes is None:
             o_local_scene = LocalScene()
-            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, None)
             o_local_network.l_local_scenes.append(o_local_scene)
-        for scenery in l_local_scenes:
-            o_local_scene = LocalScene(scenery)
-            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, ''.join(scenery))
-            o_local_network.l_local_scenes.append(o_local_scene)
+        else:
+            for scene in l_local_scenes:
+                o_local_scene = LocalScene(scene)
+                o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, ''.join(scene))
+                o_local_network.l_local_scenes.append(o_local_scene)
         return o_local_network
 
     @staticmethod
-    def gen_boolean_formulation_satispy(o_local_network, number_of_transitions, l_attractors_clauses,
-                                        l_signal_coupling):
+    def gen_boolean_formulation_satispy(o_local_network, number_of_transitions, l_attractors_clauses, scene):
         # create dictionary of cnf variables!!
         for variable in o_local_network.l_var_total:
             for transition_c in range(0, number_of_transitions):
@@ -129,20 +129,21 @@ class LocalNetwork:
             cont_transition = cont_transition + 1
 
         # ASSIGN VALUES FOR PERMUTATIONS
-        cont_permutation = 0
-        for element in o_local_network.l_var_exterm:
-            # print oRDD.list_of_v_exterm
-            for v_transition in range(0, number_of_transitions):
-                # print l_signal_coupling[cont_permutation]
-                if l_signal_coupling[cont_permutation] == "0":
-                    boolean_function = boolean_function & -o_local_network.dic_var_cnf[
-                        str(element) + "_" + str(v_transition)]
-                    # print (str(element) +"_"+ str(v_transition))
-                else:
-                    boolean_function = boolean_function & o_local_network.dic_var_cnf[
-                        str(element) + "_" + str(v_transition)]
-                    # print (str(element) +"_"+ str(v_transition))
-            cont_permutation = cont_permutation + 1
+        if scene is not None:
+            cont_permutation = 0
+            for element in o_local_network.l_var_exterm:
+                # print oRDD.list_of_v_exterm
+                for v_transition in range(0, number_of_transitions):
+                    # print l_signal_coupling[cont_permutation]
+                    if scene[cont_permutation] == "0":
+                        boolean_function = boolean_function & -o_local_network.dic_var_cnf[
+                            str(element) + "_" + str(v_transition)]
+                        # print (str(element) +"_"+ str(v_transition))
+                    else:
+                        boolean_function = boolean_function & o_local_network.dic_var_cnf[
+                            str(element) + "_" + str(v_transition)]
+                        # print (str(element) +"_"+ str(v_transition))
+                cont_permutation = cont_permutation + 1
 
         # add attractors to boolean function
         if len(l_attractors_clauses) > 0:
@@ -197,7 +198,7 @@ class LocalNetwork:
             return number_of_times
 
         print("BEGIN TO FIND ATTRACTORS")
-        print("NETWORK NUMBER : " + str(o_local_network.index) + " PERMUTATION SIGNAL COUPLING: " + scene)
+        print("NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
         v_num_transitions = 3
@@ -217,8 +218,11 @@ class LocalNetwork:
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
                     # print("_________________________________________")
-                    # print("Variable de Error:", f"{i}_{j}")
-                    # print(v_bool_function)
+                    print("Error Variable:", f'{i}_{j}')
+                    # print("Total variables: ",o_local_network.l_var_total)
+                    # print("External variables: ", o_local_network.l_var_exterm)
+                    print(o_local_network.dic_var_cnf.items())
+                    print(o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
             print("The expression cannot be satisfied")

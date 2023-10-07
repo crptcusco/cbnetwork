@@ -31,10 +31,11 @@ class CBN:
             print(number, ":", topology)
 
     @staticmethod
-    def generate_cbn_topology_classic(l_networks, v_topology=1):
+    def generate_cbn_topology(l_networks, v_topology=6):
         # We create a graph beginning in 1
         n_nodes = len(l_networks)
         G = nx.DiGraph()
+        # classical topologies
         if v_topology == 1:
             G = nx.complete_graph(n_nodes, nx.DiGraph())
         elif v_topology == 2:
@@ -43,12 +44,25 @@ class CBN:
             G = nx.cycle_graph(n_nodes, nx.DiGraph())
         elif v_topology == 4:
             G = nx.path_graph(n_nodes, nx.DiGraph())
+        # aleatory topologies
+        elif v_topology == 5:
+            G = nx.gn_graph(n_nodes)
+        elif v_topology == 6:
+            G = nx.gnc_graph(n_nodes)
         else:
             G = nx.complete_graph(n_nodes, nx.DiGraph())
 
+        # Classical topologies
         # G = nx.balanced_tree(n_nodes, 1, nx.DiGraph())
         # G = nx.circulant_graph(n, [1, 2], nx.DiGraph())
         # G = nx.full_rary_tree(2, n, nx.DiGraph())
+
+        # # Directed Graphs
+        # G = nx.gn_graph(n)
+        # G = nx.gnr_graph(n,0.5) # need probabilities
+        # G = nx.gnc_graph(n)
+        # G = nx.random_k_out_graph(n) # not supported
+        # G = nx.scale_free_graph(n) # have cycles
 
         # Renaming the label of the nodes for beginning in 1
         mapping = {node: node + 1 for node in G.nodes()}
@@ -94,13 +108,10 @@ class CBN:
         for o_edge in self.l_directed_edges:
             l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
         G.add_edges_from(l_networks)
-        print(l_networks)
         nx.draw(G)
-        # nx.draw_networkx_labels(G,pos=nx.spring_layout(G))
 
     @staticmethod
-    def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function,
-                     relations_fixed=False):
+    def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function):
         print("Generating the CBN")
         print("==================")
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
@@ -115,7 +126,7 @@ class CBN:
             v_cont_var = v_cont_var + n_var_network
 
         # GENERATE THE TOPOLOGY
-        l_relations = CBN.generate_cbn_topology_classic(l_local_networks, v_topology)
+        l_relations = CBN.generate_cbn_topology(l_local_networks, v_topology)
         aux1_l_local_networks = []
         for o_local_network in l_local_networks:
             l_local_networks_co = []
@@ -228,9 +239,12 @@ class CBN:
         # find the local network information
         o_local_network = self.find_network_by_index(lowest_weight_node.index)
         # calculate the local scenarios
-        l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
+        l_local_scenes = None
+        if len(o_local_network.l_var_exterm) != 0:
+            l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
+
         # calculate the attractors for the node in the top of the  heap
-        o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
+        o_local_network = LocalNetwork.find_local_attractors(o_local_network)
         # # update the network in the CBN
         # self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
@@ -292,11 +306,11 @@ class CBN:
                 o_output_signal.kind_signal = 4
                 print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
 
-        # print all the kinds of the signals
-        print("message:", "Resume")
-        print("Network:", o_local_network.index)
-        for o_directed_edge in self.l_directed_edges:
-            print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
+        # # print all the kinds of the signals
+        # print("message:", "Resume")
+        # print("Network:", o_local_network.index)
+        # for o_directed_edge in self.l_directed_edges:
+        #     print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
 
         # Update the weights of the nodes
         # Add the output network to the list of modified networks
@@ -323,6 +337,11 @@ class CBN:
             lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
             # Find Local Network
             o_local_network = self.find_network_by_index(lowest_weight_node.index)
+
+            l_local_scenes = None
+            if len(o_local_network.l_var_exterm) != 0:
+                l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
+
             # Find attractors with the minimum weight
             LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
             print("Local Network:", lowest_weight_node.index, "Weight:", lowest_weight_node.weight)
@@ -429,7 +448,7 @@ class CBN:
             print("Network:", o_network.index)
             for o_scene in o_network.l_local_scenes:
                 print("--------------")
-                print("Scene:", o_scene.l_values)
+                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
                 print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
                     print("--------------")
