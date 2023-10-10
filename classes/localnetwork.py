@@ -29,34 +29,29 @@ class LocalNetwork:
         print('Variables intern : ', self.l_var_intern)
         # Description variables
         for o_variable in self.des_funct_variables:
-            o_variable.show()
-
-        # print('Input Signals:')
-        # for o_signal in self.l_input_signals:
-        #     o_signal.show()
-        # print('Output Signals:')
-        # for o_signal in self.l_output_signals:
-        #     o_signal.show()
+            o_variable.show_cbn()
 
     def process_input_signals(self, l_input_signals):
         # Processing the input signals of local network
         for o_signal in l_input_signals:
             self.l_var_exterm.append(o_signal.index_variable_signal)
-        # update the value of list_variables
+        # add the local variables
         self.l_var_total.extend(self.l_var_intern.copy())
+        # add the external variables from coupling signal
         self.l_var_total.extend(self.l_var_exterm.copy())
+        # calculate the number of total variables
         self.num_var_total = len(self.l_var_total)
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
         if l_local_scenes is None:
             o_local_scene = LocalScene()
-            o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, None)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, None)
             o_local_network.l_local_scenes.append(o_local_scene)
         else:
             for scene in l_local_scenes:
                 o_local_scene = LocalScene(scene)
-                o_local_scene.l_attractors = LocalNetwork.find_local_scenary_attractors(o_local_network, ''.join(scene))
+                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, ''.join(scene))
                 o_local_network.l_local_scenes.append(o_local_scene)
         return o_local_network
 
@@ -116,7 +111,7 @@ class LocalNetwork:
                             boolean_expression_clause_global >> o_local_network.dic_var_cnf[
                         str(o_variable_model.variable_name) + "_" + str(transition)])
                 if not o_variable_model.cnf_function:
-                    print("ENTRO CASO ATIPICO")
+                    print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
                             o_local_network.dic_var_cnf[str(o_variable_model.variable_name) + "_" + str(transition)] | -
                     o_local_network.dic_var_cnf[str(o_variable_model.variable_name) + "_" + str(transition)])
@@ -187,7 +182,7 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
-    def find_local_scenary_attractors(o_local_network, scene=None):
+    def find_local_scene_attractors(o_local_network, scene=None):
         # MEJORAR EL METODO PARA QUE ADMITA UN OBJETO ATRACTOR
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
@@ -218,11 +213,11 @@ class LocalNetwork:
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
                     # print("_________________________________________")
-                    print("Error Variable:", f'{i}_{j}')
+                    # print("Error Variable:", f'{i}_{j}')
                     # print("Total variables: ",o_local_network.l_var_total)
                     # print("External variables: ", o_local_network.l_var_exterm)
-                    print(o_local_network.dic_var_cnf.items())
-                    print(o_solution.varmap)
+                    # print(o_local_network.dic_var_cnf.items())
+                    # print(o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
             print("The expression cannot be satisfied")
