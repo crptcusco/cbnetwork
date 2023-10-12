@@ -183,7 +183,6 @@ class LocalNetwork:
 
     @staticmethod
     def find_local_scene_attractors(o_local_network, scene=None):
-        # MEJORAR EL METODO PARA QUE ADMITA UN OBJETO ATRACTOR
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
             number_of_times = 0
@@ -192,8 +191,8 @@ class LocalNetwork:
                     number_of_times = number_of_times + 1
             return number_of_times
 
-        print("BEGIN TO FIND ATTRACTORS")
-        print("NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
+        print("MESSAGE:", "NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
+        print("MESSAGE:", "BEGIN TO FIND ATTRACTORS")
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
         v_num_transitions = 3
@@ -207,20 +206,20 @@ class LocalNetwork:
         o_solver = Minisat()
         o_solution = o_solver.solve(v_bool_function)
 
-        # print(o_local_network.number_of_v_total)
+        # print("INFO", o_local_network.number_of_v_total)
         if o_solution.success:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
-                    # print("_________________________________________")
-                    # print("Error Variable:", f'{i}_{j}')
-                    # print("Total variables: ",o_local_network.l_var_total)
-                    # print("External variables: ", o_local_network.l_var_exterm)
-                    # print(o_local_network.dic_var_cnf.items())
-                    # print(o_solution.varmap)
+                    # print("INFO", "_________________________________________")
+                    # print("INFO", "Error Variable:", f'{i}_{j}')
+                    # print("INFO", "Total variables: ",o_local_network.l_var_total)
+                    # print("INFO", "External variables: ", o_local_network.l_var_exterm)
+                    # print("INFO", o_local_network.dic_var_cnf.items())
+                    # print("INFO", o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
-            print("The expression cannot be satisfied")
+            print("MESSAGE:", "The expression cannot be satisfied")
 
         # BLOCK ATTRACTORS
         m_aux_sat = []
@@ -293,7 +292,7 @@ class LocalNetwork:
                         m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
             else:
                 # print(" ")
-                print("The expression cannot be satisfied")
+                print("MESSAGE:", "The expression cannot be satisfied")
 
             # BLOCK ATTRACTORS
             m_aux_sat = []
@@ -322,5 +321,5 @@ class LocalNetwork:
             o_local_attractor = LocalAttractor(l_local_states)
             res.append(o_local_attractor)
 
-        print("END OF FIND ATTRACTORS")
+        print("MESSAGE:", "end find attractors")
         return res

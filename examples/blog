@@ -34,3 +34,23 @@
     #
     #
 
+    # # utils function
+    # @staticmethod
+    # def send_text(a_kind, a_text, a_type):
+    #     if a_type == 1:
+    #         print(a_text)
+    #     if a_type == 2 and a_kind == 'ERROR':
+    #         print(a_text)
+    #     if a_type == 3 and a_kind == 'INFO':
+    #         print(a_text)
+    #     if a_type == 4 and a_kind == 'MESSAGE':
+    #         print(a_text)
+
+
+            # # see the lind of every coupling signals
+        # l_index_output_signals = []
+        # for o_directed_edge in self.l_directed_edges:
+        #     print(o_directed_edge.input_local_network, "->", o_directed_edge.output_local_network,
+        #           "Kind signal:", o_directed_edge.kind_signal)
+        #     print("Index:", o_directed_edge.index_variable_signal, "->", o_directed_edge.kind_signal)
+        #     l_index_output_signals.append(o_directed_edge.index_variable_signal)

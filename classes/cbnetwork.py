@@ -16,19 +16,32 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Calculated properties
+        self.l_global_scenes = []
         self.l_attractor_fields = []
 
-    # # utils function
-    # @staticmethod
-    # def send_text(a_kind, a_text, a_type):
-    #     if a_type == 1:
-    #         print(a_text)
-    #     if a_type == 2 and a_kind == 'ERROR':
-    #         print(a_text)
-    #     if a_type == 3 and a_kind == 'INFO':
-    #         print(a_text)
-    #     if a_type == 4 and a_kind == 'MESSAGE':
-    #         print(a_text)
+    def show_cbn(self):
+        print("INFO:", "CBN description")
+        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
+        print("INFO:", "Local Networks:", l_local_networks_indexes)
+        print("INFO:", "Directed edges:")
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.show()
+
+    def show_attractors(self):
+        for o_network in self.l_local_networks:
+            print("==============")
+            print("Network:", o_network.index)
+            for o_scene in o_network.l_local_scenes:
+                print("--------------")
+                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
+                print("Attractors number:", len(o_scene.l_attractors))
+                for o_attractor in o_scene.l_attractors:
+                    print("--------------")
+                    for o_state in o_attractor.l_states:
+                        print(o_state.l_variable_values)
+
+    def show_attractors_fields(self):
+        pass
 
     @staticmethod
     def show_allowed_topologies():
@@ -80,60 +93,6 @@ class CBN:
         mapping = {node: node + 1 for node in G.nodes()}
         G = nx.relabel_nodes(G, mapping)
         return list(G.edges)
-
-    def show_cbn(self):
-        print("INFO:", "CBN description")
-        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
-        print("INFO:", "Local Networks:", l_local_networks_indexes)
-        print("INFO:", "Directed edges:")
-        for o_directed_edge in self.l_directed_edges:
-            o_directed_edge.show()
-
-    def show_attractors(self):
-        for o_network in self.l_local_networks:
-            print("==============")
-            print("Network:", o_network.index)
-            for o_scene in o_network.l_local_scenes:
-                print("--------------")
-                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
-                print("Attractors number:", len(o_scene.l_attractors))
-                for o_attractor in o_scene.l_attractors:
-                    print("--------------")
-                    for o_state in o_attractor.l_states:
-                        print(o_state.l_variable_values)
-
-    def show_attractors_fields(self):
-        pass
-
-    def process_output_signals(self):
-        # update output signals for every local network
-        for o_local_network in self.l_local_networks:
-            for t_relation in self.l_directed_edges:
-                if o_local_network.index == t_relation[1]:
-                    o_local_network.l_output_signals.append(t_relation)
-                    print("INFO:", t_relation)
-
-    def find_network_by_index(self, index):
-        for o_local_network in self.l_local_networks:
-            if o_local_network.index == index:
-                return o_local_network
-
-    def update_network_by_index(self, index, o_local_network_update):
-        for o_local_network in self.l_local_networks:
-            if o_local_network.index == index:
-                o_local_network = o_local_network_update
-                print("MESSAGE:", "Local Network updated")
-                return True
-        print("ERROR:", "Local Network not found")
-        return False
-
-    def generate_graph(self):
-        G = nx.DiGraph()
-        l_networks = []
-        for o_edge in self.l_directed_edges:
-            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
-        G.add_edges_from(l_networks)
-        nx.draw(G)
 
     @staticmethod
     def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function):
@@ -214,7 +173,7 @@ class CBN:
             # adding the local network to list of local networks
             o_local_network.des_funct_variables = des_funct_variables.copy()
             aux2_l_local_networks.append(o_local_network)
-            print("MESSAGE:", "Local network created :",o_local_network.index)
+            print("MESSAGE:", "Local network created :", o_local_network.index)
             print("---------------------")
             # actualized the list of local networks
         l_local_networks = aux2_l_local_networks.copy()
@@ -223,6 +182,46 @@ class CBN:
         print("MESSAGE:", "Coupled Boolean Network created")
         print("===============================")
         return o_cbn
+
+    def generate_global_scenes(self):
+        print("MESSAGE:","GENERATE GLOBAL SCENES")
+        # generate the global scenes using all the combinations
+        self.l_global_scenes = list(product(list('01'), repeat=len(self.l_directed_edges)))
+        # for global_scene in self.l_global_scenes:
+        #     print("INFO:", global_scene)
+        # print(self.l_global_scenes)
+        print("MESSAGE:", "Global Scenes generated")
+        print("==================================")
+
+    def process_output_signals(self):
+        # update output signals for every local network
+        for o_local_network in self.l_local_networks:
+            for t_relation in self.l_directed_edges:
+                if o_local_network.index == t_relation[1]:
+                    o_local_network.l_output_signals.append(t_relation)
+                    print("INFO:", t_relation)
+
+    def find_network_by_index(self, index):
+        for o_local_network in self.l_local_networks:
+            if o_local_network.index == index:
+                return o_local_network
+
+    def update_network_by_index(self, index, o_local_network_update):
+        for o_local_network in self.l_local_networks:
+            if o_local_network.index == index:
+                o_local_network = o_local_network_update
+                print("MESSAGE:", "Local Network updated")
+                return True
+        print("ERROR:", "Local Network not found")
+        return False
+
+    def generate_graph(self):
+        G = nx.DiGraph()
+        l_networks = []
+        for o_edge in self.l_directed_edges:
+            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
+        G.add_edges_from(l_networks)
+        nx.draw(G)
 
     def find_attractors(self):
         print("MESSAGE:", "Find Attractors using optimized method")
@@ -269,7 +268,7 @@ class CBN:
             l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
 
         # calculate the attractors for the node in the top of the  heap
-        o_local_network = LocalNetwork.find_local_attractors(o_local_network,l_local_scenes)
+        o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
         # # update the network in the CBN
         # self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
@@ -460,8 +459,8 @@ class CBN:
             # print(o_custom_heap.get_indexes())
             # print("empty heap")
             print("MESSAGE:", "The Local attractors are computed")
-            print("=========================")
         print("MESSAGE:", "END")
+        print("=========================")
 
     def get_index_networks(self):
         indexes_networks = []
@@ -469,5 +468,13 @@ class CBN:
             indexes_networks.append(i_network)
         return indexes_networks
 
-
-
+    def find_compatible_pairs(self):
+        # show the attractors by local network
+        for o_local_network in self.l_local_networks:
+            print("INFO:", "Network:", o_local_network.index)
+            for o_local_scene in o_local_network.l_local_scenes:
+                print("INFO:", "Local Scene:", o_local_scene.l_values)
+                for o_attrator in o_local_scene.l_attractors:
+                    for o_state in o_attrator.l_states:
+                        print(o_state.l_variable_values, end=",")
+                    print("")
