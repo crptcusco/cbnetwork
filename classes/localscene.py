@@ -10,6 +10,9 @@ class LocalAttractor:
         self.index = index
         self.l_states = l_states
 
+    def show(self):
+        print("INFO:", "Index -", self.index, "states - ", self.l_states)
+
 
 class LocalState:
     def __init__(self, l_variable_values):

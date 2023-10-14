@@ -12,10 +12,12 @@ from classes.utils.customheap import Node, CustomHeap
 
 class CBN:
     def __init__(self, l_local_networks, l_directed_edges):
+
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
 
         # Calculated properties
+        self.l_output_edges = None
         self.l_global_scenes = []
         self.l_attractor_fields = []
 
@@ -39,6 +41,10 @@ class CBN:
                     print("--------------")
                     for o_state in o_attractor.l_states:
                         print(o_state.l_variable_values)
+
+    def show_global_scenes(self):
+        for o_global_scene in self.l_global_scenes:
+            print("INFO:", "Global scene -", o_global_scene)
 
     def show_attractors_fields(self):
         pass
@@ -257,8 +263,8 @@ class CBN:
         # Assigning the king of the relations, all the relations are not computed
         # print("Initial kind of directed edges")
         for o_directed_edge in self.l_directed_edges:
-            o_directed_edge.kind_relation = 2
-            # print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_relation)
+            o_directed_edge.kind_signal = 2
+            # print("INFO:",o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_relation)
 
         # create an empty heap to organize the local networks by weight
         o_custom_heap = CustomHeap()
@@ -268,7 +274,7 @@ class CBN:
             weight = 0
             for o_directed_edge in self.l_directed_edges:
                 if o_directed_edge.input_local_network == o_local_network.index:
-                    weight = weight + o_directed_edge.kind_relation
+                    weight = weight + o_directed_edge.kind_signal
             # add node to the heap with computed weight
             o_node = Node(o_local_network.index, weight)
             o_custom_heap.add_node(o_node)
@@ -329,6 +335,13 @@ class CBN:
                     if len(set(l_signals_in_attractor)) == 1:
                         l_signals_in_local_scene.append(l_signals_in_attractor[0])
                         print("MESSAGE:", "the attractor signal value is stable")
+
+                        # add the attractor to the dictionary of output value -> attractors
+                        if l_signals_in_attractor[0] == '0':
+                            o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
+                        elif l_signals_in_attractor[0] == '1':
+                            o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
+
                     else:
                         print("MESSAGE:", "the attractor signal is not stable")
                 if len(set(l_signals_in_local_scene)) == 1:
@@ -429,6 +442,13 @@ class CBN:
                         if len(set(l_signals_in_attractor)) == 1:
                             l_signals_in_local_scene.append(l_signals_in_attractor[0])
                             print("MESSAGE:", "the attractor signal value is stable")
+
+                            # add the attractor to the dictionary of output value -> attractors
+                            if l_signals_in_attractor[0] == '0':
+                                o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
+                            elif l_signals_in_attractor[0] == '1':
+                                o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
+
                         else:
                             print("MESSAGE:", "the attractor signal is not stable")
                     if len(set(l_signals_in_local_scene)) == 1:
@@ -487,53 +507,14 @@ class CBN:
         l_pairs = []
         # for every local networks find compatible attractor pairs
         for o_local_network in self.l_local_networks:
-            print("INFO:", "Network:", o_local_network.index)
+            print("----------------------------------------")
             # find the output edges from the local network
             l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
-            # generate a dictionary to find the compatible attractors with an output value
-            d_out_value_to_attractor = {}
             # search the values for every signal
             for o_output_signal in l_output_edges:
-                # Initialized the values of the dictionary
-                d_out_value_to_attractor[1] = []
-                d_out_value_to_attractor[0] = []
-                # Search in the every
-                for o_local_scene in o_local_network.l_local_scenes:
-                    print("INFO:", "Local Scene:", o_local_scene.l_values)
-                    for o_attractor in o_local_scene.l_attractors:
-                        print("INFO:", "Attractor -", o_attractor.index)
-                        l_signals_in_attractor = []
-                        for o_state in o_attractor.l_states:
-                            # print("INFO:", "STATE")
-                            # print("INFO:", o_local_network.l_var_total)
-                            # print("INFO:", o_local_network.l_var_intern)
-                            # print("INFO:", o_state.l_variable_values)
-                            # # select the values of the output variables
-                            true_table_index = ""
-                            for v_output_variable in o_output_signal.l_output_variables:
-                                print("INFO:", "Variables list:", o_local_network.l_var_total)
-                                print("INFO:", "Output variables list:", o_output_signal.l_output_variables)
-                                print("INFO:", "Output variable:", v_output_variable)
-                                pos = o_local_network.l_var_total.index(v_output_variable)
-                                value = o_state.l_variable_values[pos]
-                                true_table_index = true_table_index + str(value)
-                            # print("INFO:", o_output_signal.l_output_variables)
-                            # print("INFO:", true_table_index)
-                            output_value_state = o_output_signal.true_table[true_table_index]
-                            # print("INFO:", "Output value :", output_value_state)
-                            l_signals_in_attractor.append(output_value_state)
-                        print(l_signals_in_attractor)
-                        if len(set(l_signals_in_attractor)) == 1:
-                            print("MESSAGE:", "the attractor signal value is stable")
-                            # add the attractor to the dictionary
-                            if l_signals_in_attractor == 0:
-                                d_out_value_to_attractor[0].append(o_attractor)
-                            elif l_signals_in_attractor == 1:
-                                d_out_value_to_attractor[1].append(o_attractor)
-                        else:
-                            print("MESSAGE:", "the attractor signal is not stable")
-            for key, values in d_out_value_to_attractor.items():
-                print(key, ":", values)
+                print("INFO:", "Network -", o_local_network.index, "Signal - ", o_output_signal.index_variable_signal)
+                # Show the dictionary of the attractors by value of output signal
+                o_output_signal.show_dict_v_output_signal_attractor()
+
         # # show the global scenes
-        # for o_global_scene in self.l_global_scenes:
-        #     print("INFO:", "Global scene -", o_global_scene)
+        # self.show_global_scenes()

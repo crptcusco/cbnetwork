@@ -18,19 +18,22 @@ class DirectedEdge:
         # Calculated properties
         self.true_table = self.process_true_table()
         # Defined the kind for every coupling signal: stable 1, not compute 2
-        #     1: "restricted",
-        #     2: "not compute",
-        #     3: "stable",
-        #     4: "not stable"
+        #
+        self.d_kind_signal = {1: "restricted", 2: "not compute", 3: "stable", 4: "not stable"}
         self.kind_signal = 2
 
+        # Calculated properties
+        self.d_out_value_to_attractor = {1: [], 0: []}
+
     def show(self):
-        print("Input Local Network:", str(self.input_local_network) + "\n"
-              + "Network Output:", str(self.output_local_network) + "\n"
-              + "Variables:", str(self.l_output_variables) + "\n"
-              + "Name Variable:", str(self.index_variable_signal) + "\n"
-              + "Coupling Function:", str(self.coupling_function) + "\n"
-              + "Truth Table:", str(self.true_table))
+        print("MESSAGE:", "Input Local Network:", self.input_local_network)
+        print("MESSAGE:", "Network Output:", self.output_local_network)
+        print("MESSAGE:", "Variables:", self.l_output_variables)
+        print("MESSAGE:", "Name Variable:", self.index_variable_signal)
+        print("MESSAGE:", "Coupling Function:", self.coupling_function)
+        print("MESSAGE:", "Truth Table:", self.true_table)
+        print("MESSAGE:", "Kind of coupling function", self.kind_signal,
+              " - ", self.d_out_value_to_attractor[self.kind_signal])
 
     def process_true_table(self):
         r_true_table = {}
@@ -231,3 +234,6 @@ class DirectedEdge:
                 res.append(o_directed_edge)
         return res
 
+    def show_dict_v_output_signal_attractor(self):
+        for signal_value, l_attractors in self.d_out_value_to_attractor.items():
+            print(signal_value, ":", l_attractors)
