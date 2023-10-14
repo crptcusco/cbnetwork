@@ -6,7 +6,8 @@ class LocalScene:
 
 
 class LocalAttractor:
-    def __init__(self, l_states):
+    def __init__(self, index, l_states):
+        self.index = index
         self.l_states = l_states
 
 

@@ -13,16 +13,16 @@ class LocalNetwork:
         self.des_funct_variables = des_funct_variables
 
         # Processed properties
-        # self.l_input_signals = []
-        # self.l_output_signals = []
         self.l_var_exterm = []
         self.l_var_total = []
         self.num_var_total = 0
         self.dic_var_cnf = {}
 
+        self.l_input_signals = []
+        self.l_output_signals = []
+
         # Calculated properties
         self.l_local_scenes = []
-        # self.l_local_attractors = []
 
     def show(self):
         print('Local Network', self.index)
@@ -313,13 +313,15 @@ class LocalNetwork:
 
         # Creating the objects of the attractor
         res = []
+        v_index = 1
         for o_attractor in set_of_attractors:
             l_local_states = []
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(l_local_states)
+            o_local_attractor = LocalAttractor(v_index, l_local_states)
             res.append(o_local_attractor)
+            v_index = v_index + 1
 
         print("MESSAGE:", "end find attractors")
         return res
