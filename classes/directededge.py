@@ -16,13 +16,13 @@ class DirectedEdge:
         self.coupling_function = coupling_function
 
         # Calculated properties
+        # True table for signal with the output variables
         self.true_table = self.process_true_table()
-        # Defined the kind for every coupling signal: stable 1, not compute 2
-        #
+        # Dictionary for kind status of the signal
         self.d_kind_signal = {1: "restricted", 2: "not compute", 3: "stable", 4: "not stable"}
+        # Defined the initial kind for every coupling signal
         self.kind_signal = 2
-
-        # Calculated properties
+        # Dictionary for group the attractors by his output signal value
         self.d_out_value_to_attractor = {1: [], 0: []}
 
     def show(self):

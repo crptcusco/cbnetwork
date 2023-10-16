@@ -46,12 +46,13 @@ class LocalNetwork:
     def find_local_attractors(o_local_network, l_local_scenes=None):
         if l_local_scenes is None:
             o_local_scene = LocalScene()
-            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, None)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
             o_local_network.l_local_scenes.append(o_local_scene)
         else:
             for scene in l_local_scenes:
-                o_local_scene = LocalScene(scene)
-                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, ''.join(scene))
+                o_local_scene = LocalScene(scene, o_local_network.l_var_exterm)
+                s_scene = ''.join(scene)
+                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
                 o_local_network.l_local_scenes.append(o_local_scene)
         return o_local_network
 
@@ -319,7 +320,8 @@ class LocalNetwork:
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(v_index, l_local_states)
+            o_local_attractor = LocalAttractor(v_index, l_local_states, o_local_network.index,
+                                               o_local_network.l_var_exterm, scene)
             res.append(o_local_attractor)
             v_index = v_index + 1
 
