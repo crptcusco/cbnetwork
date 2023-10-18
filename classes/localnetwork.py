@@ -6,8 +6,6 @@ from classes.localscene import LocalScene, LocalAttractor, LocalState
 
 class LocalNetwork:
     def __init__(self, num_local_network, l_var_intern, des_funct_variables=None):
-        if des_funct_variables is None:
-            des_funct_variables = []
         self.index = num_local_network
         self.l_var_intern = l_var_intern
         self.des_funct_variables = des_funct_variables
@@ -192,7 +190,7 @@ class LocalNetwork:
                     number_of_times = number_of_times + 1
             return number_of_times
 
-        print("MESSAGE:", "NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
+        print("MESSAGE:", "NETWORK NUMBER : ", o_local_network.i_local_net, " PERMUTATION SIGNAL COUPLING: ", scene)
         print("MESSAGE:", "BEGIN TO FIND ATTRACTORS")
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
@@ -320,7 +318,7 @@ class LocalNetwork:
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(v_index, l_local_states, o_local_network.index,
+            o_local_attractor = LocalAttractor(v_index, l_local_states, o_local_network.i_local_net,
                                                o_local_network.l_var_exterm, scene)
             res.append(o_local_attractor)
             v_index = v_index + 1

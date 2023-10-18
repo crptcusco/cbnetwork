@@ -16,8 +16,8 @@ class LocalAttractor:
         self.local_scene = local_scene
 
     def show(self):
-        print("INFO:", "Network Index -", self.network_index, ", Input Signal Index -", self.relation_index, ", Scene -",
-              self.local_scene, ", Attractor Index -", self.index, ", States - ", end="")
+        print("INFO:", "Network Index -", self.network_index, ", Input Signal Index -", self.relation_index,
+              ", Scene -", self.local_scene, ", Attractor Index -", self.index, ", States - ", end="")
         for o_state in self.l_states:
             print(end='[')
             for variable in o_state.l_variable_values:
