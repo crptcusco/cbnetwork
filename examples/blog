@@ -54,3 +54,13 @@
         #           "Kind signal:", o_directed_edge.kind_signal)
         #     print("Index:", o_directed_edge.index_variable_signal, "->", o_directed_edge.kind_signal)
         #     l_index_output_signals.append(o_directed_edge.index_variable_signal)
+
+        # for t_edge in l_edges:
+    #     coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
+    #     o_directed_edge = DirectedEdge(o_local_network.index,
+    #                                    o_local_network_co.index,
+    #                                    l_output_variables,
+    #                                    v_cont_var,
+    #                                    coupling_function)
+    #     # generate the object of the directed edge
+    #     o_directed_edge = DirectedEdge(t_edge[0], t_edge[1], )

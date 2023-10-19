@@ -23,7 +23,7 @@ class CBN:
 
     def show_cbn(self):
         print("INFO:", "CBN description")
-        l_local_networks_indexes = [o_local_network.i_local_net for o_local_network in self.l_local_networks]
+        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
         print("INFO:", "Local Networks:", l_local_networks_indexes)
         print("INFO:", "Directed edges:")
         for o_directed_edge in self.l_directed_edges:
@@ -32,10 +32,10 @@ class CBN:
     def show_attractors(self):
         for o_network in self.l_local_networks:
             print("==============")
-            print("Network:", o_network.i_local_net)
+            print("Network:", o_network.index)
             for o_scene in o_network.l_local_scenes:
                 print("--------------")
-                print("Network:", o_network.i_local_net, "- Scene:", o_scene.l_values)
+                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
                 print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
                     print("--------------")
@@ -125,7 +125,7 @@ class CBN:
             l_local_networks_co = []
             for t_relation in l_relations:
                 if t_relation[1] == o_local_network.index:
-                    o_local_network_aux = next(filter(lambda x: x.i_local_net == t_relation[0], l_local_networks), None)
+                    o_local_network_aux = next(filter(lambda x: x.index == t_relation[0], l_local_networks), None)
                     l_local_networks_co.append(o_local_network_aux)
 
             for o_local_network_co in l_local_networks_co:
@@ -167,7 +167,7 @@ class CBN:
             # generate the function description of the variables
             des_funct_variables = []
             # generate clauses
-            for v_description_variable in o_local_network.l_var_intern:
+            for i_local_variable in o_local_network.l_var_intern:
                 l_clauses_node = []
                 for v_clause in range(0, randint(1, number_max_of_clauses)):
                     v_num_variable = randint(1, number_max_of_literals)
@@ -175,7 +175,7 @@ class CBN:
                     l_literals_variables = random.sample(l_aux_variables, v_num_variable)
                     l_clauses_node.append(l_literals_variables)
                 # adding the description of variable in form of object
-                o_variable_model = InternalVariable(v_description_variable, l_clauses_node)
+                o_variable_model = InternalVariable(i_local_variable, l_clauses_node)
                 des_funct_variables.append(o_variable_model)
                 # adding the description in functions of every variable
             # adding the local network to list of local networks
@@ -205,18 +205,18 @@ class CBN:
         # update output signals for every local network
         for o_local_network in self.l_local_networks:
             for t_relation in self.l_directed_edges:
-                if o_local_network.i_local_net == t_relation[1]:
+                if o_local_network.index == t_relation[1]:
                     o_local_network.l_output_signals.append(t_relation)
                     print("INFO:", t_relation)
 
     def find_network_by_index(self, index):
         for o_local_network in self.l_local_networks:
-            if o_local_network.i_local_net == index:
+            if o_local_network.index == index:
                 return o_local_network
 
     def update_network_by_index(self, index, o_local_network_update):
         for o_local_network in self.l_local_networks:
-            if o_local_network.i_local_net == index:
+            if o_local_network.index == index:
                 o_local_network = o_local_network_update
                 print("MESSAGE:", "Local Network updated")
                 return True
@@ -266,10 +266,10 @@ class CBN:
             # initial graph only have not computed signals
             weight = 0
             for o_directed_edge in self.l_directed_edges:
-                if o_directed_edge.input_local_network == o_local_network.i_local_net:
+                if o_directed_edge.input_local_network == o_local_network.index:
                     weight = weight + o_directed_edge.kind_signal
             # add node to the heap with computed weight
-            o_node = Node(o_local_network.i_local_net, weight)
+            o_node = Node(o_local_network.index, weight)
             o_custom_heap.add_node(o_node)
 
         # print("INITIAL HEAP")
@@ -280,7 +280,7 @@ class CBN:
         # find the node in the top  of the heap
         lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
         # find the local network information
-        o_local_network = self.find_network_by_index(lowest_weight_node.i_local_net)
+        o_local_network = self.find_network_by_index(lowest_weight_node.index)
         # calculate the local scenarios
         l_local_scenes = None
         if len(o_local_network.l_var_exterm) != 0:
@@ -293,7 +293,7 @@ class CBN:
 
         # # Update kind signals
         # validate if the output variables by attractor send a fixed value
-        l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.i_local_net, self.l_directed_edges)
+        l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
         # print("INFO:", "Local network:", o_local_network.index)
         for o_output_signal in l_directed_edges:
             # print("INFO:", "Index variable output signal:", o_output_signal.index_variable_signal)
@@ -317,7 +317,7 @@ class CBN:
                             # print("INFO:", "Variables list:", o_local_network.l_var_total)
                             # print("INFO:", "Output variables list:", o_output_signal.l_output_variables)
                             # print("INFO:", "Output variable:", v_output_variable)
-                            pos = o_local_network.l_var_total.i_local_net(v_output_variable)
+                            pos = o_local_network.l_var_total.index(v_output_variable)
                             value = o_state.l_variable_values[pos]
                             true_table_index = true_table_index + str(value)
                         # print(o_output_signal.l_output_variables)
@@ -364,7 +364,7 @@ class CBN:
 
         # Update the weights of the nodes
         # Add the output network to the list of modified networks
-        l_modified_edges = DirectedEdge.find_input_edges_by_network_index(o_local_network.i_local_net, self.l_directed_edges)
+        l_modified_edges = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, self.l_directed_edges)
         for o_edge in l_modified_edges:
             modified_network_index = o_edge.output_local_network
             print("INFO:", "Network", modified_network_index)
@@ -386,7 +386,7 @@ class CBN:
             # find the node on the top of the heap
             lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
             # Find Local Network
-            o_local_network = self.find_network_by_index(lowest_weight_node.i_local_net)
+            o_local_network = self.find_network_by_index(lowest_weight_node.index)
 
             l_local_scenes = None
             if len(o_local_network.l_var_exterm) != 0:
@@ -394,14 +394,14 @@ class CBN:
 
             # Find attractors with the minimum weight
             LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-            print("INFO:", "Local Network:", lowest_weight_node.i_local_net, "Weight:", lowest_weight_node.weight)
+            print("INFO:", "Local Network:", lowest_weight_node.index, "Weight:", lowest_weight_node.weight)
 
             # COPIED CODE !!!
             # # Update kind signals
             # validate if the output variables by attractor send a fixed value
-            l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.i_local_net,
+            l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index,
                                                                                self.l_directed_edges)
-            print("INFO:", "Local network:", o_local_network.i_local_net)
+            print("INFO:", "Local network:", o_local_network.index)
             for o_output_signal in l_directed_edges:
                 print("INFO:", "Index variable output signal:", o_output_signal.index_variable_signal)
                 print("INFO:", "Output variables:", o_output_signal.l_output_variables)
@@ -424,7 +424,7 @@ class CBN:
                                 print("INFO:", "Variables list:", o_local_network.l_var_total)
                                 print("INFO:", "Output variables list:", o_output_signal.l_output_variables)
                                 print("INFO:", "Output variable:", v_output_variable)
-                                pos = o_local_network.l_var_total.i_local_net(v_output_variable)
+                                pos = o_local_network.l_var_total.index(v_output_variable)
                                 value = o_state.l_variable_values[pos]
                                 true_table_index = true_table_index + str(value)
                             print("INFO:", o_output_signal.l_output_variables)
@@ -472,7 +472,7 @@ class CBN:
 
             # Update the weights of the nodes
             # Add the output network to the list of modified networks
-            l_modified_edges = DirectedEdge.find_input_edges_by_network_index(o_local_network.i_local_net,
+            l_modified_edges = DirectedEdge.find_input_edges_by_network_index(o_local_network.index,
                                                                               self.l_directed_edges)
             for o_edge in l_modified_edges:
                 modified_network_index = o_edge.output_local_network
@@ -505,12 +505,12 @@ class CBN:
         for o_local_network in self.l_local_networks:
             print("----------------------------------------")
             # find the output edges from the local network
-            l_output_edges = self.get_output_edges_by_network_index(o_local_network.i_local_net)
+            l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
             # search the values for every signal
             l_pairs_by_edge = []
             for o_output_signal in l_output_edges:
                 print("-------------------------")
-                print("INFO:", "Network -", o_local_network.i_local_net, ", Output Signal - ", o_output_signal.index_variable_signal)
+                print("INFO:", "Network -", o_local_network.index, ", Output Signal - ", o_output_signal.index_variable_signal)
                 # Show the dictionary of the attractors by value of output signal
                 o_output_signal.show_dict_v_output_signal_attractor()
                 # coupling the attractors pairs by the output signal
