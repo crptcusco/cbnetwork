@@ -32,7 +32,7 @@ class LocalNetwork:
     def process_input_signals(self, l_input_signals):
         # Processing the input signals of local network
         for o_signal in l_input_signals:
-            self.l_var_exterm.append(o_signal.index_variable_signal)
+            self.l_var_exterm.append(o_signal.index_variable)
         # add the local variables
         self.l_var_total.extend(self.l_var_intern.copy())
         # add the external variables from coupling signal

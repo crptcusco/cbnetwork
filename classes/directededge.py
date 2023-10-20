@@ -9,7 +9,7 @@ from collections import namedtuple  # structures like trees
 class DirectedEdge:
     def __init__(self, input_local_network, output_local_network, l_output_variables, index_variable_signal,
                  coupling_function):
-        self.index_variable_signal = index_variable_signal
+        self.index_variable = index_variable_signal
         self.input_local_network = input_local_network
         self.output_local_network = output_local_network
         self.l_output_variables = l_output_variables
@@ -29,7 +29,7 @@ class DirectedEdge:
         print("MESSAGE:", "Input Local Network:", self.input_local_network)
         print("MESSAGE:", "Network Output:", self.output_local_network)
         print("MESSAGE:", "Variables:", self.l_output_variables)
-        print("MESSAGE:", "Name Variable:", self.index_variable_signal)
+        print("MESSAGE:", "Name Variable:", self.index_variable)
         print("MESSAGE:", "Coupling Function:", self.coupling_function)
         print("MESSAGE:", "Truth Table:", self.true_table)
         print("MESSAGE:", "Kind of coupling function", self.kind_signal,
@@ -236,4 +236,4 @@ class DirectedEdge:
 
     def show_dict_v_output_signal_attractor(self):
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print(signal_value, ":", l_attractors)
+            print("INFO:", signal_value, ":", l_attractors)

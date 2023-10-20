@@ -29,26 +29,26 @@ for i_local_net in d_network_variables.keys():
     l_local_networks.append(o_local_network)
 
 # generate the directed edges
-o_directed_edge1 = DirectedEdge(2,
-                                1,
+o_directed_edge1 = DirectedEdge(1,
+                                2,
                                 [4, 5],
                                 15,
                                 " 4 ∨ 5 ")
 
-o_directed_edge2 = DirectedEdge(3,
-                                2,
+o_directed_edge2 = DirectedEdge(2,
+                                3,
                                 [8, 9],
                                 16,
                                 " 8 ∨ 9 ")
 
-o_directed_edge3 = DirectedEdge(2,
-                                1,
+o_directed_edge3 = DirectedEdge(3,
+                                2,
                                 [6, 7],
                                 17,
                                 " 6 ∨ 7 ")
 
-o_directed_edge4 = DirectedEdge(2,
-                                1,
+o_directed_edge4 = DirectedEdge(3,
+                                4,
                                 [13, 14],
                                 18,
                                 " 13 ∨ 14 ")
@@ -74,7 +74,7 @@ d_variable_cnf_function = {1: [[2, 3], [1, -15]],
                            13: [[14, -11, 12]],
                            14: [[11, -12]]}
 
-
+# generating the local network dynamic
 for o_local_network in l_local_networks:
     l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
     o_local_network.process_input_signals(l_input_signals)
@@ -82,18 +82,29 @@ for o_local_network in l_local_networks:
         o_variable_model = InternalVariable(i_local_variable, d_variable_cnf_function[i_local_variable])
         o_local_network.des_funct_variables.append(o_variable_model)
 
+
+print(l_local_networks)
+
 # generating the CBN network
 o_cbn = CBN(l_local_networks, l_directed_edges)
 
 # Find attractors
 o_cbn.find_attractors()
-#
+
+# show attractors
+o_cbn.show_attractors()
+
 # # generate the global scenes
 # o_cbn.generate_global_scenes()
-# # o_cbn.show_global_scenes()
-#
-# # find the compatible pairs
-# o_cbn.find_compatible_pairs()
+
+# # Show global attractors
+# o_cbn.show_global_scenes()
+
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
+
+# show attractor pairs
+o_cbn.show_attractor_pairs()
 
 # # show graph with networkx
 # o_cbn.generate_graph()
