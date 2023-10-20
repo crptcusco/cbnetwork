@@ -1,5 +1,6 @@
 class LocalScene:
-    def __init__(self, l_values=None, l_index_signals=None):
+    def __init__(self, index, l_values=None, l_index_signals=None):
+        self.index = index
         self.l_values = l_values
         self.l_index_signals = l_index_signals
         # Calculated properties

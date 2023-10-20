@@ -529,7 +529,8 @@ class CBN:
     def get_attractors_by_input_signal(self, index_variable_signal):
         for o_local_network in self.l_local_networks:
             for scene in o_local_network.l_local_scenes:
-                # print(scene.l_values)
-                if index_variable_signal in scene.l_index_signals:
-                    return scene.l_attractors
+                # Validate se tem sinais ou nao
+                if scene.l_values is not None:
+                    if index_variable_signal in scene.l_index_signals:
+                        return scene.l_attractors
 

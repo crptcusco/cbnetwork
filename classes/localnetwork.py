@@ -42,16 +42,19 @@ class LocalNetwork:
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
+
         if l_local_scenes is None:
-            o_local_scene = LocalScene()
+            o_local_scene = LocalScene(index=1)
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
             o_local_network.l_local_scenes.append(o_local_scene)
         else:
+            v_cont_index = 1
             for scene in l_local_scenes:
-                o_local_scene = LocalScene(scene, o_local_network.l_var_exterm)
+                o_local_scene = LocalScene(v_cont_index, scene, o_local_network.l_var_exterm)
                 s_scene = ''.join(scene)
                 o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
                 o_local_network.l_local_scenes.append(o_local_scene)
+                v_cont_index = v_cont_index + 1
         return o_local_network
 
     @staticmethod
