@@ -118,4 +118,5 @@ o_cbn.show_attractor_pairs()
 # Show attractor fields
 # o_cbn.show_attractors_fields()
 
+print("==============================")
 print("MESSAGE:", "END SCRIPT EXAMPLE")
