@@ -104,7 +104,7 @@ o_cbn.show_attractors()
 o_cbn.find_compatible_pairs()
 
 # show attractor pairs
-o_cbn.show_attractor_pairs()
+# o_cbn.show_attractor_pairs()
 
 # # show graph with networkx
 # o_cbn.generate_graph()
