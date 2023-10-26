@@ -238,4 +238,10 @@ class DirectedEdge:
 
     def show_dict_v_output_signal_attractor(self):
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print("INFO:", signal_value, ":", l_attractors)
+            print("INFO:", signal_value, "-", l_attractors)
+
+    def show_v_output_signal_attractor(self):
+        for signal_value, l_attractors in self.d_out_value_to_attractor.items():
+            print("INFO:", "Output signal Value -", signal_value, "- Attractors:")
+            for o_attractor in l_attractors:
+                o_attractor.show()
