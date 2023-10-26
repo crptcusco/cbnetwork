@@ -25,7 +25,7 @@ class DirectedEdge:
         # Dictionary for group the attractors by his output signal value
         self.d_out_value_to_attractor = {1: [], 0: []}
         # List of the compatible pair attractors
-        self.l_comp_pairs_attractors = []
+        self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
 
     def show(self):
         print("MESSAGE:", "Input Local Network:", self.input_local_network)

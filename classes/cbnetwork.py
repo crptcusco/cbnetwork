@@ -537,7 +537,8 @@ class CBN:
                     elif signal_value == 1:
                         l_pairs_edge_1 = list(itertools.product(l_attractors_input_1, l_attractors_output))
                 # Join the two list in only one
-                o_output_signal.l_comp_pairs_attractors = l_pairs_edge_0 + l_pairs_edge_1
+                o_output_signal.d_comp_pairs_attractors_by_value[0] = l_pairs_edge_0
+                o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
 
     def get_attractors_by_input_signal_value(self, index_variable_signal, signal_value):
         l_attractors = []
@@ -557,8 +558,11 @@ class CBN:
         for o_directed_edge in self.l_directed_edges:
             print("----------------------------------------------------")
             print("MESSAGE:", "Edge ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
-            for t_compatible_pair in o_directed_edge.l_comp_pairs_attractors:
+            for key in o_directed_edge.d_comp_pairs_attractors_by_value.keys():
                 print("----------------------------------------------------")
-                t_compatible_pair[0].show()
-                t_compatible_pair[1].show()
+                print("INFO:", "Coupling Variable - ", o_directed_edge.index_variable,  "Value - ", key)
+                for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
+                    o_pair[0].show()
+                    o_pair[1].show()
+
 
