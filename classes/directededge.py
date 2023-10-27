@@ -35,7 +35,7 @@ class DirectedEdge:
         print("MESSAGE:", "Coupling Function:", self.coupling_function)
         print("MESSAGE:", "Truth Table:", self.true_table)
         print("MESSAGE:", "Kind of coupling function", self.kind_signal,
-              " - ", self.d_out_value_to_attractor[self.kind_signal])
+              " - ", self.d_kind_signal[self.kind_signal])
 
     def process_true_table(self):
         r_true_table = {}
