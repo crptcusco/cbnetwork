@@ -1,4 +1,6 @@
 # import libraries
+import random
+
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
@@ -48,12 +50,20 @@ for t_edge in l_edges:
     cont_output_variable += 5
     index_variable_signal += 1
 
-# TAREA!!!!
-# d_variable_cnf_function = {i: [[x for x in range(i*5+1, i*5+6)],
-#                                [x for x in range((i-1)*5+1, (i-1)*5+6, 2)]] for i in range(1, 51)}
-#
-# for key, value in d_variable_cnf_function.items():
-#     print(key, "->", value)
+# Generate
+d_variable_cnf_function = {}
+
+count_network = 1
+count_dict_var = 1
+for o_local_network in l_local_networks:
+    for _ in range(5):
+        d_variable_cnf_function[count_dict_var] = [random.sample([n_variables * (count_network - 1) + 1,
+                                                                  count_network * 5], 3)]
+        count_dict_var += 1
+    count_network += 1
+
+for key, value in d_variable_cnf_function.items():
+    print(key, "->", value)
 
 # d_variable_cnf_function = {1: [[2, 3], [1, -15]],
 #                            2: [[1, 15]],
