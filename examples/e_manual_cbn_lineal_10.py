@@ -11,10 +11,14 @@ print("==============================+++++++")
 # pass the parameters
 l_local_networks = []
 l_directed_edges = []
-l_index_local_networks = list(range(1, 10))
+
+n_local_networks = 10
+n_variables = 5
+# l_index_local_networks = list(range(1, n_local_networks))
+
 
 # generate the variables 5 per network in sequence
-d_network_variables = {i: list(range(5*(i-1)+1, 5*i+1)) for i in range(1, 11)}
+d_network_variables = {i: list(range(n_variables * (i - 1) + 1, n_variables * i + 1)) for i in range(1, 11)}
 
 # generate the edges of the linear CBN
 l_edges = [(1, 2), (2, 3), (3, 4), (5, 6), (7, 8), (9, 10)]
@@ -24,38 +28,34 @@ for i_local_net in d_network_variables.keys():
     # generate the Local network
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
     l_local_networks.append(o_local_network)
+    # Show the networks
+    o_local_network.show()
 
 # generate the directed edges
-o_directed_edge1 = DirectedEdge(1,
-                                2,
-                                [4, 5],
-                                15,
-                                " 4 ∨ 5 ")
+cont_output_variable = 0
+index_variable_signal = (n_local_networks * n_variables) + 1
+for t_edge in l_edges:
+    l_output_variables = [4, 5]
+    # generate coupling function
+    coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
+    print(coupling_function)
+    o_directed_edge = DirectedEdge(t_edge[0],
+                                   t_edge[1],
+                                   [x + cont_output_variable for x in l_output_variables],
+                                   index_variable_signal,
+                                   coupling_function)
+    print(o_directed_edge.l_output_variables)
+    l_directed_edges.append(o_directed_edge)
+    cont_output_variable += 5
+    index_variable_signal += 1
+    # o_directed_edge.show()
 
-o_directed_edge2 = DirectedEdge(2,
-                                3,
-                                [8, 9],
-                                16,
-                                " 8 ∨ 9 ")
+d_variable_cnf_function = {i: [[x for x in range(i*5+1, i*5+6)],
+                               [x for x in range((i-1)*5+1, (i-1)*5+6, 2)]] for i in range(1, 51)}
 
-o_directed_edge3 = DirectedEdge(3,
-                                2,
-                                [6, 7],
-                                17,
-                                " 6 ∨ 7 ")
+for key, value in d_variable_cnf_function.items():
+    print(key, "->", value)
 
-o_directed_edge4 = DirectedEdge(3,
-                                4,
-                                [13, 14],
-                                18,
-                                " 13 ∨ 14 ")
-
-# l_directed_edges.append(o_directed_edge1)
-# l_directed_edges.append(o_directed_edge2)
-# l_directed_edges.append(o_directed_edge3)
-# l_directed_edges.append(o_directed_edge4)
-#
-#
 # d_variable_cnf_function = {1: [[2, 3], [1, -15]],
 #                            2: [[1, 15]],
 #                            3: [[3, -1, 15]],
@@ -70,7 +70,7 @@ o_directed_edge4 = DirectedEdge(3,
 #                            12: [[11, 13]],
 #                            13: [[14, -11, 12]],
 #                            14: [[11, -12]]}
-#
+
 # # generating the local network dynamic
 # for o_local_network in l_local_networks:
 #     l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
