@@ -35,26 +35,25 @@ for i_local_net in d_network_variables.keys():
 cont_output_variable = 0
 index_variable_signal = (n_local_networks * n_variables) + 1
 for t_edge in l_edges:
-    l_output_variables = [4, 5]
+    l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
     # generate coupling function
     coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
-    print(coupling_function)
     o_directed_edge = DirectedEdge(t_edge[0],
                                    t_edge[1],
-                                   [x + cont_output_variable for x in l_output_variables],
+                                   l_output_variables,
                                    index_variable_signal,
                                    coupling_function)
-    print(o_directed_edge.l_output_variables)
+    o_directed_edge.show()
     l_directed_edges.append(o_directed_edge)
     cont_output_variable += 5
     index_variable_signal += 1
-    # o_directed_edge.show()
 
-d_variable_cnf_function = {i: [[x for x in range(i*5+1, i*5+6)],
-                               [x for x in range((i-1)*5+1, (i-1)*5+6, 2)]] for i in range(1, 51)}
-
-for key, value in d_variable_cnf_function.items():
-    print(key, "->", value)
+# TAREA!!!!
+# d_variable_cnf_function = {i: [[x for x in range(i*5+1, i*5+6)],
+#                                [x for x in range((i-1)*5+1, (i-1)*5+6, 2)]] for i in range(1, 51)}
+#
+# for key, value in d_variable_cnf_function.items():
+#     print(key, "->", value)
 
 # d_variable_cnf_function = {1: [[2, 3], [1, -15]],
 #                            2: [[1, 15]],
