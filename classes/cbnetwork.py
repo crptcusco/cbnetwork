@@ -253,8 +253,9 @@ class CBN:
         return indexes_networks
 
     def find_attractors(self):
-        print("MESSAGE:", "Find Attractors using optimized method")
-        print("-------------------------")
+        print("==================================================")
+        print("MESSAGE:", "FIND ATTRACTORS USING OPTIMIZED METHOD")
+        print("-------------------------------------")
         print("MESSAGE:", "Begin of the initial loop")
 
         # In the beginning all the kind or relations are "not computed" with index 2
@@ -442,7 +443,6 @@ class CBN:
                                 o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
                             elif l_signals_in_attractor[0] == '1':
                                 o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
-
                         else:
                             print("MESSAGE:", "the attractor signal is not stable")
                     if len(set(l_signals_in_local_scene)) == 1:
@@ -493,8 +493,7 @@ class CBN:
             # print(o_custom_heap.get_indexes())
             # print("empty heap")
             print("MESSAGE:", "The Local attractors are computed")
-        print("MESSAGE:", "END")
-        print("=========================")
+        print("MESSAGE:", "ALL THE ATTRACTORS ARE COMPUTED")
 
     def find_compatible_pairs(self):
         print("===============================")
@@ -564,5 +563,12 @@ class CBN:
                 for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
                     o_pair[0].show()
                     o_pair[1].show()
+
+    def show_directed_edges(self):
+        print("==================================")
+        print("SHOW THE DIRECTED EDGES OF THE CBN")
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.show()
+
 
 

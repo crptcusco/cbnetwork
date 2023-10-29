@@ -28,11 +28,10 @@ class DirectedEdge:
         self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
 
     def show(self):
-        print("MESSAGE:", "Input Local Network:", self.input_local_network)
-        print("MESSAGE:", "Network Output:", self.output_local_network)
-        print("MESSAGE:", "Variables:", self.l_output_variables)
-        print("MESSAGE:", "Name Variable:", self.index_variable)
-        print("MESSAGE:", "Coupling Function:", self.coupling_function)
+        print("----------------------------------------------------")
+        print("MESSAGE:", "DIRECTED EDGE:", self.input_local_network, "->", self.output_local_network,
+              "INDEX:", self.index_variable)
+        print("MESSAGE:", "Variables:", self.l_output_variables, "Coupling Function:", self.coupling_function)
         print("MESSAGE:", "Truth Table:", self.true_table)
         print("MESSAGE:", "Kind of coupling function", self.kind_signal,
               " - ", self.d_kind_signal[self.kind_signal])
