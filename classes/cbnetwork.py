@@ -83,6 +83,11 @@ class CBN:
             G = nx.gn_graph(n_nodes)
         elif v_topology == 6:
             G = nx.gnc_graph(n_nodes)
+        elif v_topology == 7:
+            G = nx.DiGraph()
+            G.add_nodes_from(range(1, n_nodes + 1))
+            for i in range(1, n_nodes):
+                G.add_edge(i, i + 1)
         else:
             G = nx.complete_graph(n_nodes, nx.DiGraph())
 
