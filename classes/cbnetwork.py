@@ -59,7 +59,8 @@ class CBN:
             3: "cycle_graph",
             4: "path_graph",
             5: "gn_graph",
-            6: "gnc_graph"
+            6: "gnc_graph",
+            7: "linear_graph"
         }
         for key, value in allowed_topologies.items():
             print("INFO:", key, "-", value)

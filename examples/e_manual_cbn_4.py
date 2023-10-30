@@ -118,5 +118,11 @@ o_cbn.show_attractor_pairs()
 # Show attractor fields
 # o_cbn.show_attractors_fields()
 
-print("==============================")
-print("MESSAGE:", "END SCRIPT EXAMPLE")
+# show the kind of every coupled signal
+
+for o_directed_edge in o_cbn.l_directed_edges:
+    print("SIGNAL:", o_directed_edge.index_variable,
+          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
+          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
+    if o_directed_edge.kind_signal == 2:
+        print("RESTRICTED SIGNAL")

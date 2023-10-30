@@ -38,7 +38,7 @@ index_variable_signal = (n_local_networks * n_var_net) + 1
 for t_edge in l_edges:
     l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
     # generate coupling function
-    coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
+    coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
     o_directed_edge = DirectedEdge(t_edge[1],
                                    t_edge[0],
                                    l_output_variables,
@@ -55,7 +55,7 @@ count_network = 1
 count_var = 0
 for o_local_network in l_local_networks:
     d_variable_cnf_function[count_var + 1] = [[count_var + 2, -(count_var + 3), count_var + 4]]
-    d_variable_cnf_function[count_var + 2] = [[-(count_var + 1), -(count_var + 3), -(count_var + 5)]]
+    d_variable_cnf_function[count_var + 2] = [[count_var + 1, -(count_var + 3), -(count_var + 5)]]
     d_variable_cnf_function[count_var + 3] = [[-(count_var + 2), -(count_var + 4), count_var + 5]]
     if o_local_network.index == 1:
         d_variable_cnf_function[count_var + 4] = [[count_var + 3, count_var + 5]]
@@ -87,8 +87,14 @@ o_cbn.find_attractors()
 # show the kind of the edges
 o_cbn.show_directed_edges()
 
-# # show attractors
-# o_cbn.show_attractors()
+# show the kind of every coupled signal
+for o_directed_edge in o_cbn.l_directed_edges:
+    print("SIGNAL:", o_directed_edge.index_variable,
+          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
+          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
+
+# show attractors
+o_cbn.show_attractors()
 
 # # # generate the global scenes
 # # o_cbn.generate_global_scenes()
@@ -96,11 +102,11 @@ o_cbn.show_directed_edges()
 # # # Show global attractors
 # # o_cbn.show_global_scenes()
 #
-# # find the compatible pairs
-# o_cbn.find_compatible_pairs()
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
 #
-# # show attractor pairs
-# o_cbn.show_attractor_pairs()
+# show attractor pairs
+o_cbn.show_attractor_pairs()
 #
 # # # show graph with networkx
 # # o_cbn.generate_graph()
@@ -116,3 +122,12 @@ o_cbn.show_directed_edges()
 #
 # print("==============================")
 # print("MESSAGE:", "END SCRIPT EXAMPLE")
+
+# show the kind of every coupled signal
+for o_directed_edge in o_cbn.l_directed_edges:
+    print("SIGNAL:", o_directed_edge.index_variable,
+          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
+          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
+    if o_directed_edge.kind_signal == 2:
+        print("RESTRICTED SIGNAL")
+
