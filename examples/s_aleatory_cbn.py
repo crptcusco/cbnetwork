@@ -18,12 +18,11 @@ o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=n_var_
 # find local network attractors
 o_cbn.find_attractors()
 
-# generate the global scenes
-o_cbn.generate_global_scenes()
-# o_cbn.show_global_scenes()
-
 # find the compatible pairs
 o_cbn.find_compatible_pairs()
+
+# show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
 
 # find attractors fields
 # o_cbn.find_attractor_fields()

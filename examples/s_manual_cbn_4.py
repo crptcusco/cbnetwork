@@ -21,43 +21,19 @@ l_edges = [(2, 1), (3, 2), (2, 3), (4, 3)]
 
 # generate the networks
 for i_local_net in d_network_variables.keys():
-    # print("Network:", i_local_net)
-    # for i_variable in d_network_variables[i_local_net]:
-    #     print("Variable", i_variable)
-    # generate the Local network
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
     l_local_networks.append(o_local_network)
 
 # generate the directed edges
-o_directed_edge1 = DirectedEdge(1,
-                                2,
-                                [4, 5],
-                                15,
-                                " 4 ∨ 5 ")
-
-o_directed_edge2 = DirectedEdge(2,
-                                3,
-                                [8, 9],
-                                16,
-                                " 8 ∨ 9 ")
-
-o_directed_edge3 = DirectedEdge(3,
-                                2,
-                                [6, 7],
-                                17,
-                                " 6 ∨ 7 ")
-
-o_directed_edge4 = DirectedEdge(3,
-                                4,
-                                [13, 14],
-                                18,
-                                " 13 ∨ 14 ")
+o_directed_edge1 = DirectedEdge(15, 1, 2, [4, 5], " 4 ∨ 5 ")
+o_directed_edge2 = DirectedEdge(16, 2, 3, [8, 9], " 8 ∨ 9 ")
+o_directed_edge3 = DirectedEdge(17, 3, 2, [6, 7], " 6 ∨ 7 ")
+o_directed_edge4 = DirectedEdge(18, 3, 4, [13, 14], " 13 ∨ 14 ")
 
 l_directed_edges.append(o_directed_edge1)
 l_directed_edges.append(o_directed_edge2)
 l_directed_edges.append(o_directed_edge3)
 l_directed_edges.append(o_directed_edge4)
-
 
 d_variable_cnf_function = {1: [[2, 3], [1, -15]],
                            2: [[1, 15]],
@@ -82,7 +58,6 @@ for o_local_network in l_local_networks:
         o_variable_model = InternalVariable(i_local_variable, d_variable_cnf_function[i_local_variable])
         o_local_network.des_funct_variables.append(o_variable_model)
 
-
 print(l_local_networks)
 
 # generating the CBN network
@@ -91,7 +66,7 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 # Find attractors
 o_cbn.find_attractors()
 
-# show attractors
+# show local attractors
 o_cbn.show_attractors()
 
 # # generate the global scenes
@@ -119,10 +94,5 @@ o_cbn.show_attractor_pairs()
 # o_cbn.show_attractors_fields()
 
 # show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
 
-for o_directed_edge in o_cbn.l_directed_edges:
-    print("SIGNAL:", o_directed_edge.index_variable,
-          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
-          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
-    if o_directed_edge.kind_signal == 2:
-        print("RESTRICTED SIGNAL")

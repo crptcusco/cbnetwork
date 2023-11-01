@@ -18,53 +18,11 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Calculated properties
-        self.l_output_edges = None
+        # self.l_output_edges = None
         self.l_global_scenes = []
         self.l_attractor_fields = []
 
-    def show_cbn(self):
-        print("INFO:", "CBN description")
-        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
-        print("INFO:", "Local Networks:", l_local_networks_indexes)
-        print("INFO:", "Directed edges:")
-        for o_directed_edge in self.l_directed_edges:
-            o_directed_edge.show()
-
-    def show_attractors(self):
-        for o_network in self.l_local_networks:
-            print("==============")
-            print("Network:", o_network.index)
-            for o_scene in o_network.l_local_scenes:
-                print("--------------")
-                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
-                print("Attractors number:", len(o_scene.l_attractors))
-                for o_attractor in o_scene.l_attractors:
-                    print("--------------")
-                    for o_state in o_attractor.l_states:
-                        print(o_state.l_variable_values)
-
-    def show_global_scenes(self):
-        for o_global_scene in self.l_global_scenes:
-            print("INFO:", "Global scene -", o_global_scene)
-
-    def show_attractors_fields(self):
-        pass
-
-    @staticmethod
-    def show_allowed_topologies():
-        # allowed topologies
-        allowed_topologies = {
-            1: "complete_graph",
-            2: "binomial_tree",
-            3: "cycle_graph",
-            4: "path_graph",
-            5: "gn_graph",
-            6: "gnc_graph",
-            7: "linear_graph"
-        }
-        for key, value in allowed_topologies.items():
-            print("INFO:", key, "-", value)
-
+    # functions
     @staticmethod
     def generate_cbn_topology(l_networks, v_topology=6):
         # We create a graph beginning in 1
@@ -141,8 +99,8 @@ class CBN:
                     coupling_function = l_output_variables[0]
                 else:
                     coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
-                o_directed_edge = DirectedEdge(o_local_network.index, o_local_network_co.index,
-                                               l_output_variables, v_cont_var, coupling_function)
+                o_directed_edge = DirectedEdge(v_cont_var, o_local_network.index, o_local_network_co.index,
+                                               l_output_variables, coupling_function)
                 l_directed_edges.append(o_directed_edge)
                 v_cont_var = v_cont_var + 1
             aux1_l_local_networks.append(o_local_network)
@@ -198,15 +156,12 @@ class CBN:
         print("===============================")
         return o_cbn
 
-    def generate_global_scenes(self):
-        print("MESSAGE:", "GENERATE GLOBAL SCENES")
-        # generate the global scenes using all the combinations
-        self.l_global_scenes = list(product(list('01'), repeat=len(self.l_directed_edges)))
-        # for global_scene in self.l_global_scenes:
-        #     print("INFO:", global_scene)
-        # print(self.l_global_scenes)
-        print("MESSAGE:", "Global Scenes generated")
-        print("==================================")
+    # def generate_global_scenes(self):
+    #     print("MESSAGE:", "GENERATE GLOBAL SCENES")
+    #     # generate the global scenes using all the combinations
+    #     self.l_global_scenes = list(product(list('01'), repeat=len(self.l_directed_edges)))
+    #     print("MESSAGE:", "Global Scenes generated")
+    #     print("==================================")
 
     def process_output_signals(self):
         # update output signals for every local network
@@ -229,34 +184,6 @@ class CBN:
                 return True
         print("ERROR:", "Local Network not found")
         return False
-
-    def generate_graph(self):
-        G = nx.DiGraph()
-        l_networks = []
-        for o_edge in self.l_directed_edges:
-            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
-        G.add_edges_from(l_networks)
-        nx.draw(G)
-
-    def get_input_edges_by_network_index(self, index):
-        l_input_edges = []
-        for o_directed_edge in self.l_directed_edges:
-            if o_directed_edge.input_local_network == index:
-                l_input_edges.append(o_directed_edge)
-        return l_input_edges
-
-    def get_output_edges_by_network_index(self, index):
-        l_output_edges = []
-        for o_directed_edge in self.l_directed_edges:
-            if o_directed_edge.output_local_network == index:
-                l_output_edges.append(o_directed_edge)
-        return l_output_edges
-
-    def get_index_networks(self):
-        indexes_networks = []
-        for i_network in self.l_local_networks:
-            indexes_networks.append(i_network)
-        return indexes_networks
 
     def find_attractors(self):
         print("==================================================")
@@ -545,6 +472,27 @@ class CBN:
                 o_output_signal.d_comp_pairs_attractors_by_value[0] = l_pairs_edge_0
                 o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
 
+    # get methods
+    def get_input_edges_by_network_index(self, index):
+        l_input_edges = []
+        for o_directed_edge in self.l_directed_edges:
+            if o_directed_edge.input_local_network == index:
+                l_input_edges.append(o_directed_edge)
+        return l_input_edges
+
+    def get_output_edges_by_network_index(self, index):
+        l_output_edges = []
+        for o_directed_edge in self.l_directed_edges:
+            if o_directed_edge.output_local_network == index:
+                l_output_edges.append(o_directed_edge)
+        return l_output_edges
+
+    def get_index_networks(self):
+        indexes_networks = []
+        for i_network in self.l_local_networks:
+            indexes_networks.append(i_network)
+        return indexes_networks
+
     def get_attractors_by_input_signal_value(self, index_variable_signal, signal_value):
         l_attractors = []
         for o_local_network in self.l_local_networks:
@@ -556,6 +504,30 @@ class CBN:
                         if scene.l_values[pos] == str(signal_value):
                             l_attractors = l_attractors + scene.l_attractors
         return l_attractors
+
+    # show methods
+    @staticmethod
+    def show_allowed_topologies():
+        # allowed topologies
+        allowed_topologies = {
+            1: "complete_graph",
+            2: "binomial_tree",
+            3: "cycle_graph",
+            4: "path_graph",
+            5: "gn_graph",
+            6: "gnc_graph",
+            7: "linear_graph"
+        }
+        for key, value in allowed_topologies.items():
+            print("INFO:", key, "-", value)
+
+    def show_cbn_graph(self):
+        G = nx.DiGraph()
+        l_networks = []
+        for o_edge in self.l_directed_edges:
+            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
+        G.add_edges_from(l_networks)
+        nx.draw(G)
 
     def show_attractor_pairs(self):
         print("====================================================")
@@ -576,5 +548,42 @@ class CBN:
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.show()
 
+    def show_coupled_signals_kind(self):
+        print("==============================")
+        print("SHOW THE COUPLED SIGNALS KINDS")
+        for o_directed_edge in self.l_directed_edges:
+            print("SIGNAL:", o_directed_edge.index_variable,
+                  "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
+                  "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
+            if o_directed_edge.kind_signal == 2:
+                print("RESTRICTED SIGNAL")
+        
+    def show_cbn(self):
+        print("INFO:", "CBN description")
+        l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
+        print("INFO:", "Local Networks:", l_local_networks_indexes)
+        print("INFO:", "Directed edges:")
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.show()
+
+    def show_attractors(self):
+        for o_network in self.l_local_networks:
+            print("==============")
+            print("Network:", o_network.index)
+            for o_scene in o_network.l_local_scenes:
+                print("--------------")
+                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
+                print("Attractors number:", len(o_scene.l_attractors))
+                for o_attractor in o_scene.l_attractors:
+                    print("--------------")
+                    for o_state in o_attractor.l_states:
+                        print(o_state.l_variable_values)
+
+    def show_global_scenes(self):
+        for o_global_scene in self.l_global_scenes:
+            print("INFO:", "Global scene -", o_global_scene)
+
+    def show_attractors_fields(self):
+        pass
 
 

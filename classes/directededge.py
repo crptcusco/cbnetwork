@@ -7,7 +7,7 @@ from collections import namedtuple  # structures like trees
 
 
 class DirectedEdge:
-    def __init__(self, input_local_network, output_local_network, l_output_variables, index_variable_signal,
+    def __init__(self, index_variable_signal, input_local_network, output_local_network, l_output_variables,
                  coupling_function):
         self.index_variable = index_variable_signal
         self.input_local_network = input_local_network
@@ -29,7 +29,7 @@ class DirectedEdge:
 
     def show(self):
         print("----------------------------------------------------")
-        print("MESSAGE:", "DIRECTED EDGE:", self.input_local_network, "->", self.output_local_network,
+        print("MESSAGE:", "DIRECTED EDGE:", self.output_local_network, "->", self.input_local_network,
               "INDEX:", self.index_variable)
         print("MESSAGE:", "Variables:", self.l_output_variables, "Coupling Function:", self.coupling_function)
         print("MESSAGE:", "Truth Table:", self.true_table)
