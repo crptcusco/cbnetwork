@@ -25,9 +25,9 @@ for i_local_net in d_network_variables.keys():
     l_local_networks.append(o_local_network)
 
 # generate the directed edges
-o_directed_edge1 = DirectedEdge(15, 1, 2, [4, 5], " 4 ∨ 5 ")
+o_directed_edge1 = DirectedEdge(15, 1, 2, [4, 5], " 4 ∧ 5 ")
 o_directed_edge2 = DirectedEdge(16, 2, 3, [8, 9], " 8 ∨ 9 ")
-o_directed_edge3 = DirectedEdge(17, 3, 2, [6, 7], " 6 ∨ 7 ")
+o_directed_edge3 = DirectedEdge(17, 3, 2, [6, 7], " 6 ∧ 7 ")
 o_directed_edge4 = DirectedEdge(18, 3, 4, [13, 14], " 13 ∨ 14 ")
 
 l_directed_edges.append(o_directed_edge1)
@@ -93,6 +93,6 @@ o_cbn.show_attractor_pairs()
 # Show attractor fields
 # o_cbn.show_attractors_fields()
 
-# show the kind of every coupled signal
-o_cbn.show_coupled_signals_kind()
+# # show the kind of every coupled signal
+# o_cbn.show_coupled_signals_kind()
 
