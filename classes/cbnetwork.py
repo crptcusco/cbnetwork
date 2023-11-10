@@ -22,6 +22,9 @@ class CBN:
         self.l_global_scenes = []
         self.l_attractor_fields = []
 
+        print("------------------")
+        print("CBN object created")
+
     # functions
     @staticmethod
     def generate_cbn_topology(l_networks, v_topology=6):
@@ -70,7 +73,7 @@ class CBN:
     @staticmethod
     def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function):
         print("MESSAGE:", "Generating the CBN")
-        print("==================")
+        print("==============================")
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
         l_local_networks = []
         l_directed_edges = []

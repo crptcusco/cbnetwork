@@ -5,8 +5,8 @@ from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 
 # script to put a manual parameters for the example of 4 networks
-print("MESSAGE:", "CBN MANUAL SCRIPT EXAMPLE")
-print("==============================+++++++")
+print("=================================================")
+print("MESSAGE:", "CBN MANUAL SCRIPT EXAMPLE: 4 NETWORKS")
 
 # pass the parameters
 l_local_networks = []
@@ -57,7 +57,6 @@ for o_local_network in l_local_networks:
     for i_local_variable in o_local_network.l_var_intern:
         o_variable_model = InternalVariable(i_local_variable, d_variable_cnf_function[i_local_variable])
         o_local_network.des_funct_variables.append(o_variable_model)
-
 print(l_local_networks)
 
 # generating the CBN network
@@ -69,17 +68,14 @@ o_cbn.find_attractors()
 # show local attractors
 o_cbn.show_attractors()
 
-# # generate the global scenes
-# o_cbn.generate_global_scenes()
-
-# # Show global attractors
-# o_cbn.show_global_scenes()
-
 # find the compatible pairs
 o_cbn.find_compatible_pairs()
 
 # show attractor pairs
 o_cbn.show_attractor_pairs()
+
+# show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
 
 # # show graph with networkx
 # o_cbn.generate_graph()
@@ -93,6 +89,9 @@ o_cbn.show_attractor_pairs()
 # Show attractor fields
 # o_cbn.show_attractors_fields()
 
-# show the kind of every coupled signal
-o_cbn.show_coupled_signals_kind()
+# # generate the global scenes
+# o_cbn.generate_global_scenes()
+
+# # Show global attractors
+# o_cbn.show_global_scenes()
 
