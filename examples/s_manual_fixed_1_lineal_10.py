@@ -1,9 +1,5 @@
 # import libraries
-import random
-
-from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
-from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 
 # script to put a manual parameters for the example of 4 networks
@@ -23,8 +19,8 @@ d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)
 d_network_variables[n_local_nets+4] = [11, 12, 13, 14]
 
 # generate the edges of the linear CBN
-l_edges = [(i, i+1) for i in range(1, 10)]
-l_edges.append((n_local_nets+4, 1))
+l_edges = [(i, i + 1) for i in range(1, 10)]
+l_edges.append((n_local_nets + 4, 1))
 
 # generate the networks
 for i_local_net in d_network_variables.keys():
@@ -33,23 +29,28 @@ for i_local_net in d_network_variables.keys():
     l_local_networks.append(o_local_network)
     # Show the local network
     o_local_network.show()
-#
-# # generate the directed edges
-# cont_output_variable = 0
-# index_variable_signal = (n_local_nets * n_var_net) + 1
-# for t_edge in l_edges:
-#     l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
-#     # generate coupling function
-#     coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
-#     # generate the Directed Edge object
-#     o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables, coupling_function)
-#     # add the directed object to list
-#     l_directed_edges.append(o_directed_edge)
-#     # updating the count of variables
-#     cont_output_variable += 5
-#     # updating the index variable signal
-#     index_variable_signal += 1
-#
+
+# generate the directed edges
+cont_output_variable = 0
+index_variable_signal = (n_local_nets * n_var_net) + 1
+for t_edge in l_edges[:-1]:
+    l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
+    # generate coupling function
+    coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
+    # generate the Directed Edge object
+    o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables, coupling_function)
+    # add the directed object to list
+    l_directed_edges.append(o_directed_edge)
+    # updating the count of variables
+    cont_output_variable += 5
+    # updating the index variable signal
+    index_variable_signal += 1
+
+t_edge = l_edges[-1]
+l_output_variables = []
+coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
+o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables, coupling_function)
+
 # # Generate the functions for every variable in the CBN
 # d_var_cnf_func = {}
 # count_network = 1
