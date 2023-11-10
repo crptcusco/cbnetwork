@@ -93,6 +93,6 @@ o_cbn.show_attractor_pairs()
 # Show attractor fields
 # o_cbn.show_attractors_fields()
 
-# # show the kind of every coupled signal
-# o_cbn.show_coupled_signals_kind()
+# show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
 
