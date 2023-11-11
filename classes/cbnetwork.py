@@ -18,11 +18,9 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Calculated properties
-        # self.l_output_edges = None
         self.l_global_scenes = []
         self.l_attractor_fields = []
 
-        print("------------------")
         print("CBN object created")
 
     # functions

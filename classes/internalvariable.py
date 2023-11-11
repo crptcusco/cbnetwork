@@ -8,6 +8,8 @@ class InternalVariable:
         self.variable_name = int(name_variable)
         self.cnf_function = cnf_function
 
+        print('Internal Variable', self.variable_name,'created')
+
     def show(self):
         print("V: " + str(self.variable_name) + " -> CNF :" + str(self.cnf_function))
 

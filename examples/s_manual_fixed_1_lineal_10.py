@@ -5,13 +5,10 @@ from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 
 # script to put a manual parameters for the example of 4 networks
-print("MESSAGE:", "LINEAL CBN MANUAL SCRIPT EXAMPLE")
-print("==============================+++++++")
+print("MESSAGE:", "1 FIXED 10 LINEAL CBN MANUAL SCRIPT EXAMPLE")
+print("=======================================================")
 
 # pass the parameters
-l_local_networks = []
-l_directed_edges = []
-
 n_local_nets = 10
 n_var_net = 5
 n_total_var = n_local_nets * n_var_net
@@ -24,9 +21,10 @@ d_network_variables[11] = [61, 62, 63, 64]
 l_edges = [(i, i + 1) for i in range(1, 10)]
 l_edges.append((11, 1))
 
+# generate the networks
 print("-----------------------")
 print("Generate Networks")
-# generate the networks
+l_local_networks = []
 for i_local_net in d_network_variables.keys():
     # generate the Local network
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
@@ -34,9 +32,10 @@ for i_local_net in d_network_variables.keys():
     # Show the local network
     o_local_network.show()
 
+# generate the directed edges
 print("-----------------------")
 print("Generate Directed Edges")
-# generate the directed edges
+l_directed_edges = []
 cont_output_variable = 0
 index_variable_signal = (n_local_nets * n_var_net) + 1
 for t_edge in l_edges[:-1]:
@@ -100,6 +99,9 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 # Find attractors
 o_cbn.find_attractors()
 
+# show attractors
+o_cbn.show_attractors()
+
 # show the kind of the edges
 o_cbn.show_directed_edges()
 
@@ -109,36 +111,3 @@ for o_directed_edge in o_cbn.l_directed_edges:
           "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
           "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
 
-# show attractors
-o_cbn.show_attractors()
-
-# # # # generate the global scenes
-# # # o_cbn.generate_global_scenes()
-# #
-# # # # Show global attractors
-# # # o_cbn.show_global_scenes()
-# #
-# # find the compatible pairs
-# o_cbn.find_compatible_pairs()
-# #
-# # show attractor pairs
-# o_cbn.show_attractor_pairs()
-# #
-# # # # show graph with networkx
-# # # o_cbn.generate_graph()
-# #
-# # # # show attractors
-# # # o_cbn.show_attractors()
-# #
-# # # Find attractors fields
-# # # o_cbn.find_attractor_fields()
-# #
-# # # Show attractor fields
-# # # o_cbn.show_attractors_fields()
-# #
-# # print("==============================")
-# # print("MESSAGE:", "END SCRIPT EXAMPLE")
-#
-# # show the kind of every coupled signal
-# o_cbn.show_coupled_signals_kind()
-#
