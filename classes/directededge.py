@@ -19,7 +19,10 @@ class DirectedEdge:
         # True table for signal with the output variables
         self.true_table = self.process_true_table()
         # Dictionary for kind status of the signal
-        self.d_kind_signal = {1: "restricted", 2: "not compute", 3: "stable", 4: "not stable"}
+        self.d_kind_signal = {1: "restricted",
+                              2: "not compute",
+                              3: "stable",
+                              4: "not stable"}
         # Defined the initial kind for every coupling signal
         self.kind_signal = 2
         # Dictionary for group the attractors by his output signal value

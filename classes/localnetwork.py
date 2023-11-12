@@ -23,11 +23,12 @@ class LocalNetwork:
         self.l_local_scenes = []
 
     def show(self):
-        print('Local Network', self.index)
+        print("--------------------------------------------")
+        print('Local Network:', self.index)
         print('Variables intern : ', self.l_var_intern)
         # Description variables
-        for o_variable in self.des_funct_variables:
-            o_variable.show_cbn()
+        for o_internal_variable in self.des_funct_variables:
+            o_internal_variable.show()
 
     def process_input_signals(self, l_input_signals):
         # Processing the input signals of local network
@@ -39,6 +40,16 @@ class LocalNetwork:
         self.l_var_total.extend(self.l_var_exterm.copy())
         # calculate the number of total variables
         self.num_var_total = len(self.l_var_total)
+
+    def get_internal_variable(self, i_variable):
+        for o_internal_variable in self.des_funct_variables:
+            if o_internal_variable.index == i_variable:
+                return o_internal_variable
+
+    def update_internal_variable(self, o_internal_variable_to_update):
+        for i, o_internal_variable in enumerate(self.des_funct_variables):
+            if o_internal_variable.index == o_internal_variable_to_update.index:
+                self.des_funct_variables[i] = o_internal_variable_to_update
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
@@ -100,23 +111,23 @@ class LocalNetwork:
                     cont_clause = cont_clause + 1
                 if cont_clause_global == 0:
                     boolean_expression_equivalence = o_local_network.dic_var_cnf[
-                                                         str(o_variable_model.variable_name) + "_" + str(
+                                                         str(o_variable_model.index) + "_" + str(
                                                              transition)] >> boolean_expression_clause_global
                     boolean_expression_equivalence = boolean_expression_equivalence & (
                             boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        str(o_variable_model.variable_name) + "_" + str(transition)])
+                        str(o_variable_model.index) + "_" + str(transition)])
                 else:
                     boolean_expression_equivalence = boolean_expression_equivalence & (o_local_network.dic_var_cnf[
-                                                                                           str(o_variable_model.variable_name) + "_" + str(
+                                                                                           str(o_variable_model.index) + "_" + str(
                                                                                                transition)] >> boolean_expression_clause_global)
                     boolean_expression_equivalence = boolean_expression_equivalence & (
                             boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        str(o_variable_model.variable_name) + "_" + str(transition)])
+                        str(o_variable_model.index) + "_" + str(transition)])
                 if not o_variable_model.cnf_function:
                     print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
-                            o_local_network.dic_var_cnf[str(o_variable_model.variable_name) + "_" + str(transition)] | -
-                    o_local_network.dic_var_cnf[str(o_variable_model.variable_name) + "_" + str(transition)])
+                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
+                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
                 cont_clause_global = cont_clause_global + 1
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence
@@ -213,12 +224,12 @@ class LocalNetwork:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
-                    # print("INFO", "_________________________________________")
-                    # print("INFO", "Error Variable:", f'{i}_{j}')
-                    # print("INFO", "Total variables: ",o_local_network.l_var_total)
-                    # print("INFO", "External variables: ", o_local_network.l_var_exterm)
-                    # print("INFO", o_local_network.dic_var_cnf.items())
-                    # print("INFO", o_solution.varmap)
+                    print("INFO", "_________________________________________")
+                    print("INFO", "Error Variable:", f'{i}_{j}')
+                    print("INFO", "Total variables: ",o_local_network.l_var_total)
+                    print("INFO", "External variables: ", o_local_network.l_var_exterm)
+                    print("INFO", o_local_network.dic_var_cnf.items())
+                    print("INFO", o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
             print("MESSAGE:", "The expression cannot be satisfied")
