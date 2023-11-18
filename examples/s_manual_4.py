@@ -65,26 +65,23 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 # Find attractors
 o_cbn.find_attractors()
 
-# show local attractors
-o_cbn.show_attractors()
+# # show local attractors
+# o_cbn.show_attractors()
 
 # find the compatible pairs
 o_cbn.find_compatible_pairs()
 
-# show attractor pairs
-o_cbn.show_attractor_pairs()
+# # show attractor pairs
+# o_cbn.show_attractor_pairs()
 
-# show the kind of every coupled signal
-o_cbn.show_coupled_signals_kind()
+# # show the kind of every coupled signal
+# o_cbn.show_coupled_signals_kind()
 
 # # show graph with networkx
 # o_cbn.generate_graph()
 
-# # show attractors
-# o_cbn.show_attractors()
-
 # Find attractors fields
-# o_cbn.find_attractor_fields()
+o_cbn.find_attractor_fields()
 
 # Show attractor fields
 # o_cbn.show_attractors_fields()

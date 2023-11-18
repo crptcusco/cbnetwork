@@ -74,7 +74,7 @@ o_local_network.num_var_total += 1
 
 # update all the internal variables with literal
 for o_internal_variable in o_local_network.des_funct_variables:
-    o_internal_variable.cnf_function[0].append(105)
+    o_internal_variable.cnf_function[0].append(-105)
     o_local_network.update_internal_variable(o_internal_variable)
 
 o_cbn.update_network_by_index(1, o_local_network)
@@ -90,8 +90,7 @@ o_cbn.find_attractors()
 # # show attractors
 o_cbn.show_attractors()
 
-# o_cbn.find_compatible_pairs()
-# o_cbn.show_attractor_pairs()
+
 # o_cbn.show_directed_edges()
 
 # show the resume of the cbn
@@ -99,3 +98,6 @@ o_cbn.show_cbn()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
+
+o_cbn.find_compatible_pairs()
+o_cbn.show_attractor_pairs()

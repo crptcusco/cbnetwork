@@ -13,15 +13,13 @@ from classes.utils.customheap import Node, CustomHeap
 
 class CBN:
     def __init__(self, l_local_networks, l_directed_edges):
-
+        # attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
 
-        # Calculated properties
+        # calculated attributes
         self.l_global_scenes = []
         self.l_attractor_fields = []
-
-        print("CBN object created")
 
     # functions
     @staticmethod
@@ -30,19 +28,25 @@ class CBN:
         n_nodes = len(l_networks)
         G = nx.DiGraph()
         # classical topologies
+        # complete_graph
         if v_topology == 1:
             G = nx.complete_graph(n_nodes, nx.DiGraph())
+        # binomial_tree
         elif v_topology == 2:
             G = nx.binomial_tree(n_nodes, nx.DiGraph())
+        # cycle_graph
         elif v_topology == 3:
             G = nx.cycle_graph(n_nodes, nx.DiGraph())
+        # path_graph
         elif v_topology == 4:
             G = nx.path_graph(n_nodes, nx.DiGraph())
         # aleatory topologies
+        # gn_graph
         elif v_topology == 5:
             G = nx.gn_graph(n_nodes)
         elif v_topology == 6:
             G = nx.gnc_graph(n_nodes)
+        # linear_graph
         elif v_topology == 7:
             G = nx.DiGraph()
             G.add_nodes_from(range(1, n_nodes + 1))
@@ -50,18 +54,6 @@ class CBN:
                 G.add_edge(i, i + 1)
         else:
             G = nx.complete_graph(n_nodes, nx.DiGraph())
-
-        # Classical topologies
-        # G = nx.balanced_tree(n_nodes, 1, nx.DiGraph())
-        # G = nx.circulant_graph(n, [1, 2], nx.DiGraph())
-        # G = nx.full_rary_tree(2, n, nx.DiGraph())
-
-        # # Directed Graphs
-        # G = nx.gn_graph(n)
-        # G = nx.gnr_graph(n,0.5) # need probabilities
-        # G = nx.gnc_graph(n)
-        # G = nx.random_k_out_graph(n) # not supported
-        # G = nx.scale_free_graph(n) # have cycles
 
         # Renaming the label of the nodes for beginning in 1
         mapping = {node: node + 1 for node in G.nodes()}
@@ -475,6 +467,46 @@ class CBN:
                 o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
         print("END FIND ATTRACTOR PAIRS")
 
+    def find_attractor_fields(self):
+        def f_order_groups(l_directed_edges):
+            def f_inspect_group(l_base, v_group):
+                for aux_par in l_base:
+                    if (aux_par.input_local_network == v_group.input_local_network or
+                            aux_par.input_local_network == v_group.output_local_network):
+                        return True
+                    elif (aux_par.output_local_network == v_group.output_local_network or
+                          aux_par.output_local_network == v_group.input_local_network):
+                        return True
+                return False
+
+            # Order the groups of compatible pairs
+            l_base = [l_directed_edges[0]]
+            aux_l_rest_groups = l_directed_edges[1:]
+            for v_group in aux_l_rest_groups:
+                if f_inspect_group(l_base, v_group):
+                    l_base.append(v_group)
+                else:
+                    aux_l_rest_groups.remove(v_group)
+                    aux_l_rest_groups.append(v_group)
+            header = [l_directed_edges[0]] + aux_l_rest_groups
+            return header
+
+        print("=====================")
+        print("FIND ATTRACTOR FIELDS")
+
+        # Order the edges by nearest
+        self.l_directed_edges = f_order_groups(self.l_directed_edges)
+        # Show the order edges
+        for o_directed_edge in self.l_directed_edges:
+            o_directed_edge.show()
+
+        # for o_output_signal in self.l_directed_edges:
+        #     for key, value in o_output_signal.d_comp_pairs_attractors_by_value.items():
+        #         print("Coupling Signal:", o_output_signal.index_variable, "value: ", key)
+        #         for o_tuple in value:
+        #             o_tuple[0].show()
+        #             o_tuple[1].show()
+
     # get methods
     def get_input_edges_by_network_index(self, index):
         l_input_edges = []
@@ -596,3 +628,7 @@ class CBN:
 
     def show_attractors_fields(self):
         pass
+
+
+
+
