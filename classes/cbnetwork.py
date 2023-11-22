@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt  # generate the figures
 import random  # generate random numbers
 import networkx as nx  # generate networks
 
+from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
@@ -23,9 +24,8 @@ class CBN:
 
     # functions
     @staticmethod
-    def generate_cbn_topology(l_networks, v_topology=6):
-        # We create a graph beginning in 1
-        n_nodes = len(l_networks)
+    def generate_cbn_topology(n_nodes, v_topology=1):
+        # Generate a directed graph begin in 1
         G = nx.DiGraph()
         # classical topologies
         # complete_graph
@@ -68,6 +68,7 @@ class CBN:
         l_local_networks = []
         l_directed_edges = []
         v_cont_var = 1
+
         # generate the local networks
         for v_num_network in range(1, n_local_networks + 1):
             # generate the variables of the networks
@@ -76,8 +77,8 @@ class CBN:
             l_local_networks.append(o_local_network)
             v_cont_var = v_cont_var + n_var_network
 
-        # GENERATE THE TOPOLOGY
-        l_relations = CBN.generate_cbn_topology(l_local_networks, v_topology)
+        # generate the topology
+        l_relations = CBN.generate_cbn_topology(len(l_local_networks), v_topology)
         aux1_l_local_networks = []
         for o_local_network in l_local_networks:
             l_local_networks_co = []
@@ -103,9 +104,6 @@ class CBN:
         for o_local_network in l_local_networks:
             l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
             o_local_network.process_input_signals(l_input_signals)
-            # l_output_signals = DirectedEdge.find_output_edges_by_network_index(o_local_network.index,
-            # l_directed_edges)
-            # o_local_network.process_output_signals(l_input_signals)
 
         # GENERATE THE DYNAMICS OF EACH RDD
         number_max_of_clauses = n_clauses_function
@@ -149,12 +147,26 @@ class CBN:
         print("=================================")
         return o_cbn
 
-    # def generate_global_scenes(self):
-    #     print("MESSAGE:", "GENERATE GLOBAL SCENES")
-    #     # generate the global scenes using all the combinations
-    #     self.l_global_scenes = list(product(list('01'), repeat=len(self.l_directed_edges)))
-    #     print("MESSAGE:", "Global Scenes generated")
-    #     print("==================================")
+    def generate_global_scenes(self):
+        print("==================================")
+        print("GENERATE GLOBAL SCENES")
+
+        # get the index for every directed_edge
+        l_global_signal_indexes = []
+        for o_directed_edge in self.l_directed_edges:
+            l_global_signal_indexes.append(o_directed_edge.index_variable)
+
+        # generate the global scenes using all the combinations
+        l_global_scenes_values = list(product(list('01'), repeat=len(self.l_directed_edges)))
+
+        cont_index_scene = 1
+        for global_scene_values in l_global_scenes_values:
+            o_global_scene = GlobalScene(cont_index_scene, l_global_signal_indexes, global_scene_values)
+            self.l_global_scenes.append(o_global_scene)
+            cont_index_scene = cont_index_scene + 1
+
+        print("-----------------------------------")
+        print("MESSAGE:", "Global Scenes generated")
 
     def process_output_signals(self):
         # update output signals for every local network
@@ -178,7 +190,7 @@ class CBN:
         print("ERROR:", "Local Network not found")
         return False
 
-    def find_attractors(self):
+    def find_attractors_with_heap(self):
         print("==================================================")
         print("MESSAGE:", "FIND ATTRACTORS USING OPTIMIZED METHOD")
         print("-------------------------------------")
@@ -468,14 +480,14 @@ class CBN:
         print("END FIND ATTRACTOR PAIRS")
 
     def find_attractor_fields(self):
-        def f_order_groups(l_directed_edges):
-            def f_inspect_group(l_base, v_group):
-                for aux_par in l_base:
-                    if (aux_par.input_local_network == v_group.input_local_network or
-                            aux_par.input_local_network == v_group.output_local_network):
+        def order_edges_by_compatibility(l_directed_edges):
+            def is_compatible(l_group_base, o_group):
+                for aux_par in l_group_base:
+                    if (aux_par.input_local_network == o_group.input_local_network or
+                            aux_par.input_local_network == o_group.output_local_network):
                         return True
-                    elif (aux_par.output_local_network == v_group.output_local_network or
-                          aux_par.output_local_network == v_group.input_local_network):
+                    elif (aux_par.output_local_network == o_group.output_local_network or
+                          aux_par.output_local_network == o_group.input_local_network):
                         return True
                 return False
 
@@ -483,29 +495,34 @@ class CBN:
             l_base = [l_directed_edges[0]]
             aux_l_rest_groups = l_directed_edges[1:]
             for v_group in aux_l_rest_groups:
-                if f_inspect_group(l_base, v_group):
+                if is_compatible(l_base, v_group):
                     l_base.append(v_group)
                 else:
                     aux_l_rest_groups.remove(v_group)
                     aux_l_rest_groups.append(v_group)
             header = [l_directed_edges[0]] + aux_l_rest_groups
+            print("MESSAGE:", "Directed Edges ordered")
             return header
 
         print("=====================")
         print("FIND ATTRACTOR FIELDS")
 
-        # Order the edges by nearest
-        self.l_directed_edges = f_order_groups(self.l_directed_edges)
-        # Show the order edges
-        for o_directed_edge in self.l_directed_edges:
+        # Order the edges by compatibility
+        self.l_directed_edges = order_edges_by_compatibility(self.l_directed_edges)
+
+        # generate a base list of the pairs
+        l_base = [self.l_directed_edges[0]]
+
+        l_base[0].show()
+        # l_base[0].show_d_comp_pairs_attractors_by_value()
+        for key, pares in l_base[0].d_comp_pairs_attractors_by_value.items():
+            print(key)
+            print(pares)
+
+        for o_directed_edge in self.l_directed_edges[1:]:
             o_directed_edge.show()
 
-        # for o_output_signal in self.l_directed_edges:
-        #     for key, value in o_output_signal.d_comp_pairs_attractors_by_value.items():
-        #         print("Coupling Signal:", o_output_signal.index_variable, "value: ", key)
-        #         for o_tuple in value:
-        #             o_tuple[0].show()
-        #             o_tuple[1].show()
+
 
     # get methods
     def get_input_edges_by_network_index(self, index):
@@ -623,12 +640,14 @@ class CBN:
                         print(o_state.l_variable_values)
 
     def show_global_scenes(self):
+        print("==================================")
+        print("LIST OF GLOBAL SCENES")
         for o_global_scene in self.l_global_scenes:
-            print("INFO:", "Global scene -", o_global_scene)
+            o_global_scene.show()
 
-    def show_attractors_fields(self):
-        pass
-
-
-
+    def show_scene_attractors_fields(self):
+        for o_global_scene in self.l_global_scenes:
+            print(o_global_scene.index)
+            for o_attractor_field in o_global_scene.l_atractor_fields:
+                o_attractor_field.show()
 
