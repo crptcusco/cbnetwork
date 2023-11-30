@@ -204,6 +204,7 @@ class LocalNetwork:
                     number_of_times = number_of_times + 1
             return number_of_times
 
+        print('---------------------------------------------------------------------------------------------')
         print("MESSAGE:", "NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
         print("MESSAGE:", "BEGIN TO FIND ATTRACTORS")
         # create boolean expression initial with "n" transitions
@@ -224,12 +225,12 @@ class LocalNetwork:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
-                    print("INFO", "_________________________________________")
-                    print("INFO", "Error Variable:", f'{i}_{j}')
-                    print("INFO", "Total variables: ",o_local_network.l_var_total)
-                    print("INFO", "External variables: ", o_local_network.l_var_exterm)
-                    print("INFO", o_local_network.dic_var_cnf.items())
-                    print("INFO", o_solution.varmap)
+                    # print("INFO", "_________________________________________")
+                    # print("INFO", "Error Variable:", f'{i}_{j}')
+                    # print("INFO", "Total variables: ",o_local_network.l_var_total)
+                    # print("INFO", "External variables: ", o_local_network.l_var_exterm)
+                    # print("INFO", o_local_network.dic_var_cnf.items())
+                    # print("INFO", o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
             print("MESSAGE:", "The expression cannot be satisfied")

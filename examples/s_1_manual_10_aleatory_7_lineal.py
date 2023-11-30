@@ -86,7 +86,7 @@ for o_directed_edge in o_cbn.l_directed_edges:
     print(o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
 
 # Find attractors
-o_cbn.find_attractors_with_heap()
+o_cbn.find_local_attractors_optimized_method()
 # # show attractors
 o_cbn.show_attractors()
 
