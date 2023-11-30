@@ -1,15 +1,19 @@
-import itertools
-from itertools import product  # generate the permutations
-from random import randint  # generate random numbers integers
-from matplotlib import pyplot as plt  # generate the figures
-import random  # generate random numbers
-import networkx as nx  # generate networks
-
+# internal imports
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
 from classes.utils.customheap import Node, CustomHeap
+from classes.utils.customtext import CustomText
+
+# external imports
+import itertools
+import random                           # generate random numbers
+import networkx as nx                   # generate networks
+from itertools import product           # generate the permutations te result in tuples
+from itertools import combinations      # generate the combinations the result in list
+from random import randint              # generate random numbers integers
+from matplotlib import pyplot as plt    # generate the figures
 
 
 class CBN:
@@ -62,8 +66,9 @@ class CBN:
 
     @staticmethod
     def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables, n_clauses_function):
-        print("MESSAGE:", "Generating the CBN")
-        print("==============================")
+        CustomText.print_duplex_line()
+        print("Generating the CBN ...")
+
         # GENERATE THE LOCAL NETWORKS IN BASIC FORM (WITHOUT RELATIONS AND DYNAMIC)
         l_local_networks = []
         l_directed_edges = []
@@ -137,18 +142,17 @@ class CBN:
             # adding the local network to list of local networks
             o_local_network.des_funct_variables = des_funct_variables.copy()
             aux2_l_local_networks.append(o_local_network)
-            print("MESSAGE:", "Local network created :", o_local_network.index)
-            print("---------------------")
+            print("Local network created :", o_local_network.index)
+            CustomText.print_simple_line()
             # actualized the list of local networks
         l_local_networks = aux2_l_local_networks.copy()
-
-        print("MESSAGE:", "CBN generated")
         o_cbn = CBN(l_local_networks, l_directed_edges)
-        print("=================================")
+
+        print("CBN generated")
         return o_cbn
 
     def generate_global_scenes(self):
-        print("==================================")
+        CustomText.print_duplex_line()
         print("GENERATE GLOBAL SCENES")
 
         # get the index for every directed_edge
@@ -165,8 +169,8 @@ class CBN:
             self.l_global_scenes.append(o_global_scene)
             cont_index_scene = cont_index_scene + 1
 
-        print("-----------------------------------")
-        print("MESSAGE:", "Global Scenes generated")
+        CustomText.print_simple_line()
+        print("Global Scenes generated")
 
     def process_output_signals(self):
         # update output signals for every local network
@@ -185,55 +189,49 @@ class CBN:
         for i, o_local_network in enumerate(self.l_local_networks):
             if o_local_network.index == index:
                 self.l_local_networks[i] = o_local_network_update
-                print("MESSAGE:", "Local Network updated")
+                print("Local Network updated")
                 return True
         print("ERROR:", "Local Network not found")
         return False
 
     def find_local_attractors_optimized_method(self):
-        print("==================================================")
-        print("MESSAGE:", "FIND ATTRACTORS USING OPTIMIZED METHOD")
-        print("-------------------------------------")
-        print("MESSAGE:", "Begin of the initial loop")
-
-        # In the beginning all the kind or relations are "not computed" with index 2
-        # print("INFO:",o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_relation)
+        CustomText.print_duplex_line()
+        print("FIND ATTRACTORS USING OPTIMIZED METHOD")
 
         # create an empty heap to organize the local networks by weight
         o_custom_heap = CustomHeap()
 
         # calculate the initial weights for every local network anda safe in the node of the heap
         for o_local_network in self.l_local_networks:
-            # initial graph only have not computed signals with weight = 2
             weight = 0
             for o_directed_edge in self.l_directed_edges:
                 if o_directed_edge.input_local_network == o_local_network.index:
+                    # In the beginning all the kind or relations are "not computed" with index 2
                     weight = weight + o_directed_edge.kind_signal
-            # add node to the heap with computed weight
+            # create the node of the heap
             o_node = Node(o_local_network.index, weight)
+            # add node to the heap with computed weight
             o_custom_heap.add_node(o_node)
 
         # generate the initial heap
         initial_heap = o_custom_heap.get_indexes()
         # print(initial_heap)
 
-        # PROCESS THE FIRST NODE - FIND ATTRACTORS
         # find the node in the top  of the heap
         lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
         # find the local network information
         o_local_network = self.find_network_by_index(lowest_weight_node.index)
-        # calculate the local scenarios
+        # generate the local scenarios
         l_local_scenes = None
         if len(o_local_network.l_var_exterm) != 0:
             l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
 
         # calculate the attractors for the node in the top of the  heap
         o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-        # # update the network in the CBN
-        # self.update_network_by_index(lowest_weight_node.index, o_local_network)
+        # update the network in the CBN
+        self.update_network_by_index(lowest_weight_node.index, o_local_network)
 
-        # # Update kind signals
-        # validate if the output variables by attractor send a fixed value
+        # validate if the output variables by attractor send a fixed value and update kind signals
         l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
         # print("INFO:", "Local network:", o_local_network.index)
         for o_output_signal in l_directed_edges:
@@ -268,7 +266,7 @@ class CBN:
                         l_signals_in_attractor.append(output_value_state)
                     if len(set(l_signals_in_attractor)) == 1:
                         l_signals_in_local_scene.append(l_signals_in_attractor[0])
-                        print("MESSAGE:", "the attractor signal value is stable")
+                        print("the attractor signal value is stable")
 
                         # add the attractor to the dictionary of output value -> attractors
                         if l_signals_in_attractor[0] == '0':
@@ -277,31 +275,32 @@ class CBN:
                             o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
 
                     else:
-                        print("MESSAGE:", "the attractor signal is not stable")
+                        print("the attractor signal is not stable")
                 if len(set(l_signals_in_local_scene)) == 1:
                     l_signals_for_output.append(l_signals_in_local_scene[0])
-                    print("MESSAGE:", "the scene signal is restricted")
+                    print("the scene signal is restricted")
                 else:
                     if len(set(l_signals_in_local_scene)) == 2:
                         l_signals_for_output.extend(l_signals_in_local_scene)
-                        print("MESSAGE:", "the scene signal value is stable")
+                        print("the scene signal value is stable")
                     else:
                         print("warning:", "the scene signal is not stable")
             if len(set(l_signals_for_output)) == 1:
                 o_output_signal.kind_signal = 1
-                print("MESSAGE:", "the output signal is restricted")
+                print("the output signal is restricted")
             elif len(set(l_signals_for_output)) == 2:
                 o_output_signal.kind_signal = 3
-                print("MESSAGE:", "the output signal is stable")
+                print("the output signal is stable")
             else:
                 o_output_signal.kind_signal = 4
                 print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
 
         # # print all the kinds of the signals
-        # print("MESSAGE:", "Resume")
-        # print("Network:", o_local_network.index)
-        # for o_directed_edge in self.l_directed_edges:
-        #     print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
+        CustomText.print_simple_line()
+        print("Resume")
+        print("Network:", o_local_network.index)
+        for o_directed_edge in self.l_directed_edges:
+            print(o_directed_edge.index_variable, ":", o_directed_edge.kind_signal)
 
         # Update the weights of the nodes
         # Add the output network to the list of modified networks
@@ -318,9 +317,9 @@ class CBN:
             o_custom_heap.update_node(o_edge.output_local_network, weight)
 
         # compare the initial heap with the update heap
-        print("MESSAGE:", "INITIAL HEAP")
+        print("INITIAL HEAP")
         print(initial_heap)
-        print("MESSAGE:", "UPDATE HEAP")
+        print("UPDATE HEAP")
         print(o_custom_heap.get_indexes())
 
         # Verify if the heap have at least two elements
@@ -376,7 +375,7 @@ class CBN:
                             l_signals_in_attractor.append(output_value_state)
                         if len(set(l_signals_in_attractor)) == 1:
                             l_signals_in_local_scene.append(l_signals_in_attractor[0])
-                            # print("MESSAGE:", "the attractor signal value is stable")
+                            # print("the attractor signal value is stable")
 
                             # add the attractor to the dictionary of output value -> attractors
                             if l_signals_in_attractor[0] == '0':
@@ -384,28 +383,28 @@ class CBN:
                             elif l_signals_in_attractor[0] == '1':
                                 o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
                         else:
-                            print("MESSAGE:", "the attractor signal is not stable")
+                            print("the attractor signal is not stable")
                     if len(set(l_signals_in_local_scene)) == 1:
                         l_signals_for_output.append(l_signals_in_local_scene[0])
-                        print("MESSAGE:", "the scene signal is restricted")
+                        print("the scene signal is restricted")
                     else:
                         if len(set(l_signals_in_local_scene)) == 2:
                             l_signals_for_output.extend(l_signals_in_local_scene)
-                            print("MESSAGE:", "the scene signal value is stable")
+                            print("the scene signal value is stable")
                         else:
-                            print("MESSAGE:", "the scene signal is not stable")
+                            print("the scene signal is not stable")
                 if len(set(l_signals_for_output)) == 1:
                     o_output_signal.kind_signal = 1
-                    print("MESSAGE:", "the output signal is restricted")
+                    print("the output signal is restricted")
                 elif len(set(l_signals_for_output)) == 2:
                     o_output_signal.kind_signal = 3
-                    print("MESSAGE:", "the output signal is stable")
+                    print("the output signal is stable")
                 else:
                     o_output_signal.kind_signal = 4
-                    print("MESSAGE:", "THE SCENE SIGNAL IS NOT STABLE. THIS CBN DONT HAVE STABLE ATTRACTOR FIELDS")
+                    print("THE SCENE SIGNAL IS NOT STABLE. THIS CBN DONT HAVE STABLE ATTRACTOR FIELDS")
 
             # print all the kinds of the signals
-            print("===============================")
+            CustomText.print_duplex_line()
             print("INFO:", "RESUME")
             # print("INFO:", "Network:", o_local_network.index)
             # for o_directed_edge in self.l_directed_edges:
@@ -432,11 +431,11 @@ class CBN:
             # print("UPDATE HEAP")
             # print(o_custom_heap.get_indexes())
             # print("empty heap")
-            print("MESSAGE:", "The Local attractors are computed")
-        print("MESSAGE:", "ALL THE ATTRACTORS ARE COMPUTED")
+            print("The Local attractors are computed")
+        print("ALL THE ATTRACTORS ARE COMPUTED")
 
     def find_compatible_pairs(self):
-        print("===============================")
+        CustomText.print_duplex_line()
         print("FIND COMPATIBLE ATTRACTOR PAIRS")
 
         # generate the pairs using the output signal
@@ -503,10 +502,10 @@ class CBN:
                     aux_l_rest_groups.remove(v_group)
                     aux_l_rest_groups.append(v_group)
             header = [l_directed_edges[0]] + aux_l_rest_groups
-            print("MESSAGE:", "Directed Edges ordered")
+            print("Directed Edges ordered")
             return header
 
-        print("=====================")
+        CustomText.print_duplex_line()
         print("FIND ATTRACTOR FIELDS")
 
         # Order the edges by compatibility
@@ -583,10 +582,10 @@ class CBN:
 
     def show_attractor_pairs(self):
         print("====================================================")
-        print("MESSAGE:", "LIST OF THE COMPATIBLE ATTRACTOR PAIRS")
+        print("LIST OF THE COMPATIBLE ATTRACTOR PAIRS")
         for o_directed_edge in self.l_directed_edges:
             print("----------------------------------------------------")
-            print("MESSAGE:", "Edge ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
+            print("Edge ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
             for key in o_directed_edge.d_comp_pairs_attractors_by_value.keys():
                 print("----------------------------------------------------")
                 print("INFO:", "Coupling Variable - ", o_directed_edge.index_variable, "Value - ", key)
@@ -650,4 +649,3 @@ class CBN:
             print(o_global_scene.index)
             for o_attractor_field in o_global_scene.l_atractor_fields:
                 o_attractor_field.show()
-

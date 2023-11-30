@@ -2,6 +2,7 @@ from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
 
 from classes.localscene import LocalScene, LocalAttractor, LocalState
+from classes.utils.customtext import CustomText
 
 
 class LocalNetwork:
@@ -53,7 +54,8 @@ class LocalNetwork:
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
-
+        CustomText.print_simple_line()
+        print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
@@ -69,16 +71,16 @@ class LocalNetwork:
         return o_local_network
 
     @staticmethod
-    def gen_boolean_formulation_satispy(o_local_network, number_of_transitions, l_attractors_clauses, scene):
+    def gen_boolean_formulation(o_local_network, n_transitions, l_attractors_clauses, scene):
         # create dictionary of cnf variables!!
         for variable in o_local_network.l_var_total:
-            for transition_c in range(0, number_of_transitions):
+            for transition_c in range(0, n_transitions):
                 o_local_network.dic_var_cnf[str(variable) + "_" + str(transition_c)] = Variable(
                     str(variable) + "_" + str(transition_c))
 
         cont_transition = 0
         boolean_function = Variable("0_0")
-        for transition in range(1, number_of_transitions):
+        for transition in range(1, n_transitions):
             cont_clause_global = 0
             boolean_expression_equivalence = Variable("0_0")
             for o_variable_model in o_local_network.des_funct_variables:
@@ -141,7 +143,7 @@ class LocalNetwork:
             cont_permutation = 0
             for element in o_local_network.l_var_exterm:
                 # print oRDD.list_of_v_exterm
-                for v_transition in range(0, number_of_transitions):
+                for v_transition in range(0, n_transitions):
                     # print l_signal_coupling[cont_permutation]
                     if scene[cont_permutation] == "0":
                         boolean_function = boolean_function & -o_local_network.dic_var_cnf[
@@ -165,19 +167,19 @@ class LocalNetwork:
                     if cont_term == 0:
                         if term[0] != "-":
                             bool_expr_clause_attractors = o_local_network.dic_var_cnf[
-                                str(term_aux) + "_" + str(number_of_transitions - 1)]
+                                str(term_aux) + "_" + str(n_transitions - 1)]
                         else:
                             bool_expr_clause_attractors = -o_local_network.dic_var_cnf[
-                                str(term_aux) + "_" + str(number_of_transitions - 1)]
+                                str(term_aux) + "_" + str(n_transitions - 1)]
                     else:
                         if term[0] != "-":
                             bool_expr_clause_attractors = bool_expr_clause_attractors & \
                                                           o_local_network.dic_var_cnf[
                                                               str(term_aux) + "_" + str(
-                                                                  number_of_transitions - 1)]
+                                                                  n_transitions - 1)]
                         else:
                             bool_expr_clause_attractors = bool_expr_clause_attractors & - \
-                                o_local_network.dic_var_cnf[str(term_aux) + "_" + str(number_of_transitions - 1)]
+                                o_local_network.dic_var_cnf[str(term_aux) + "_" + str(n_transitions - 1)]
                     cont_term = cont_term + 1
                 if cont_clause == 0:
                     boolean_function_of_attractors = -bool_expr_clause_attractors
@@ -204,9 +206,9 @@ class LocalNetwork:
                     number_of_times = number_of_times + 1
             return number_of_times
 
-        print('---------------------------------------------------------------------------------------------')
-        print("MESSAGE:", "NETWORK NUMBER : ", o_local_network.index, " PERMUTATION SIGNAL COUPLING: ", scene)
-        print("MESSAGE:", "BEGIN TO FIND ATTRACTORS")
+        CustomText.print_simple_line()
+        print("Network:", o_local_network.index, " Local Scene:", scene)
+        print("Begin to find attractors...")
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
         v_num_transitions = 3
@@ -214,26 +216,19 @@ class LocalNetwork:
         l_attractors_clauses = []
 
         # REPEAT CODE
-        v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
-                                                                          l_attractors_clauses, scene)
+        v_bool_function = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
+                                                                  l_attractors_clauses, scene)
         m_response_sat = []
         o_solver = Minisat()
         o_solution = o_solver.solve(v_bool_function)
 
-        # print("INFO", o_local_network.number_of_v_total)
         if o_solution.success:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
-                    # print("INFO", "_________________________________________")
-                    # print("INFO", "Error Variable:", f'{i}_{j}')
-                    # print("INFO", "Total variables: ",o_local_network.l_var_total)
-                    # print("INFO", "External variables: ", o_local_network.l_var_exterm)
-                    # print("INFO", o_local_network.dic_var_cnf.items())
-                    # print("INFO", o_solution.varmap)
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
         else:
-            print("MESSAGE:", "The expression cannot be satisfied")
+            print("The expression cannot be satisfied")
 
         # BLOCK ATTRACTORS
         m_aux_sat = []
@@ -293,8 +288,8 @@ class LocalNetwork:
 
             # print l_attractors_clauses
             # REPEAT CODE
-            v_bool_function = o_local_network.gen_boolean_formulation_satispy(o_local_network, v_num_transitions,
-                                                                              l_attractors_clauses, scene)
+            v_bool_function = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
+                                                                      l_attractors_clauses, scene)
             m_response_sat = []
             o_solver = Minisat()
             o_solution = o_solver.solve(v_bool_function)
@@ -306,7 +301,7 @@ class LocalNetwork:
                         m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
             else:
                 # print(" ")
-                print("MESSAGE:", "The expression cannot be satisfied")
+                print("The expression cannot be satisfied")
 
             # BLOCK ATTRACTORS
             m_aux_sat = []
@@ -338,5 +333,5 @@ class LocalNetwork:
             res.append(o_local_attractor)
             v_index = v_index + 1
 
-        print("MESSAGE:", "end find attractors")
+        print("end find attractors")
         return res

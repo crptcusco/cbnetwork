@@ -1,12 +1,13 @@
-# import libraries
+# internal imports
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
+from classes.utils.customtext import CustomText
 
 # script to put a manual parameters for the example of 4 networks
-print("=================================================")
-print("MESSAGE:", "CBN MANUAL SCRIPT EXAMPLE: 4 NETWORKS")
+CustomText.print_duplex_line()
+print("CBN MANUAL SCRIPT EXAMPLE: 4 NETWORKS")
 
 # pass the CBN properties
 l_local_networks = []
@@ -20,7 +21,7 @@ d_network_variables = {1: [1, 2, 3],
 l_edges = [(2, 1), (3, 2), (2, 3), (4, 3)]
 
 # generate the networks
-print("===========================")
+CustomText.print_duplex_line()
 print("Creating the local networks")
 for i_local_net in d_network_variables.keys():
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
@@ -50,7 +51,7 @@ d_variable_cnf_function = {1: [[2, 3], [1, -15]],
                            14: [[11, -12]]}
 
 # generating the local network dynamic
-print("=============================================")
+CustomText.print_duplex_line()
 print("Generating the dynamics of the local networks")
 for o_local_network in l_local_networks:
     l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
@@ -61,13 +62,14 @@ for o_local_network in l_local_networks:
         o_local_network.des_funct_variables.append(o_variable_model)
 
 # generating the CBN network
-print("=============================================")
-print("Creating the Coupled Boolean Network object")
+CustomText.print_duplex_line()
+print("Creating the Coupled Boolean Network object...")
 o_cbn = CBN(l_local_networks, l_directed_edges)
+print("CBN object created")
 
 # Find attractors
 o_cbn.find_local_attractors_optimized_method()
-# o_cbn.show_attractors()
+o_cbn.show_attractors()
 
 # # find the compatible pairs
 # o_cbn.find_compatible_pairs()
