@@ -8,12 +8,12 @@ from classes.utils.customtext import CustomText
 
 # external imports
 import itertools
-import random                           # generate random numbers
-import networkx as nx                   # generate networks
-from itertools import product           # generate the permutations te result in tuples
-from itertools import combinations      # generate the combinations the result in list
-from random import randint              # generate random numbers integers
-from matplotlib import pyplot as plt    # generate the figures
+import random  # generate random numbers
+import networkx as nx  # generate networks
+from itertools import product  # generate the permutations te result in tuples
+from itertools import combinations  # generate the combinations the result in list
+from random import randint  # generate random numbers integers
+from matplotlib import pyplot as plt  # generate the figures
 
 
 class CBN:
@@ -151,6 +151,28 @@ class CBN:
         print("CBN generated")
         return o_cbn
 
+    def process_output_signals(self):
+        # update output signals for every local network
+        for o_local_network in self.l_local_networks:
+            for t_relation in self.l_directed_edges:
+                if o_local_network.index == t_relation[1]:
+                    o_local_network.l_output_signals.append(t_relation)
+                    print(t_relation)
+
+    def find_network_by_index(self, index):
+        for o_local_network in self.l_local_networks:
+            if o_local_network.index == index:
+                return o_local_network
+
+    def update_network_by_index(self, index, o_local_network_update):
+        for i, o_local_network in enumerate(self.l_local_networks):
+            if o_local_network.index == index:
+                self.l_local_networks[i] = o_local_network_update
+                print("Local Network updated")
+                return True
+        print("ERROR:", "Local Network not found")
+        return False
+
     def generate_global_scenes(self):
         CustomText.print_duplex_line()
         print("GENERATE GLOBAL SCENES")
@@ -171,28 +193,6 @@ class CBN:
 
         CustomText.print_simple_line()
         print("Global Scenes generated")
-
-    def process_output_signals(self):
-        # update output signals for every local network
-        for o_local_network in self.l_local_networks:
-            for t_relation in self.l_directed_edges:
-                if o_local_network.index == t_relation[1]:
-                    o_local_network.l_output_signals.append(t_relation)
-                    print("INFO:", t_relation)
-
-    def find_network_by_index(self, index):
-        for o_local_network in self.l_local_networks:
-            if o_local_network.index == index:
-                return o_local_network
-
-    def update_network_by_index(self, index, o_local_network_update):
-        for i, o_local_network in enumerate(self.l_local_networks):
-            if o_local_network.index == index:
-                self.l_local_networks[i] = o_local_network_update
-                print("Local Network updated")
-                return True
-        print("ERROR:", "Local Network not found")
-        return False
 
     def find_local_attractors_optimized_method(self):
         CustomText.print_duplex_line()
@@ -233,29 +233,29 @@ class CBN:
 
         # validate if the output variables by attractor send a fixed value and update kind signals
         l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-        # print("INFO:", "Local network:", o_local_network.index)
+        # print("Local network:", o_local_network.index)
         for o_output_signal in l_directed_edges:
-            # print("INFO:", "Index variable output signal:", o_output_signal.index_variable_signal)
-            # print("INFO:", "Output variables:", o_output_signal.l_output_variables)
-            # print("INFO:", str(o_output_signal.true_table))
+            # print("Index variable output signal:", o_output_signal.index_variable_signal)
+            # print("Output variables:", o_output_signal.l_output_variables)
+            # print(str(o_output_signal.true_table))
             l_signals_for_output = []
             for o_local_scene in o_local_network.l_local_scenes:
-                # print("INFO:", "Scene: ", str(o_local_scene.l_values))
+                # print("Scene: ", str(o_local_scene.l_values))
                 l_signals_in_local_scene = []
                 for o_attractor in o_local_scene.l_attractors:
-                    # print("INFO:", "ATTRACTOR")
+                    # print("ATTRACTOR")
                     l_signals_in_attractor = []
                     for o_state in o_attractor.l_states:
-                        # print("INFO:", "STATE")
-                        # print("INFO:", o_local_network.l_var_total)
-                        # print("INFO:", o_local_network.l_var_intern)
-                        # print("INFO:", o_state.l_variable_values)
+                        # print("STATE")
+                        # print(o_local_network.l_var_total)
+                        # print(o_local_network.l_var_intern)
+                        # print(o_state.l_variable_values)
                         # # select the values of the output variables
                         true_table_index = ""
                         for v_output_variable in o_output_signal.l_output_variables:
-                            # print("INFO:", "Variables list:", o_local_network.l_var_total)
-                            # print("INFO:", "Output variables list:", o_output_signal.l_output_variables)
-                            # print("INFO:", "Output variable:", v_output_variable)
+                            # print("Variables list:", o_local_network.l_var_total)
+                            # print("Output variables list:", o_output_signal.l_output_variables)
+                            # print("Output variable:", v_output_variable)
                             pos = o_local_network.l_var_total.index(v_output_variable)
                             value = o_state.l_variable_values[pos]
                             true_table_index = true_table_index + str(value)
@@ -307,13 +307,13 @@ class CBN:
         l_modified_edges = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, self.l_directed_edges)
         for o_edge in l_modified_edges:
             modified_network_index = o_edge.output_local_network
-            # print("INFO:", "Network", modified_network_index)
-            # print("INFO:", "Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
+            # print("Network", modified_network_index)
+            # print("Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
             weight = 0
             l_edges = DirectedEdge.find_input_edges_by_network_index(o_edge.output_local_network, self.l_directed_edges)
             for o_updated_edge in l_edges:
                 weight = weight + o_updated_edge.kind_signal
-            # print("INFO:", "New weight:", weight)
+            # print("New weight:", weight)
             o_custom_heap.update_node(o_edge.output_local_network, weight)
 
         # compare the initial heap with the update heap
@@ -335,43 +335,43 @@ class CBN:
 
             # Find attractors with the minimum weight
             LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-            # print("INFO:", "Local Network:", lowest_weight_node.index, "Weight:", lowest_weight_node.weight)
+            # print("Local Network:", lowest_weight_node.index, "Weight:", lowest_weight_node.weight)
 
             # COPIED CODE !!!
             # # Update kind signals
             # validate if the output variables by attractor send a fixed value
             l_directed_edges = DirectedEdge.find_output_edges_by_network_index(o_local_network.index,
                                                                                self.l_directed_edges)
-            # print("INFO:", "Local network:", o_local_network.index)
+            # print("Local network:", o_local_network.index)
             for o_output_signal in l_directed_edges:
-                # print("INFO:", "Index variable output signal:", o_output_signal.index_variable)
-                # print("INFO:", "Output variables:", o_output_signal.l_output_variables)
+                # print("Index variable output signal:", o_output_signal.index_variable)
+                # print("Output variables:", o_output_signal.l_output_variables)
                 # print(str(o_output_signal.true_table))
                 l_signals_for_output = []
                 for o_local_scene in o_local_network.l_local_scenes:
-                    # print("INFO:", "Scene: ", str(o_local_scene.l_values))
+                    # print("Scene: ", str(o_local_scene.l_values))
                     l_signals_in_local_scene = []
                     for o_attractor in o_local_scene.l_attractors:
-                        # print("INFO:", "ATTRACTOR")
+                        # print("ATTRACTOR")
                         l_signals_in_attractor = []
                         for o_state in o_attractor.l_states:
-                            # print("INFO:", "STATE")
-                            # print("INFO:", o_local_network.l_var_total)
-                            # print("INFO:", o_local_network.l_var_intern)
-                            # print("INFO:", o_state.l_variable_values)
+                            # print("STATE")
+                            # print(o_local_network.l_var_total)
+                            # print(o_local_network.l_var_intern)
+                            # print(o_state.l_variable_values)
                             # select the values of the output variables
                             true_table_index = ""
                             for v_output_variable in o_output_signal.l_output_variables:
-                                # print("INFO:", "Variables list:", o_local_network.l_var_total)
-                                # print("INFO:", "Output variables list:", o_output_signal.l_output_variables)
-                                # print("INFO:", "Output variable:", v_output_variable)
+                                # print("Variables list:", o_local_network.l_var_total)
+                                # print("Output variables list:", o_output_signal.l_output_variables)
+                                # print("Output variable:", v_output_variable)
                                 pos = o_local_network.l_var_total.index(v_output_variable)
                                 value = o_state.l_variable_values[pos]
                                 true_table_index = true_table_index + str(value)
-                            # print("INFO:", o_output_signal.l_output_variables)
-                            # print("INFO:", true_table_index)
+                            # print(o_output_signal.l_output_variables)
+                            # print(true_table_index)
                             output_value_state = o_output_signal.true_table[true_table_index]
-                            # print("INFO:", "Output value :", output_value_state)
+                            # print("Output value :", output_value_state)
                             l_signals_in_attractor.append(output_value_state)
                         if len(set(l_signals_in_attractor)) == 1:
                             l_signals_in_local_scene.append(l_signals_in_attractor[0])
@@ -405,10 +405,10 @@ class CBN:
 
             # print all the kinds of the signals
             CustomText.print_duplex_line()
-            print("INFO:", "RESUME")
-            # print("INFO:", "Network:", o_local_network.index)
+            print("RESUME")
+            # print("Network:", o_local_network.index)
             # for o_directed_edge in self.l_directed_edges:
-            #     print("INFO:", o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
+            #     print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
 
             # Update the weights of the nodes
             # Add the output network to the list of modified networks
@@ -416,14 +416,14 @@ class CBN:
                                                                               self.l_directed_edges)
             for o_edge in l_modified_edges:
                 modified_network_index = o_edge.output_local_network
-                print("INFO:", "Network", modified_network_index)
-                print("INFO:", "Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
+                print("Network", modified_network_index)
+                print("Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
                 weight = 0
                 l_edges = DirectedEdge.find_input_edges_by_network_index(o_edge.output_local_network,
                                                                          self.l_directed_edges)
                 for o_updated_edge in l_edges:
                     weight = weight + o_updated_edge.kind_signal
-                print("INFO:", "New weight:", weight)
+                print("New weight:", weight)
                 o_custom_heap.update_node(o_edge.output_local_network, weight)
 
             # print("INITIAL HEAP")
@@ -443,13 +443,13 @@ class CBN:
         # for every local networks find compatible attractor pairs
         for o_local_network in self.l_local_networks:
             # print("----------------------------------------")
-            # print("INFO:", "NETWORK -", o_local_network.index)
+            # print("NETWORK -", o_local_network.index)
             # find the output edges from the local network
             l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
             # find the pairs for every signal
             for o_output_signal in l_output_edges:
                 # print("-------------------------------")
-                # print("INFO:", "OUTPUT SIGNAL -", o_output_signal.index_variable)
+                # print("OUTPUT SIGNAL -", o_output_signal.index_variable)
                 # Show the attractors by value of output signal
                 # o_output_signal.show_v_output_signal_attractor()
                 # coupling the attractors pairs by the output signal
@@ -459,11 +459,11 @@ class CBN:
                 l_pairs_edge_1 = []
 
                 # print("-------------------------------")
-                # print("INFO:", "INPUT ATTRACTOR LIST")
+                # print("INPUT ATTRACTOR LIST")
                 # search the values for every signal
                 for signal_value in o_output_signal.d_out_value_to_attractor.keys():
                     # print("-------------------------------")
-                    # print("INFO:", "Coupling signal value -", signal_value)
+                    # print("Coupling signal value -", signal_value)
                     # find the attractors that generated by this signal
                     l_attractors_output = []
                     # select the attractor who generated the output value of the signal
@@ -481,47 +481,120 @@ class CBN:
         print("END FIND ATTRACTOR PAIRS")
 
     def find_attractor_fields(self):
-        def order_edges_by_compatibility(l_directed_edges):
-            def is_compatible(l_group_base, o_group):
-                for aux_par in l_group_base:
-                    if (aux_par.input_local_network == o_group.input_local_network or
-                            aux_par.input_local_network == o_group.output_local_network):
-                        return True
-                    elif (aux_par.output_local_network == o_group.output_local_network or
-                          aux_par.output_local_network == o_group.input_local_network):
-                        return True
-                return False
+        """
+        Assembles compatible attractor fields.
 
-            # Order the groups of compatible pairs
-            l_base = [l_directed_edges[0]]
-            aux_l_rest_groups = l_directed_edges[1:]
-            for v_group in aux_l_rest_groups:
-                if is_compatible(l_base, v_group):
-                    l_base.append(v_group)
-                else:
-                    aux_l_rest_groups.remove(v_group)
-                    aux_l_rest_groups.append(v_group)
-            header = [l_directed_edges[0]] + aux_l_rest_groups
-            print("Directed Edges ordered")
-            return header
+        Args:
+          List of compatible attractor pairs.
+
+        Returns:
+          List of attractor fields.
+        """
+
+        def evaluate_pair(base_pair, candidate_pair):
+            """
+            Checks if a candidate attractor pair is compatible with a base attractor pair.
+
+            Args:
+              base_pair: Base attractor pair.
+              candidate_pair: Candidate attractor pair.
+
+            Returns:
+              Boolean value of True or False.
+            """
+
+            # Extract the RDDs from each attractor pair.
+            base_attractor_pairs = [attractor for pair in [base_pair] for attractor in pair]
+            candidate_attractor_pairs = [attractor for pair in [candidate_pair] for attractor in pair]
+
+            # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
+            for candidate_attractor in candidate_pair:
+                if candidate_attractor in base_attractor_pairs:
+                    return True
+
+            # If no RDD from the candidate attractor pair is present, then they are not compatible.
+            return False
+
+        def cartesian_product_mod(base_pairs, candidate_pairs):
+            """
+            Performs the modified Cartesian product of two lists of attractor pairs.
+
+            Args:
+              base_pairs: List of base attractor pairs.
+              candidate_pairs: List of candidate attractor pairs.
+
+            Returns:
+              List of candidate attractor fields.
+            """
+
+            # Initialize the list of candidate attractor fields.
+            field_pair_list = []
+
+            # Iterate over the base attractor pairs.
+            for base_pair in base_pairs:
+                # Iterate over the candidate attractor pairs.
+                for candidate_pair in candidate_pairs:
+                    # show the base
+                    if isinstance(base_pair, list):
+                        for pair in base_pair:
+                            pair[0].show()
+                            pair[1].show()
+                    elif isinstance(base_pair, tuple):
+                        base_pair[0].show()
+                        base_pair[1].show()
+                    else:
+                        raise TypeError("Unsupported base_pair type.")
+                    # show the candidate
+                    print(candidate_pair)
+                    candidate_pair[0].show()
+                    candidate_pair[1].show()
+
+                    # Check if the candidate attractor pair is compatible with the base attractor pair.
+                    if evaluate_pair(base_pair, candidate_pair):
+                        print("compatible pair")
+                        # Create a new attractor pair
+                        # by combining the base attractor pair and the candidate attractor pair.
+                        if isinstance(base_pair, list):
+                            new_pair = base_pair + [candidate_pair]
+                        elif isinstance(base_pair, tuple):
+                            new_pair = [base_pair] + [candidate_pair]
+                        else:
+                            raise TypeError("Unsupported base_pair type.")
+
+                        # Add the new attractor pair to the list of candidate attractor fields.
+                        field_pair_list.append(new_pair)
+                    else:
+                        print("incompatible pair")
+
+            return field_pair_list
 
         CustomText.print_duplex_line()
         print("FIND ATTRACTOR FIELDS")
 
         # Order the edges by compatibility
-        self.l_directed_edges = order_edges_by_compatibility(self.l_directed_edges)
+        self.order_edges_by_compatibility()
 
         # generate a base list of the pairs
-        l_base = [self.l_directed_edges[0]]
+        l_base = self.l_directed_edges[:2]
 
-        l_base[0].show()
-        # l_base[0].show_d_comp_pairs_attractors_by_value()
-        for key, pares in l_base[0].d_comp_pairs_attractors_by_value.items():
-            print(key)
-            print(pares)
+        # generate the list of pairs made with 0 or 1
+        l_base_pairs = l_base[0].d_comp_pairs_attractors_by_value[0] + l_base[0].d_comp_pairs_attractors_by_value[1]
 
+        # for every edge make the union to the base
         for o_directed_edge in self.l_directed_edges[1:]:
-            o_directed_edge.show()
+
+            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
+                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
+            # join the base list with the new directed edge
+            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+
+        # show attractor fields
+        CustomText.print_duplex_line()
+        print("Show the list of attractor fields")
+        print("Number of attractor fields:", len(l_base_pairs))
+        for attractor_field in l_base_pairs:
+            print(len(l_base_pairs))
+        self.l_attractor_fields = l_base_pairs
 
     # GET METHODS
     def get_input_edges_by_network_index(self, index):
@@ -570,7 +643,7 @@ class CBN:
             7: "linear_graph"
         }
         for key, value in allowed_topologies.items():
-            print("INFO:", key, "-", value)
+            print(key, "-", value)
 
     def show_cbn_graph(self):
         G = nx.DiGraph()
@@ -581,26 +654,28 @@ class CBN:
         nx.draw(G)
 
     def show_attractor_pairs(self):
-        print("====================================================")
+        CustomText.print_duplex_line()
         print("LIST OF THE COMPATIBLE ATTRACTOR PAIRS")
         for o_directed_edge in self.l_directed_edges:
-            print("----------------------------------------------------")
-            print("Edge ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
+            CustomText.print_simple_line()
+            print("Edge: ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
             for key in o_directed_edge.d_comp_pairs_attractors_by_value.keys():
-                print("----------------------------------------------------")
-                print("INFO:", "Coupling Variable - ", o_directed_edge.index_variable, "Value - ", key)
+                CustomText.print_simple_line()
+                print("Coupling Variable:", o_directed_edge.index_variable, "Scene:", key)
                 for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
-                    o_pair[0].show()
-                    o_pair[1].show()
+                    o_pair[0].show_short()
+                    o_pair[1].show_short()
+                    # print("Network:", o_pair[0].network_index, "Attractor:", o_pair[0].index)
+                    # print("Network:", o_pair[1].network_index, "Attractor:", o_pair[1].index)
 
     def show_directed_edges(self):
-        print("==================================")
+        CustomText.print_duplex_line()
         print("SHOW THE DIRECTED EDGES OF THE CBN")
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.show()
 
     def show_coupled_signals_kind(self):
-        print("==============================")
+        CustomText.print_duplex_line()
         print("SHOW THE COUPLED SIGNALS KINDS")
         n_restricted_signals = 0
         for o_directed_edge in self.l_directed_edges:
@@ -613,39 +688,64 @@ class CBN:
         print("Number of restricted signals :", n_restricted_signals)
 
     def show_cbn(self):
-        print("============================================")
-        print("INFO:", "CBN description")
+        CustomText.print_duplex_line()
+        print("CBN description")
         l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
-        print("--------------------------------------------")
-        print("INFO:", "Local Networks:", l_local_networks_indexes)
+        CustomText.print_simple_line()
+        print("Local Networks:", l_local_networks_indexes)
         for o_local_network in self.l_local_networks:
             o_local_network.show()
-        print("--------------------------------------------")
-        print("INFO:", "Directed edges:")
+        CustomText.print_simple_line()
+        print("Directed edges:")
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.show()
 
     def show_attractors(self):
         for o_network in self.l_local_networks:
-            print("==============")
+            CustomText.print_duplex_line()
             print("Network:", o_network.index)
             for o_scene in o_network.l_local_scenes:
-                print("--------------")
+                CustomText.print_simple_line()
                 print("Network:", o_network.index, "- Scene:", o_scene.l_values)
                 print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
-                    print("--------------")
+                    CustomText.print_simple_line()
                     for o_state in o_attractor.l_states:
                         print(o_state.l_variable_values)
 
     def show_global_scenes(self):
-        print("==================================")
+        CustomText.print_duplex_line()
         print("LIST OF GLOBAL SCENES")
         for o_global_scene in self.l_global_scenes:
             o_global_scene.show()
 
-    def show_scene_attractors_fields(self):
-        for o_global_scene in self.l_global_scenes:
-            print(o_global_scene.index)
-            for o_attractor_field in o_global_scene.l_atractor_fields:
-                o_attractor_field.show()
+    def show_attractors_fields(self):
+        for attractor_field in self.l_attractor_fields:
+            for pair in attractor_field:
+                CustomText.print_simple_line()
+                pair[0].show()
+                pair[1].show()
+
+    def order_edges_by_compatibility(self):
+
+        def is_compatible(l_group_base, o_group):
+            for aux_par in l_group_base:
+                if (aux_par.input_local_network == o_group.input_local_network or
+                        aux_par.input_local_network == o_group.output_local_network):
+                    return True
+                elif (aux_par.output_local_network == o_group.output_local_network or
+                      aux_par.output_local_network == o_group.input_local_network):
+                    return True
+            return False
+
+        # Order the groups of compatible pairs
+        l_base = [self.l_directed_edges[0]]
+        aux_l_rest_groups = self.l_directed_edges[1:]
+        for v_group in aux_l_rest_groups:
+            if is_compatible(l_base, v_group):
+                l_base.append(v_group)
+            else:
+                aux_l_rest_groups.remove(v_group)
+                aux_l_rest_groups.append(v_group)
+        self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
+        print("Directed Edges ordered.")

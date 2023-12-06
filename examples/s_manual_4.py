@@ -71,21 +71,21 @@ print("CBN object created")
 o_cbn.find_local_attractors_optimized_method()
 o_cbn.show_attractors()
 
-# # find the compatible pairs
-# o_cbn.find_compatible_pairs()
-# # o_cbn.show_attractor_pairs()
-#
-# # generate the global scenes
-# o_cbn.generate_global_scenes()
-# o_cbn.show_global_scenes()
-#
-# # Find attractors fields
-# o_cbn.find_attractor_fields()
-# # # o_cbn.show_scene_attractors_fields()
-#
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
+o_cbn.show_attractor_pairs()
+
+# Find attractor fields
+o_cbn.find_attractor_fields()
+o_cbn.show_attractors_fields()
+
 # # # show the kind of every coupled signal
 # # o_cbn.show_coupled_signals_kind()
 #
 # # # show graph with networkx
 # # o_cbn.generate_graph()
 #
+# # generate the global scenes
+# o_cbn.generate_global_scenes()
+# o_cbn.show_global_scenes()
+

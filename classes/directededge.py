@@ -1,9 +1,10 @@
 import re  # analysis of regular expressions
 import operator  # unary operator management
 
-from string import ascii_lowercase, ascii_uppercase  # import the list of uppercase and lowercase letters
-from itertools import product  # generate combinations of numbers
-from collections import namedtuple  # structures like trees
+from string import ascii_lowercase, ascii_uppercase     # import the list of uppercase and lowercase letters
+from itertools import product                           # generate combinations of numbers
+from collections import namedtuple                      # structures like trees
+from classes.utils.customtext import CustomText         # utils for texts
 
 
 class DirectedEdge:
@@ -19,10 +20,10 @@ class DirectedEdge:
         # True table for signal with the output variables
         self.true_table = self.process_true_table()
         # Dictionary for kind status of the signal
-        self.d_kind_signal = {1: "restricted",
-                              2: "not compute",
-                              3: "stable",
-                              4: "not stable"}
+        self.d_kind_signal = {1: "RESTRICTED",
+                              2: "NOT COMPUTE",
+                              3: "STABLE",
+                              4: "NOT STABLE"}
         # Defined the initial kind for every coupling signal
         self.kind_signal = 2
         # Dictionary for group the attractors by his output signal value
@@ -31,13 +32,13 @@ class DirectedEdge:
         self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
 
     def show(self):
-        print("----------------------------------------------------")
-        print("MESSAGE:", "DIRECTED EDGE:", self.output_local_network, "->", self.input_local_network,
-              "INDEX:", self.index_variable)
-        print("MESSAGE:", "Variables:", self.l_output_variables, "Coupling Function:", self.coupling_function)
-        print("MESSAGE:", "Truth Table:", self.true_table)
-        print("MESSAGE:", "Kind of coupling function", self.kind_signal,
-              " - ", self.d_kind_signal[self.kind_signal])
+        CustomText.print_simple_line()
+        print("Edge:", self.output_local_network, "->", self.input_local_network,
+              ", Index:", self.index_variable)
+        print("Variables:", self.l_output_variables, ", Coupling Function:", self.coupling_function)
+        print("Truth table:", self.true_table)
+        print("Kind signal:", self.kind_signal,
+              "-", self.d_kind_signal[self.kind_signal])
 
     def process_true_table(self):
         r_true_table = {}
@@ -240,10 +241,14 @@ class DirectedEdge:
 
     def show_dict_v_output_signal_attractor(self):
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print("INFO:", signal_value, "-", l_attractors)
+            print(signal_value, "-", l_attractors)
 
     def show_v_output_signal_attractor(self):
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print("INFO:", "Output signal Value -", signal_value, "- Attractors:")
+            print("Output signal Value -", signal_value, "- Attractors:")
             for o_attractor in l_attractors:
                 o_attractor.show()
+
+    # def show_d_comp_pairs_attractors_by_value(self, value):
+    #     self.d_comp_pairs_attractors_by_value()
+    #
