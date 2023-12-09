@@ -491,12 +491,12 @@ class CBN:
           List of attractor fields.
         """
 
-        def evaluate_pair(base_pair, candidate_pair):
+        def evaluate_pair(base_pairs, candidate_pair):
             """
             Checks if a candidate attractor pair is compatible with a base attractor pair.
 
             Args:
-              base_pair: Base attractor pair.
+              base_pairs: Base attractor pairs.
               candidate_pair: Candidate attractor pair.
 
             Returns:
@@ -504,16 +504,37 @@ class CBN:
             """
 
             # Extract the RDDs from each attractor pair.
-            base_attractor_pairs = [attractor for pair in [base_pair] for attractor in pair]
-            candidate_attractor_pairs = [attractor for pair in [candidate_pair] for attractor in pair]
+            # print("Base pair")
+            # print(base_pair)
+            base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
+            # for o_attractor in base_attractor_pairs:
+            #     print("Network:", o_attractor.network_index)
+            #     print(o_attractor)
+
+            # print("Base List")
+            # print(base_attractor_pairs)
+
+            # generate the already networks visited
+            l_already_networks = []
+            for o_attractor in base_attractor_pairs:
+                l_already_networks.append(o_attractor.network_index)
+            l_already_networks = set(l_already_networks)
 
             # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
+            double_check = 0
             for candidate_attractor in candidate_pair:
-                if candidate_attractor in base_attractor_pairs:
-                    return True
-
-            # If no RDD from the candidate attractor pair is present, then they are not compatible.
-            return False
+                # print(base_attractor_pairs)
+                # print("candidate attractor")
+                # print(candidate_attractor)
+                if candidate_attractor.network_index in l_already_networks:
+                    if candidate_attractor in base_attractor_pairs:
+                        double_check = double_check + 1
+                else:
+                    double_check = double_check + 1
+            if double_check == 2:
+                return True
+            else:
+                return False
 
         def cartesian_product_mod(base_pairs, candidate_pairs):
             """
@@ -534,7 +555,10 @@ class CBN:
             for base_pair in base_pairs:
                 # Iterate over the candidate attractor pairs.
                 for candidate_pair in candidate_pairs:
+                    CustomText.print_simple_line()
+                    print("Evaluate Candidate")
                     # show the base
+                    print("Base")
                     if isinstance(base_pair, list):
                         for pair in base_pair:
                             pair[0].show()
@@ -545,27 +569,25 @@ class CBN:
                     else:
                         raise TypeError("Unsupported base_pair type.")
                     # show the candidate
-                    print(candidate_pair)
+                    print("Candidate")
                     candidate_pair[0].show()
                     candidate_pair[1].show()
 
                     # Check if the candidate attractor pair is compatible with the base attractor pair.
+                    if isinstance(base_pair, tuple):
+                        base_pair = [base_pair]
+                    # Evaluate if the pair is compatible with the base
                     if evaluate_pair(base_pair, candidate_pair):
                         print("compatible pair")
-                        # Create a new attractor pair
-                        # by combining the base attractor pair and the candidate attractor pair.
-                        if isinstance(base_pair, list):
-                            new_pair = base_pair + [candidate_pair]
-                        elif isinstance(base_pair, tuple):
-                            new_pair = [base_pair] + [candidate_pair]
-                        else:
-                            raise TypeError("Unsupported base_pair type.")
-
+                        new_pair = base_pair + [candidate_pair]
                         # Add the new attractor pair to the list of candidate attractor fields.
                         field_pair_list.append(new_pair)
                     else:
                         print("incompatible pair")
-
+            CustomText.print_duplex_line()
+            print("Show all the attractor fields")
+            for field in field_pair_list:
+                print(field)
             return field_pair_list
 
         CustomText.print_duplex_line()
@@ -588,12 +610,7 @@ class CBN:
             # join the base list with the new directed edge
             l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
 
-        # show attractor fields
-        CustomText.print_duplex_line()
-        print("Show the list of attractor fields")
-        print("Number of attractor fields:", len(l_base_pairs))
-        for attractor_field in l_base_pairs:
-            print(len(l_base_pairs))
+        print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
     # GET METHODS
@@ -720,9 +737,11 @@ class CBN:
             o_global_scene.show()
 
     def show_attractors_fields(self):
+        CustomText.print_duplex_line()
+        print("Show the list of attractor fields")
         for attractor_field in self.l_attractor_fields:
+            CustomText.print_simple_line()
             for pair in attractor_field:
-                CustomText.print_simple_line()
                 pair[0].show()
                 pair[1].show()
 
