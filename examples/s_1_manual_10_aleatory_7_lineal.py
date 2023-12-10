@@ -87,17 +87,19 @@ for o_directed_edge in o_cbn.l_directed_edges:
 
 # Find attractors
 o_cbn.find_local_attractors_optimized_method()
-# # show attractors
+
+# show attractors
 o_cbn.show_attractors()
 
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
+#
+# show attractor pairs
+o_cbn.show_attractor_pairs()
 
-# o_cbn.show_directed_edges()
-
-# show the resume of the cbn
-o_cbn.show_cbn()
+# Find attractor fields
+o_cbn.find_attractor_fields()
+o_cbn.show_attractors_fields()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
-
-o_cbn.find_compatible_pairs()
-o_cbn.show_attractor_pairs()

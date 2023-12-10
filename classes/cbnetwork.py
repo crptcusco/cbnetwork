@@ -584,10 +584,6 @@ class CBN:
                         field_pair_list.append(new_pair)
                     else:
                         print("incompatible pair")
-            CustomText.print_duplex_line()
-            print("Show all the attractor fields")
-            for field in field_pair_list:
-                print(field)
             return field_pair_list
 
         CustomText.print_duplex_line()
@@ -610,6 +606,7 @@ class CBN:
             # join the base list with the new directed edge
             l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
 
+        CustomText.print_simple_line()
         print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
@@ -682,8 +679,6 @@ class CBN:
                 for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
                     o_pair[0].show_short()
                     o_pair[1].show_short()
-                    # print("Network:", o_pair[0].network_index, "Attractor:", o_pair[0].index)
-                    # print("Network:", o_pair[1].network_index, "Attractor:", o_pair[1].index)
 
     def show_directed_edges(self):
         CustomText.print_duplex_line()

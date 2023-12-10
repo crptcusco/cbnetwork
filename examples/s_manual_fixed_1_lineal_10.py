@@ -102,12 +102,15 @@ o_cbn.find_local_attractors_optimized_method()
 # show attractors
 o_cbn.show_attractors()
 
-# show the kind of the edges
-o_cbn.show_directed_edges()
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
+#
+# show attractor pairs
+o_cbn.show_attractor_pairs()
+
+# Find attractor fields
+o_cbn.find_attractor_fields()
+o_cbn.show_attractors_fields()
 
 # show the kind of every coupled signal
-for o_directed_edge in o_cbn.l_directed_edges:
-    print("SIGNAL:", o_directed_edge.index_variable,
-          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
-          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
-
+o_cbn.show_coupled_signals_kind()

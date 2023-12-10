@@ -95,32 +95,15 @@ for o_directed_edge in o_cbn.l_directed_edges:
 # show attractors
 o_cbn.show_attractors()
 
-# # # generate the global scenes
-# # o_cbn.generate_global_scenes()
-#
-# # # Show global attractors
-# # o_cbn.show_global_scenes()
-#
 # find the compatible pairs
 o_cbn.find_compatible_pairs()
 #
 # show attractor pairs
 o_cbn.show_attractor_pairs()
-#
-# # # show graph with networkx
-# # o_cbn.generate_graph()
-#
-# # # show attractors
-# # o_cbn.show_attractors()
-#
-# # Find attractors fields
-# # o_cbn.find_attractor_fields()
-#
-# # Show attractor fields
-# # o_cbn.show_attractors_fields()
-#
-# print("==============================")
-# print("MESSAGE:", "END SCRIPT EXAMPLE")
+
+# Find attractor fields
+o_cbn.find_attractor_fields()
+o_cbn.show_attractors_fields()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
