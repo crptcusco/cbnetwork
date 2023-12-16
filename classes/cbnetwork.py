@@ -734,6 +734,7 @@ class CBN:
     def show_attractors_fields(self):
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
+        print("Number Stable Attractor Fields:", len(self.l_attractor_fields))
         for attractor_field in self.l_attractor_fields:
             CustomText.print_simple_line()
             for pair in attractor_field:
@@ -763,3 +764,31 @@ class CBN:
                 aux_l_rest_groups.append(v_group)
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         print("Directed Edges ordered.")
+
+    def show_resume(self):
+        CustomText.print_duplex_line()
+        print("CBN Resume Indicators")
+        print("n_local_attractors", self.get_n_local_attractors())
+        print("n_pair_attractors", self.get_n_pair_attractors())
+        print("n_attractor_fields", self.get_n_attractor_fields())
+
+    def get_n_local_attractors(self):
+        res = 0
+        for o_local_network in self.l_local_networks:
+            for o_scene in o_local_network.l_local_scenes:
+                res = res + len(o_scene.l_attractors)
+        return res
+
+    def get_n_pair_attractors(self):
+        res = 0
+        for o_directed_edge in self.l_directed_edges:
+            res += len(o_directed_edge.d_comp_pairs_attractors_by_value[0])
+            res += len(o_directed_edge.d_comp_pairs_attractors_by_value[1])
+        return res
+
+    def get_n_attractor_fields(self):
+        return len(self.l_attractor_fields)
+
+
+
+
