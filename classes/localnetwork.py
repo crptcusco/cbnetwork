@@ -7,6 +7,7 @@ from classes.utils.customtext import CustomText
 
 class LocalNetwork:
     def __init__(self, num_local_network, l_var_intern):
+        # basic properties
         self.index = num_local_network
         self.l_var_intern = l_var_intern
 
@@ -26,7 +27,9 @@ class LocalNetwork:
     def show(self):
         print("--------------------------------------------")
         print('Local Network:', self.index)
-        print('Variables intern : ', self.l_var_intern)
+        print('Internal Variables: ', self.l_var_intern)
+        print('External Variables: ', self.l_var_exterm)
+        print('Total Variables: ', self.l_var_total)
         # Description variables
         for o_internal_variable in self.des_funct_variables:
             o_internal_variable.show()
@@ -208,7 +211,7 @@ class LocalNetwork:
 
         CustomText.print_simple_line()
         print("Network:", o_local_network.index, " Local Scene:", scene)
-        print("Begin to find attractors...")
+        # print("Begin to find attractors...")
         # create boolean expression initial with "n" transitions
         set_of_attractors = []
         v_num_transitions = 3
@@ -227,8 +230,7 @@ class LocalNetwork:
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
-        else:
-            print("The expression cannot be satisfied")
+        # attractor_begin
 
         # BLOCK ATTRACTORS
         m_aux_sat = []
@@ -261,9 +263,9 @@ class LocalNetwork:
             for v_state in path_solution:
                 v_state_count = count_state_repeat(v_state, path_solution)
                 if v_state_count > 1:
-                    atractor_begin = path_solution.index(v_state) + 1
-                    atractor_end = path_solution[atractor_begin:].index(v_state)
-                    l_news_estates_attractor = path_solution[atractor_begin - 1:(atractor_begin + atractor_end)]
+                    attractor_begin = path_solution.index(v_state) + 1
+                    attractor_end = path_solution[attractor_begin:].index(v_state)
+                    l_news_estates_attractor = path_solution[attractor_begin - 1:(attractor_begin + attractor_end)]
                     l_attractors = l_attractors + l_news_estates_attractor
                     # add attractors like list of list
                     set_of_attractors.append(l_news_estates_attractor)
@@ -299,9 +301,9 @@ class LocalNetwork:
                     m_response_sat.append([])
                     for i in o_local_network.l_var_total:
                         m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
-            else:
-                # print(" ")
-                print("The expression cannot be satisfied")
+            # else:
+            #     # print(" ")
+            #     print("The expression cannot be satisfied")
 
             # BLOCK ATTRACTORS
             m_aux_sat = []
@@ -335,3 +337,9 @@ class LocalNetwork:
 
         print("end find attractors")
         return res
+
+    @staticmethod
+    def generate_template(n_var_network, n_input_variables, n_directed_edges):
+        d_template = {}
+        return d_template
+    # TAREA PARA LA CUSCO!!!!

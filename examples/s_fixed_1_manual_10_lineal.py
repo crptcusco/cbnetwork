@@ -81,9 +81,9 @@ d_var_cnf_func[62] = [[61, 63]]
 d_var_cnf_func[63] = [[64, -61, 62]]
 d_var_cnf_func[64] = [[61, -62]]
 
-# show the function for every variable
-for key, value in d_var_cnf_func.items():
-    print(key, "->", value)
+# # show the function for every variable
+# for key, value in d_var_cnf_func.items():
+#     print(key, "->", value)
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
@@ -97,7 +97,7 @@ for o_local_network in l_local_networks:
 o_cbn = CBN(l_local_networks, l_directed_edges)
 
 # Find attractors
-o_cbn.find_local_attractors_optimized_method()
+o_cbn.find_local_attractors_optimized()
 
 # show attractors
 o_cbn.show_attractors()

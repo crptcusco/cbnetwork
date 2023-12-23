@@ -1,31 +1,33 @@
-# import libraries
+# import internal
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
+from classes.utils.customtext import CustomText
+
+# external imports
+import multiprocessing
+# import threading
 
 # script to put a manual parameters for the example of 4 networks
-print("MESSAGE:", "1 FIXED 10 LINEAL CBN MANUAL SCRIPT EXAMPLE")
-print("=======================================================")
+print("MESSAGE:", "TEST PARALLEL - LINEAL CBN MANUAL SCRIPT EXAMPLE")
+CustomText.print_duplex_line()
 
 # pass the parameters
+l_local_networks = []
+l_directed_edges = []
+
 n_local_nets = 10
 n_var_net = 5
 n_total_var = n_local_nets * n_var_net
 
 # generate the 5 variables per network in sequence
 d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in range(1, n_local_nets + 1)}
-# generate the variables from fixed network
-d_network_variables[11] = [61, 62, 63, 64]
 
 # generate the edges of the linear CBN
-l_edges = [(i, i + 1) for i in range(1, 10)]
-l_edges.append((11, 1))
+l_edges = [(i, i+1) for i in range(1, 10)]
 
 # generate the networks
-print("-----------------------")
-print("Generate Networks")
-l_local_networks = []
 for i_local_net in d_network_variables.keys():
     # generate the Local network
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
@@ -34,12 +36,9 @@ for i_local_net in d_network_variables.keys():
     o_local_network.show()
 
 # generate the directed edges
-print("-----------------------")
-print("Generate Directed Edges")
-l_directed_edges = []
 cont_output_variable = 0
 index_variable_signal = (n_local_nets * n_var_net) + 1
-for t_edge in l_edges[:-1]:
+for t_edge in l_edges:
     l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
     # generate coupling function
     coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
@@ -52,13 +51,6 @@ for t_edge in l_edges[:-1]:
     # updating the index variable signal
     index_variable_signal += 1
 
-t_edge = l_edges[-1]
-l_output_variables = [63, 64]
-coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
-o_directed_edge = DirectedEdge(65, t_edge[1], t_edge[0], l_output_variables, coupling_function)
-l_directed_edges.append(o_directed_edge)
-o_directed_edge.show()
-
 # Generate the functions for every variable in the CBN
 d_var_cnf_func = {}
 count_network = 1
@@ -68,19 +60,13 @@ for o_local_network in l_local_networks:
     d_var_cnf_func[count_var + 2] = [[count_var + 1, -(count_var + 3), -(count_var + 5)]]
     d_var_cnf_func[count_var + 3] = [[-(count_var + 2), -(count_var + 4), count_var + 5]]
     if o_local_network.index == 1:
-        d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5, 65]]
+        d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5]]
         d_var_cnf_func[count_var + 5] = [[count_var + 1, count_var + 2]]
     else:
         d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5, n_total_var + o_local_network.index - 1]]
         d_var_cnf_func[count_var + 5] = [[-(count_var + 1), count_var + 2, n_total_var + o_local_network.index - 1]]
     count_var += 5
     count_network += 1
-
-# Especial Network
-d_var_cnf_func[61] = [[-62, 63]]
-d_var_cnf_func[62] = [[61, 63]]
-d_var_cnf_func[63] = [[64, -61, 62]]
-d_var_cnf_func[64] = [[61, -62]]
 
 # show the function for every variable
 for key, value in d_var_cnf_func.items():
@@ -98,20 +84,25 @@ for o_local_network in l_local_networks:
 o_cbn = CBN(l_local_networks, l_directed_edges)
 
 # Find attractors
-o_cbn.find_local_attractors_optimized()
+# o_cbn.find_local_attractors_optimized_method()
+# parallel method
+o_cbn.find_local_attractors_parallel()
 
-# show attractors
+# # show attractors
 o_cbn.show_attractors()
 
-# find the compatible pairs
-o_cbn.find_compatible_pairs()
+# # find the compatible pairs
+# o_cbn.find_compatible_pairs()
+# #
+# # show attractor pairs
+# o_cbn.show_attractor_pairs()
 #
-# show attractor pairs
-o_cbn.show_attractor_pairs()
-
-# Find attractor fields
-o_cbn.find_attractor_fields()
-o_cbn.show_attractors_fields()
-
-# show the kind of every coupled signal
-o_cbn.show_coupled_signals_kind()
+# # Find attractor fields
+# o_cbn.find_attractor_fields()
+# o_cbn.show_attractors_fields()
+#
+# # show the kind of every coupled signal
+# o_cbn.show_coupled_signals_kind()
+#
+# # show the kind of the edges
+# o_cbn.show_directed_edges()

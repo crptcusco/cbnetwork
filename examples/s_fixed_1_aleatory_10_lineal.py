@@ -16,11 +16,8 @@ v_topology = 4
 CBN.show_allowed_topologies()
 
 # create a Coupled Boolean Network with the parameters
-o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks,
-                         n_var_network=n_var_network,
-                         v_topology=v_topology,
-                         n_output_variables=n_output_variables,
-                         n_clauses_function=n_clauses_function)
+o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,
+                         n_output_variables=n_output_variables)
 
 # Adding a network to make restricted the signals
 # generate a network
@@ -55,7 +52,7 @@ o_cbn.l_directed_edges.append(o_directed_edge)
 
 
 # update the function of one variable in the first network
-o_local_network = o_cbn.find_network_by_index(1)
+o_local_network = o_cbn.get_network_by_index(1)
 o_local_network.l_var_exterm.append(105)
 o_local_network.l_var_total.append(105)
 o_local_network.l_input_signals.append(o_directed_edge)
@@ -86,7 +83,7 @@ for o_directed_edge in o_cbn.l_directed_edges:
     print(o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
 
 # Find attractors
-o_cbn.find_local_attractors_optimized_method()
+o_cbn.find_local_attractors_optimized()
 
 # show attractors
 o_cbn.show_attractors()
