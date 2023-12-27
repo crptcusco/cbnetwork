@@ -1,3 +1,5 @@
+import random
+
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
 
@@ -132,7 +134,7 @@ class LocalNetwork:
                     print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
                             o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
-                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
+                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
                 cont_clause_global = cont_clause_global + 1
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence
@@ -191,11 +193,10 @@ class LocalNetwork:
                 cont_clause = cont_clause + 1
             boolean_function = boolean_function & boolean_function_of_attractors
 
-        # Add all the variables of the position 0 to the boolean function
+        # Add all the variables of position 0 to the boolean function
         for variable in o_local_network.l_var_total:
-            boolean_function = boolean_function & (
-                    o_local_network.dic_var_cnf[str(variable) + "_0"] | - o_local_network.dic_var_cnf[
-                str(variable) + "_0"])
+            boolean_function = boolean_function & (o_local_network.dic_var_cnf[str(variable) + "_0"] |
+                                                   - o_local_network.dic_var_cnf[str(variable) + "_0"])
         # print(boolean_function)
         return boolean_function
 
@@ -337,9 +338,3 @@ class LocalNetwork:
 
         print("end find attractors")
         return res
-
-    @staticmethod
-    def generate_template(n_var_network, n_input_variables, n_directed_edges):
-        d_template = {}
-        return d_template
-    # TAREA PARA LA CUSCO!!!!

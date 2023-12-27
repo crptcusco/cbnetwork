@@ -59,15 +59,15 @@ o_local_network.l_input_signals.append(o_directed_edge)
 o_local_network.num_var_total += 1
 
 # # update one internal variable
-# o_internal_variable = o_local_network.get_internal_variable(1)
+# o_internal_variable = l_var_intern.get_internal_variable(1)
 # o_internal_variable.show()
 # o_internal_variable.cnf_function.append([105])
-# o_local_network.update_internal_variable(o_internal_variable)
+# l_var_intern.update_internal_variable(o_internal_variable)
 
 # # update all the internal variables with clause
-# for o_internal_variable in o_local_network.des_funct_variables:
+# for o_internal_variable in l_var_intern.des_funct_variables:
 #     o_internal_variable.cnf_function.append([105])
-#     o_local_network.update_internal_variable(o_internal_variable)
+#     l_var_intern.update_internal_variable(o_internal_variable)
 
 # update all the internal variables with literal
 for o_internal_variable in o_local_network.des_funct_variables:

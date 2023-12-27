@@ -72,7 +72,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
         d_collect_indicators = {
             # initial parameters
             "i_sample": i_sample,
-            "n_local_networks": n_local_networks,
+            "N_LOCAL_NETWORKS": n_local_networks,
             "N_VAR_NETWORK": N_VAR_NETWORK,
             "V_TOPOLOGY": V_TOPOLOGY,
             "N_OUTPUT_VARIABLES": N_OUTPUT_VARIABLES,
