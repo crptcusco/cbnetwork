@@ -8,6 +8,7 @@ import numpy as np
 
 # local imports
 from classes.cbnetwork import CBN
+from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.utils.customtext import CustomText
@@ -53,7 +54,7 @@ def generate_aleatory_template(n_var_network):
 
 
 def generate_local_networks_dynamic_from_template(l_local_networks, l_directed_edges, n_input_variables,
-                                                  o_local_network_template):
+                                                  d_variable_cnf_function):
     # GENERATE THE DYNAMICS OF EACH LOCAL NETWORK
     number_max_of_clauses = 2
     number_max_of_literals = 3
@@ -97,6 +98,21 @@ def generate_local_networks_dynamic_from_template(l_local_networks, l_directed_e
         return l_local_networks_updated
 
 
+def get_variables_from_network(i_local_network, l_local_networks, l_var_exit):
+    l_variables = []
+    for o_local_network in l_local_networks:
+        if o_local_network.index == i_local_network:
+            # select the specific variables from variable list intern
+            print(o_local_network.l_var_intern)
+            print(l_var_exit)
+            # convert the template variables in internal variables
+            for position in l_var_exit:
+                print(position)
+                print(position-1)
+                l_variables.append(o_local_network.l_var_intern[position-1])
+    print(l_variables)
+    return l_variables
+
 # Ray Configurations
 # ray.shutdown()
 # runtime_env = {"working_dir": "/home/reynaldo/Documents/RESEARCH/SynEstRDDA", "pip": ["requests", "pendulum==2.1.2"]}
@@ -118,16 +134,50 @@ N_DIRECTED_EDGES = 1
 # verbose parameters
 SHOW_MESSAGES = True
 
-# generate an special CBN
-l_local_networks = []
+# generate a special CBN
 l_directed_edges = []
+#############################################
 
 # generate the aleatory local network template
 d_variable_cnf_function, l_var_exit = generate_aleatory_template(n_var_network=N_VAR_NETWORK)
 
-print(l_var_exit)
-for key, value in d_variable_cnf_function.items():
-    print(key, "->", value)
+n_local_networks = 10
+# generate the local networks with the indexes and variables (without relations or dynamics)
+l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, N_VAR_NETWORK)
+
+# generate the CBN topology
+l_relations = CBN.generate_cbn_topology(n_local_networks, V_TOPOLOGY)
+
+# search the last variable from the local network variables
+i_last_variable = l_local_networks[-1].l_var_intern[-1]
+
+# generate the directed edges given the last variable generated and the selected output variables
+for relation in l_relations:
+    # necesitamos saber que variable tiene cada red
+    l_output_variables = get_variables_from_network(relation[1], l_local_networks, l_var_exit)
+
+    # generate the coupling function
+    coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
+    # generate the Directed-Edge object
+    o_directed_edge = DirectedEdge(index_variable_signal=i_last_variable,
+                                   input_local_network=relation[1],
+                                   output_local_network=relation[0],
+                                   l_output_variables=l_output_variables,
+                                   coupling_function=coupling_function)
+    i_last_variable += 1
+    l_directed_edges.append(o_directed_edge)
+    o_directed_edge.show()
+
+# l_directed_edges = CBN.generate_directed_edges(i_last_variable=i_last_variable,
+#                                                        l_local_networks=l_local_networks,
+#                                                        l_relations=l_relations,
+#                                                        n_output_variables=n_output_variables)
+###############################################
+
+
+# print(l_var_exit)
+# for key, value in d_variable_cnf_function.items():
+#     print(key, "->", value)
 
 # # Generate the local_networks
 # N_LOCAL_NETWORKS = 5

@@ -185,7 +185,7 @@ class CBN:
          """
 
         # generate the local networks with the indexes and variables (without relations or dynamics)
-        l_local_networks = CBN.generate_local_networks_indexes_variables(n_var_network, n_var_network)
+        l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, n_var_network)
 
         # generate the CBN topology
         l_relations = CBN.generate_cbn_topology(n_local_networks, v_topology)
@@ -194,7 +194,6 @@ class CBN:
         i_last_variable = l_local_networks[-1].l_var_intern[-1]
 
         # generate the directed edges given the last variable generated
-
         l_directed_edges = CBN.generate_directed_edges(i_last_variable=i_last_variable,
                                                        l_local_networks=l_local_networks,
                                                        l_relations=l_relations,
