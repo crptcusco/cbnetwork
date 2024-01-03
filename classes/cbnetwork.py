@@ -71,8 +71,11 @@ class CBN:
         for v_num_network in range(1, n_local_networks + 1):
             # generate the variables of the networks
             l_var_intern = list(range(v_cont_var, v_cont_var + n_var_network))
+            # create the Local Network object
             o_local_network = LocalNetwork(v_num_network, l_var_intern)
+            # add the local network object to the list
             l_local_networks.append(o_local_network)
+            # update the index of the variables
             v_cont_var = v_cont_var + n_var_network
         return l_local_networks
 
@@ -158,9 +161,9 @@ class CBN:
             print("Local network created :", o_local_network.index)
             CustomText.print_simple_line()
             # actualized the list of local networks
+
         return l_local_networks_updated
-        # l_local_networks = l_local_networks_updated.copy()
-        # return l_local_networks
+
 
     @staticmethod
     def generate_local_networks_dynamic_from_template(l_local_networks, l_directed_edges, n_input_variables,
@@ -622,7 +625,7 @@ class CBN:
 
         def cartesian_product_mod(base_pairs, candidate_pairs):
             """
-            Performs the modified Cartesian product of two lists of attractor pairs.
+            Performs the modified Cartesian product the attractor pairs lists.
 
             Args:
               base_pairs: List of base attractor pairs.
