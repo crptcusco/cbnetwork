@@ -262,7 +262,7 @@ number of local networks 3 - 10
 """
 
 # experiment parameters
-N_SAMPLES = 10
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 10
 N_VAR_NETWORK = 5
