@@ -18,7 +18,7 @@ d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)
 # generate the variables from fixed network
 d_network_variables[11] = [61, 62, 63, 64]
 
-# generate the edges of the linear CBN
+# generate the edges of the 1_linear CBN
 l_edges = [(i, i + 1) for i in range(1, 10)]
 l_edges.append((11, 1))
 

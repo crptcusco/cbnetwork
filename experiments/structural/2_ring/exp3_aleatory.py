@@ -1,34 +1,30 @@
 # external imports
-import ray
 import time
+
 import pandas as pd
-import numpy as np
 
 # local imports
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 
 """
-Experiment 3 - Test the ring structure 
+Experiment 1 - Test the 2_ring structure 
 using aleatory generated networks
 number of local networks 3 - 10 
 """
 
 # experiment parameters
-n_samples = 100
-n_local_networks_min = 3
-n_local_networks_max = 10
-n_var_network = 5
-n_output_variables = 2
-v_topology = 4  # path graph
-n_clauses_function = 2
+N_SAMPLES = 100
+N_LOCAL_NETWORKS_MIN = 3
+N_LOCAL_NETWORKS_MAX = 10
+N_VAR_NETWORK = 5
+N_OUTPUT_VARIABLES = 2
+N_INPUT_VARIABLES = 2
+V_TOPOLOGY = 3  # cycle graph
+N_CLAUSES_FUNCTION = 2
 
-# Ray Configurations
-# ray.shutdown()
-# runtime_env = {"working_dir": "/home/reynaldo/Documents/RESEARCH/SynEstRDDA", "pip": ["requests", "pendulum==2.1.2"]}
-# ray.init(address='ray://172.17.163.253:10001', runtime_env=runtime_env, log_to_driver=False)
-# ray.init(address='ray://172.17.163.244:10001', runtime_env=runtime_env , log_to_driver=False, num_cpus=12)
-# ray.init(log_to_driver=False, num_cpus=12)
+# verbose parameters
+SHOW_MESSAGES = True
 
 # Begin Experiment
 
@@ -37,12 +33,14 @@ v_begin_exp = time.time()
 
 # Begin the process
 l_data_sample = []
-for n_local_networks in range(n_local_networks_min, n_local_networks_max):
-    for i_sample in range(1, n_samples + 1):
-        print("Experiment", i_sample, "of", n_samples)
+for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
+    for i_sample in range(1, N_SAMPLES + 1):
+        print("Experiment", i_sample, "of", N_SAMPLES)
         # generate a Coupled Boolean Network with the parameters
-        o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,
-                                 n_output_variables=n_output_variables)
+        CustomText.print_duplex_line()
+        CustomText.print_message(message="Generating the CBN...", show=SHOW_MESSAGES)
+        o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=N_VAR_NETWORK, v_topology=V_TOPOLOGY,
+                                 n_output_variables=N_OUTPUT_VARIABLES, n_input_variables=N_INPUT_VARIABLES)
 
         # Find attractors
         v_begin_find_attractors = time.time()
@@ -67,18 +65,18 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
             # initial parameters
             "i_sample": i_sample,
             "N_LOCAL_NETWORKS": n_local_networks,
-            "N_VAR_NETWORK": n_var_network,
-            "V_TOPOLOGY": v_topology,
-            "N_OUTPUT_VARIABLES": n_output_variables,
-            "N_CLAUSES_FUNCTION": n_clauses_function,
-            # time parameters
-            "n_time_find_attractors": n_time_find_attractors,
-            "n_time_find_pairs": n_time_find_pairs,
-            "n_time_find_fields": n_time_find_fields,
+            "N_VAR_NETWORK": N_VAR_NETWORK,
+            "V_TOPOLOGY": V_TOPOLOGY,
+            "N_OUTPUT_VARIABLES": N_OUTPUT_VARIABLES,
+            "N_CLAUSES_FUNCTION": N_CLAUSES_FUNCTION,
             # calculate parameters
             "n_local_attractors": o_cbn.get_n_local_attractors(),
             "n_pair_attractors": o_cbn.get_n_pair_attractors(),
-            "n_attractor_fields": o_cbn.get_n_attractor_fields()
+            "n_attractor_fields": o_cbn.get_n_attractor_fields(),
+            # time parameters
+            "n_time_find_attractors": n_time_find_attractors,
+            "n_time_find_pairs": n_time_find_pairs,
+            "n_time_find_fields": n_time_find_fields
         }
         l_data_sample.append(d_collect_indicators)
         # show the important outputs

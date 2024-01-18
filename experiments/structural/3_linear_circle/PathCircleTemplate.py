@@ -1,15 +1,10 @@
 # external imports
 import random
-import ray
-import time
-import pandas as pd
-import numpy as np
 
 # local imports
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
-from classes.localnetwork import LocalNetwork
 from classes.utils.customtext import CustomText
 
 
@@ -95,7 +90,7 @@ class PathCircleTemplate:
             # update the number of the variable
             l_clause = []
             for template_value in pre_clause:
-                # evaluate if the topology is linear(4) and is the first local network and not in the list of dictionary
+                # evaluate if the topology is 1_linear(4) and is the first local network and not in the list of dictionary
                 if (v_topology == 4 and o_local_network.index == 1
                         and abs(template_value) not in list(d_variable_cnf_function.keys())):
                     continue
@@ -193,7 +188,7 @@ class PathCircleTemplate:
         return last_index_variable
 
     @staticmethod
-    def generate_cbn_from_template(v_topology, d_variable_cnf_function, l_var_exit, n_local_networks,n_var_network):
+    def generate_cbn_from_template(v_topology, d_variable_cnf_function, l_var_exit, n_local_networks, n_var_network):
         """
         Generate a special CBN
 
@@ -226,7 +221,8 @@ class PathCircleTemplate:
             input_local_network = relation[1]
 
             # get the output variables from template
-            l_output_variables = PathCircleTemplate.get_output_variables_from_template(output_local_network, l_local_networks, l_var_exit)
+            l_output_variables = PathCircleTemplate.get_output_variables_from_template(output_local_network,
+                                                                                       l_local_networks, l_var_exit)
 
             # generate the coupling function
             coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
@@ -250,9 +246,9 @@ class PathCircleTemplate:
 
         # generate dynamic of the local networks with template
         l_local_networks = PathCircleTemplate.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
-                                                                l_directed_edges=l_directed_edges,
-                                                                d_variable_cnf_function=d_variable_cnf_function,
-                                                                v_topology=v_topology)
+                                                                                   l_directed_edges=l_directed_edges,
+                                                                                   d_variable_cnf_function=d_variable_cnf_function,
+                                                                                   v_topology=v_topology)
 
         # generate the special coupled boolean network
         o_special_cbn = CBN(l_local_networks=l_local_networks,

@@ -1,8 +1,7 @@
 # external imports
-import ray
 import time
+
 import pandas as pd
-import numpy as np
 
 # local imports
 from classes.cbnetwork import CBN
@@ -12,7 +11,7 @@ from classes.localnetwork import LocalNetwork
 from classes.utils.customtext import CustomText
 
 """
-Experiment 1 - Test the ring structure 
+Experiment 1 - Test the 2_ring structure 
 using aleatory generated networks
 number of local networks 3  
 """
@@ -25,13 +24,6 @@ n_var_network = 5
 n_output_variables = 2
 v_topology = 3  # cycle graph
 n_clauses_function = 2
-
-# Ray Configurations
-# ray.shutdown()
-# runtime_env = {"working_dir": "/home/reynaldo/Documents/RESEARCH/SynEstRDDA", "pip": ["requests", "pendulum==2.1.2"]}
-# ray.init(address='ray://172.17.163.253:10001', runtime_env=runtime_env, log_to_driver=False)
-# ray.init(address='ray://172.17.163.244:10001', runtime_env=runtime_env , log_to_driver=False, num_cpus=12)
-# ray.init(log_to_driver=False, num_cpus=12)
 
 # Begin Experiment
 
@@ -55,7 +47,7 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in
                                range(1, n_local_nets + 1)}
 
-        # generate the edges of the linear CBN
+        # generate the edges of the 1_linear CBN
         l_edges = [(i, i + 1) for i in range(1, n_local_networks)]
 
         # generate the networks
@@ -165,7 +157,7 @@ pf_res = pd.DataFrame(l_data_sample)
 pf_res.reset_index(drop=True, inplace=True)
 
 # Save the experiment data in csv, using pandas Dataframe
-path = "exp2_manual.csv"
+path = "exp4_manual.csv"
 pf_res.to_csv(path)
 print("Experiment saved in:", path)
 
