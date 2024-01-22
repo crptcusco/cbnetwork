@@ -7,6 +7,7 @@ from classes.utils.customtext import CustomText
 
 # external imports
 import multiprocessing
+
 # import threading
 
 # script to put a manual parameters for the example of 4 networks
@@ -25,7 +26,7 @@ n_total_var = n_local_nets * n_var_net
 d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in range(1, n_local_nets + 1)}
 
 # generate the edges of the 1_linear CBN
-l_edges = [(i, i+1) for i in range(1, 10)]
+l_edges = [(i, i + 1) for i in range(1, 10)]
 
 # generate the networks
 for i_local_net in d_network_variables.keys():

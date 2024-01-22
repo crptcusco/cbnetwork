@@ -141,6 +141,9 @@ class CBN:
             # add local variables
             l_aux_variables.extend(o_local_network.l_var_intern)
 
+            # generate a dictionary for save the dynamic for every variable
+            d_literals_variables = {}
+
             # generate the function description of the variables
             des_funct_variables = []
             # generate clauses
@@ -151,19 +154,22 @@ class CBN:
                     # randomly select from the signal variables
                     l_literals_variables = random.sample(l_aux_variables, v_num_variable)
                     l_clauses_node.append(l_literals_variables)
-                # adding the description of variable in object form
-                o_variable_model = InternalVariable(i_local_variable, l_clauses_node)
+
+                # generate the Internal Variable Object with his index and his list of clauses
+                o_internal_variable = InternalVariable(i_local_variable, l_clauses_node)
                 # adding the description in functions of every variable
-                des_funct_variables.append(o_variable_model)
-            # adding the local network to a list of local networks
+                des_funct_variables.append(o_internal_variable)
+
+            # add the CNF variable dynamic in list of Satispy variables format
             o_local_network.des_funct_variables = des_funct_variables.copy()
+
+            # adding the local network to a list of local networks
             l_local_networks_updated.append(o_local_network)
             print("Local network created :", o_local_network.index)
             CustomText.print_simple_line()
-            # actualized the list of local networks
 
+        # actualized the list of local networks
         return l_local_networks_updated
-
 
     @staticmethod
     def generate_local_networks_dynamic_from_template(l_local_networks, l_directed_edges, n_input_variables,
@@ -855,5 +861,3 @@ class CBN:
 
     def get_n_attractor_fields(self):
         return len(self.l_attractor_fields)
-
-

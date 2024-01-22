@@ -71,7 +71,7 @@ for key, value in d_var_cnf_func.items():
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
     o_local_network.process_input_signals(l_input_signals)
     for i_local_variable in o_local_network.l_var_intern:
         o_variable_model = InternalVariable(i_local_variable, d_var_cnf_func[i_local_variable])

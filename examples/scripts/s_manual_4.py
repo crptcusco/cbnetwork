@@ -54,7 +54,7 @@ d_variable_cnf_function = {1: [[2, 3], [1, -15]],
 CustomText.print_duplex_line()
 print("Generating the dynamics of the local networks")
 for o_local_network in l_local_networks:
-    l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
     # add the input variables to the local network object
     o_local_network.process_input_signals(l_input_signals)
     for i_local_variable in o_local_network.l_var_intern:
