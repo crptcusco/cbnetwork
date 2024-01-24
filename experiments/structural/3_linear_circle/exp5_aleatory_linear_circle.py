@@ -1,6 +1,5 @@
 # external imports
 import time
-
 import pandas as pd
 
 # local imports
@@ -34,8 +33,8 @@ v_begin_exp = time.time()
 # Begin the process
 l_data_sample = []
 
-for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
-    for i_sample in range(1, N_SAMPLES + 1):
+for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1): # 5
+    for i_sample in range(1, N_SAMPLES + 1): # 1 - 1000 , 1, 2
         # generate the aleatory local network template
         d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK)
         for V_TOPOLOGY in [4, 3]:
@@ -97,7 +96,7 @@ pf_res = pd.DataFrame(l_data_sample)
 pf_res.reset_index(drop=True, inplace=True)
 
 # Save the experiment data in csv, using pandas Dataframe
-path = "exp5_aleatory_linear_circle_15_5.csv"
+path = "exp5_aleatory_linear_circle_15_50.csv"
 pf_res.to_csv(path)
 print("Experiment saved in:", path)
 
