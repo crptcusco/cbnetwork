@@ -12,3 +12,11 @@ class CustomText:
         if show:
             print(message)
 
+    @classmethod
+    def print_stars(cls):
+        print("*************************************************")
+
+    @classmethod
+    def print_dollars(cls):
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+

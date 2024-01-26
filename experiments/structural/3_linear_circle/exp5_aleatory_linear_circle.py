@@ -13,13 +13,13 @@ number of local networks 3 - 10
 """
 
 # experiment parameters
-N_SAMPLES = 50
-N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 15
+N_SAMPLES = 500
+N_LOCAL_NETWORKS_MIN = 10
+N_LOCAL_NETWORKS_MAX = 12
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
-V_TOPOLOGY = 3  # cycle graph
+# V_TOPOLOGY = 3  # cycle graph
 N_CLAUSES_FUNCTION = 2
 N_DIRECTED_EDGES = 1
 
@@ -33,14 +33,14 @@ v_begin_exp = time.time()
 # Begin the process
 l_data_sample = []
 
-for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1): # 5
-    for i_sample in range(1, N_SAMPLES + 1): # 1 - 1000 , 1, 2
+for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
+    for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
         # generate the aleatory local network template
         d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK)
-        for V_TOPOLOGY in [4, 3]:
-            print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
+        for v_topology in [4, 3]:
+            print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", v_topology)
 
-            o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=V_TOPOLOGY,
+            o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=v_topology,
                                                                   d_variable_cnf_function=d_variable_cnf_function,
                                                                   l_var_exit=l_var_exit,
                                                                   n_local_networks=n_local_networks,
@@ -70,7 +70,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1): #
                 "i_sample": i_sample,
                 "n_local_networks": n_local_networks,
                 "n_var_network": N_VAR_NETWORK,
-                "v_topology": V_TOPOLOGY,
+                "v_topology": v_topology,
                 "n_output_variables": N_OUTPUT_VARIABLES,
                 "n_clauses_function": N_CLAUSES_FUNCTION,
                 # calculate parameters
@@ -83,21 +83,25 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1): #
                 "n_time_find_fields": n_time_find_fields
             }
             l_data_sample.append(d_collect_indicators)
-            # show the important outputs
 
-CustomText.print_duplex_line()
+            # Save the collected indicator to analysis
+            pf_res = pd.DataFrame(l_data_sample)
+            pf_res.reset_index(drop=True, inplace=True)
+
+            # generate the experiment path and save the data in csv
+            path = ("exp5_aleatory_linear_circle_"
+                    + str(N_LOCAL_NETWORKS_MIN) + "_"
+                    + str(N_LOCAL_NETWORKS_MAX)
+                    + "_" + str(N_SAMPLES) + ".csv")
+            pf_res.to_csv(path)
+            print("Experiment saved in:", path)
+            CustomText.print_duplex_line()
+        CustomText.print_stars()
+    CustomText.print_dollars()
+
 # Take the time of the experiment
 v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
-
-# Save the collected indicator to analysis
-pf_res = pd.DataFrame(l_data_sample)
-pf_res.reset_index(drop=True, inplace=True)
-
-# Save the experiment data in csv, using pandas Dataframe
-path = "exp5_aleatory_linear_circle_15_50.csv"
-pf_res.to_csv(path)
-print("Experiment saved in:", path)
 
 print("End experiment")
