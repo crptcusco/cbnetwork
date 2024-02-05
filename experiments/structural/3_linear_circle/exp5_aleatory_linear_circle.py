@@ -1,4 +1,5 @@
 # external imports
+import os
 import time
 import pandas as pd
 
@@ -13,7 +14,7 @@ number of local networks 3 - 10
 """
 
 # experiment parameters
-N_SAMPLES = 500
+N_SAMPLES = 100
 N_LOCAL_NETWORKS_MIN = 10
 N_LOCAL_NETWORKS_MAX = 12
 N_VAR_NETWORK = 5
@@ -30,14 +31,24 @@ SHOW_MESSAGES = True
 # Capture the time for all the experiment
 v_begin_exp = time.time()
 
-# Begin the process
-l_data_sample = []
+# generate the experiment path and save the data in csv
+path = ("exp5_aleatory_linear_circle_"
+        + str(N_LOCAL_NETWORKS_MIN) + "_"
+        + str(N_LOCAL_NETWORKS_MAX)
+        + "_" + str(N_SAMPLES) + ".csv")
 
+# Borrar el archivo existente si existe
+if os.path.exists(path):
+    os.remove(path)
+    print("Existing file deleted:", path)
+
+# Begin the process
 for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
     for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
         # generate the aleatory local network template
         d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK)
         for v_topology in [4, 3]:
+            l_data_sample = []
             print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", v_topology)
 
             o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=v_topology,
@@ -88,12 +99,13 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
             pf_res = pd.DataFrame(l_data_sample)
             pf_res.reset_index(drop=True, inplace=True)
 
-            # generate the experiment path and save the data in csv
-            path = ("exp5_aleatory_linear_circle_"
-                    + str(N_LOCAL_NETWORKS_MIN) + "_"
-                    + str(N_LOCAL_NETWORKS_MAX)
-                    + "_" + str(N_SAMPLES) + ".csv")
-            pf_res.to_csv(path)
+            # Si el archivo ya existe, abre el archivo en modo 'a' (append), de lo contrario, crea un nuevo archivo
+            mode = 'a' if os.path.exists(path) else 'w'
+            # Agregar el encabezado solo si es un nuevo archivo
+            header = not os.path.exists(path)
+            # Guardar los datos en el archivo CSV
+            pf_res.to_csv(path, mode=mode, header=header, index=False)
+
             print("Experiment saved in:", path)
             CustomText.print_duplex_line()
         CustomText.print_stars()
