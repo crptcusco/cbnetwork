@@ -1,0 +1,5019 @@
+CNF Function: [[-8, 6, -7]]
+27 : [[-28, 26, -27]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+28 : [[26, 55, 28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+29 : [[55, 29, 28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+30 : [[55, -30, 26]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+31 : [[32, -33, -56]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+32 : [[-33, 31, -32]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+33 : [[31, 56, 33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+34 : [[56, 34, 33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+35 : [[56, -35, 31]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+36 : [[37, -38, -57]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+37 : [[-38, 36, -37]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+38 : [[36, 57, 38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+39 : [[57, 39, 38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+40 : [[57, -40, 36]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+41 : [[42, -43, -58]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+42 : [[-43, 41, -42]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+43 : [[41, 58, 43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+44 : [[58, 44, 43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+45 : [[58, -45, 41]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+46 : [[47, -48, -59]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+47 : [[-48, 46, -47]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+48 : [[46, 59, 48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+49 : [[59, 49, 48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+50 : [[59, -50, 46]]
+Local network created : 10
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1024
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 1 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+1 : [[2, -3, -60]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+2 : [[-3, 1, -2]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+3 : [[1, 60, 3]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+4 : [[60, 4, 3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+5 : [[60, -5, 1]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+6 : [[7, -8, -51]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+7 : [[-8, 6, -7]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+8 : [[6, 51, 8]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+9 : [[51, 9, 8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+10 : [[51, -10, 6]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+11 : [[12, -13, -52]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+12 : [[-13, 11, -12]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+13 : [[11, 52, 13]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+14 : [[52, 14, 13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+15 : [[52, -15, 11]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+16 : [[17, -18, -53]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+17 : [[-18, 16, -17]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+18 : [[16, 53, 18]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+19 : [[53, 19, 18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+20 : [[53, -20, 16]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+21 : [[22, -23, -54]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+22 : [[-23, 21, -22]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+23 : [[21, 54, 23]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+24 : [[54, 24, 23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+25 : [[54, -25, 21]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+26 : [[27, -28, -55]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+27 : [[-28, 26, -27]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+28 : [[26, 55, 28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+29 : [[55, 29, 28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+30 : [[55, -30, 26]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+31 : [[32, -33, -56]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+32 : [[-33, 31, -32]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+33 : [[31, 56, 33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+34 : [[56, 34, 33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+35 : [[56, -35, 31]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+36 : [[37, -38, -57]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+37 : [[-38, 36, -37]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+38 : [[36, 57, 38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+39 : [[57, 39, 38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+40 : [[57, -40, 36]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+41 : [[42, -43, -58]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+42 : [[-43, 41, -42]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+43 : [[41, 58, 43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+44 : [[58, 44, 43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+45 : [[58, -45, 41]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[7, -8, -11]]
+46 : [[47, -48, -59]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-8, 6, -7]]
+47 : [[-48, 46, -47]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[6, 11, 8]]
+48 : [[46, 59, 48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, 9, 8]]
+49 : [[59, 49, 48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[11, -10, 6]]
+50 : [[59, -50, 46]]
+Local network created : 10
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1024
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+Experiment 2 of 2  TOPOLOGY: 4
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+1 : [[4, 1]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+2 : [[5, 4, 2]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+3 : [[2, 3, 1]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+4 : [[-3, -1]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+5 : [[4, 1, -5]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+6 : [[-51, 9, 6]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+7 : [[10, 9, 7]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+8 : [[7, 8, 6]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+9 : [[51, -8, -6]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+10 : [[9, 6, -10]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+11 : [[-52, 14, 11]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+12 : [[15, 14, 12]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+13 : [[12, 13, 11]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+14 : [[52, -13, -11]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+15 : [[14, 11, -15]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+16 : [[-53, 19, 16]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+17 : [[20, 19, 17]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+18 : [[17, 18, 16]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+19 : [[53, -18, -16]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+20 : [[19, 16, -20]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+21 : [[-54, 24, 21]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+22 : [[25, 24, 22]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+23 : [[22, 23, 21]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+24 : [[54, -23, -21]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+25 : [[24, 21, -25]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+26 : [[-55, 29, 26]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+27 : [[30, 29, 27]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+28 : [[27, 28, 26]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+29 : [[55, -28, -26]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+30 : [[29, 26, -30]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+31 : [[-56, 34, 31]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+32 : [[35, 34, 32]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+33 : [[32, 33, 31]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+34 : [[56, -33, -31]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+35 : [[34, 31, -35]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+36 : [[-57, 39, 36]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+37 : [[40, 39, 37]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+38 : [[37, 38, 36]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+39 : [[57, -38, -36]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+40 : [[39, 36, -40]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+41 : [[-58, 44, 41]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+42 : [[45, 44, 42]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+43 : [[42, 43, 41]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+44 : [[58, -43, -41]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+45 : [[44, 41, -45]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+46 : [[-59, 49, 46]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+47 : [[50, 49, 47]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+48 : [[47, 48, 46]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+49 : [[59, -48, -46]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+50 : [[49, 46, -50]]
+Local network created : 10
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 2 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+1 : [[-60, 4, 1]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+2 : [[5, 4, 2]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+3 : [[2, 3, 1]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+4 : [[60, -3, -1]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+5 : [[4, 1, -5]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+6 : [[-51, 9, 6]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+7 : [[10, 9, 7]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+8 : [[7, 8, 6]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+9 : [[51, -8, -6]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+10 : [[9, 6, -10]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+11 : [[-52, 14, 11]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+12 : [[15, 14, 12]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+13 : [[12, 13, 11]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+14 : [[52, -13, -11]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+15 : [[14, 11, -15]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+16 : [[-53, 19, 16]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+17 : [[20, 19, 17]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+18 : [[17, 18, 16]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+19 : [[53, -18, -16]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+20 : [[19, 16, -20]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+21 : [[-54, 24, 21]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+22 : [[25, 24, 22]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+23 : [[22, 23, 21]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+24 : [[54, -23, -21]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+25 : [[24, 21, -25]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+26 : [[-55, 29, 26]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+27 : [[30, 29, 27]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+28 : [[27, 28, 26]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+29 : [[55, -28, -26]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+30 : [[29, 26, -30]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+31 : [[-56, 34, 31]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+32 : [[35, 34, 32]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+33 : [[32, 33, 31]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+34 : [[56, -33, -31]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+35 : [[34, 31, -35]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+36 : [[-57, 39, 36]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+37 : [[40, 39, 37]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+38 : [[37, 38, 36]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+39 : [[57, -38, -36]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+40 : [[39, 36, -40]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+41 : [[-58, 44, 41]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+42 : [[45, 44, 42]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+43 : [[42, 43, 41]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+44 : [[58, -43, -41]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+45 : [[44, 41, -45]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-11, 9, 6]]
+46 : [[-59, 49, 46]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[10, 9, 7]]
+47 : [[50, 49, 47]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[7, 8, 6]]
+48 : [[47, 48, 46]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, -8, -6]]
+49 : [[59, -48, -46]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[9, 6, -10]]
+50 : [[49, 46, -50]]
+Local network created : 10
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Experiment 1 of 2  TOPOLOGY: 4
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+1 : [[1, -5, -4]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+2 : [[1, 2]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+3 : [[-4, -3, 2]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+4 : [[-2, 4, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+5 : [[4, 3]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+6 : [[6, -10, -9]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+7 : [[6, 7, -56]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+8 : [[-9, -8, 7]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+9 : [[-7, 9, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+10 : [[9, 8, -56]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+11 : [[11, -15, -14]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+12 : [[11, 12, -57]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+13 : [[-14, -13, 12]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+14 : [[-12, 14, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+15 : [[14, 13, -57]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+16 : [[16, -20, -19]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+17 : [[16, 17, -58]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+18 : [[-19, -18, 17]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+19 : [[-17, 19, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+20 : [[19, 18, -58]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+21 : [[21, -25, -24]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+22 : [[21, 22, -59]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+23 : [[-24, -23, 22]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+24 : [[-22, 24, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+25 : [[24, 23, -59]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+26 : [[26, -30, -29]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+27 : [[26, 27, -60]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+28 : [[-29, -28, 27]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+29 : [[-27, 29, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+30 : [[29, 28, -60]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+31 : [[31, -35, -34]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+32 : [[31, 32, -61]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+33 : [[-34, -33, 32]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+34 : [[-32, 34, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+35 : [[34, 33, -61]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+36 : [[36, -40, -39]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+37 : [[36, 37, -62]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+38 : [[-39, -38, 37]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+39 : [[-37, 39, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+40 : [[39, 38, -62]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+41 : [[41, -45, -44]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+42 : [[41, 42, -63]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+43 : [[-44, -43, 42]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+44 : [[-42, 44, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+45 : [[44, 43, -63]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+46 : [[46, -50, -49]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+47 : [[46, 47, -64]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+48 : [[-49, -48, 47]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+49 : [[-47, 49, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+50 : [[49, 48, -64]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+51 : [[51, -55, -54]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+52 : [[51, 52, -65]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+53 : [[-54, -53, 52]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+54 : [[-52, 54, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+55 : [[54, 53, -65]]
+Local network created : 11
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 4194304
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 1 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+1 : [[1, -5, -4]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+2 : [[1, 2, -66]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+3 : [[-4, -3, 2]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+4 : [[-2, 4, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+5 : [[4, 3, -66]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+6 : [[6, -10, -9]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+7 : [[6, 7, -56]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+8 : [[-9, -8, 7]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+9 : [[-7, 9, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+10 : [[9, 8, -56]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+11 : [[11, -15, -14]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+12 : [[11, 12, -57]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+13 : [[-14, -13, 12]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+14 : [[-12, 14, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+15 : [[14, 13, -57]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+16 : [[16, -20, -19]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+17 : [[16, 17, -58]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+18 : [[-19, -18, 17]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+19 : [[-17, 19, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+20 : [[19, 18, -58]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+21 : [[21, -25, -24]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+22 : [[21, 22, -59]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+23 : [[-24, -23, 22]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+24 : [[-22, 24, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+25 : [[24, 23, -59]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+26 : [[26, -30, -29]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+27 : [[26, 27, -60]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+28 : [[-29, -28, 27]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+29 : [[-27, 29, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+30 : [[29, 28, -60]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+31 : [[31, -35, -34]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+32 : [[31, 32, -61]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+33 : [[-34, -33, 32]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+34 : [[-32, 34, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+35 : [[34, 33, -61]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+36 : [[36, -40, -39]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+37 : [[36, 37, -62]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+38 : [[-39, -38, 37]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+39 : [[-37, 39, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+40 : [[39, 38, -62]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+41 : [[41, -45, -44]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+42 : [[41, 42, -63]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+43 : [[-44, -43, 42]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+44 : [[-42, 44, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+45 : [[44, 43, -63]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+46 : [[46, -50, -49]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+47 : [[46, 47, -64]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+48 : [[-49, -48, 47]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+49 : [[-47, 49, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+50 : [[49, 48, -64]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[6, -10, -9]]
+51 : [[51, -55, -54]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[6, 7, -11]]
+52 : [[51, 52, -65]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[-9, -8, 7]]
+53 : [[-54, -53, 52]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[-7, 9, -8]]
+54 : [[-52, 54, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[9, 8, -11]]
+55 : [[54, 53, -65]]
+Local network created : 11
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 4194304
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+Experiment 2 of 2  TOPOLOGY: 4
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+1 : [[-4, 5, 3]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+2 : [[-4, -5]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+3 : [[2, -4, 3]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+4 : [[4, -5]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+5 : [[-4, 2]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+6 : [[-9, 10, 8]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+7 : [[-56, -9, -10]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+8 : [[7, -9, 8]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+9 : [[9, 56, -10]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+10 : [[-9, 7, -56]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+11 : [[-14, 15, 13]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+12 : [[-57, -14, -15]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+13 : [[12, -14, 13]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+14 : [[14, 57, -15]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+15 : [[-14, 12, -57]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+16 : [[-19, 20, 18]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+17 : [[-58, -19, -20]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+18 : [[17, -19, 18]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+19 : [[19, 58, -20]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+20 : [[-19, 17, -58]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+21 : [[-24, 25, 23]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+22 : [[-59, -24, -25]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+23 : [[22, -24, 23]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+24 : [[24, 59, -25]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+25 : [[-24, 22, -59]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+26 : [[-29, 30, 28]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+27 : [[-60, -29, -30]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+28 : [[27, -29, 28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+29 : [[29, 60, -30]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+30 : [[-29, 27, -60]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+31 : [[-34, 35, 33]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+32 : [[-61, -34, -35]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+33 : [[32, -34, 33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+34 : [[34, 61, -35]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+35 : [[-34, 32, -61]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+36 : [[-39, 40, 38]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+37 : [[-62, -39, -40]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+38 : [[37, -39, 38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+39 : [[39, 62, -40]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+40 : [[-39, 37, -62]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+41 : [[-44, 45, 43]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+42 : [[-63, -44, -45]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+43 : [[42, -44, 43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+44 : [[44, 63, -45]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+45 : [[-44, 42, -63]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+46 : [[-49, 50, 48]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+47 : [[-64, -49, -50]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+48 : [[47, -49, 48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+49 : [[49, 64, -50]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+50 : [[-49, 47, -64]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+51 : [[-54, 55, 53]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+52 : [[-65, -54, -55]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+53 : [[52, -54, 53]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+54 : [[54, 65, -55]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+55 : [[-54, 52, -65]]
+Local network created : 11
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 2
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 2 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+1 : [[-4, 5, 3]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+2 : [[-66, -4, -5]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+3 : [[2, -4, 3]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+4 : [[4, 66, -5]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+5 : [[-4, 2, -66]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+6 : [[-9, 10, 8]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+7 : [[-56, -9, -10]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+8 : [[7, -9, 8]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+9 : [[9, 56, -10]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+10 : [[-9, 7, -56]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+11 : [[-14, 15, 13]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+12 : [[-57, -14, -15]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+13 : [[12, -14, 13]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+14 : [[14, 57, -15]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+15 : [[-14, 12, -57]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+16 : [[-19, 20, 18]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+17 : [[-58, -19, -20]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+18 : [[17, -19, 18]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+19 : [[19, 58, -20]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+20 : [[-19, 17, -58]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+21 : [[-24, 25, 23]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+22 : [[-59, -24, -25]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+23 : [[22, -24, 23]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+24 : [[24, 59, -25]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+25 : [[-24, 22, -59]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+26 : [[-29, 30, 28]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+27 : [[-60, -29, -30]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+28 : [[27, -29, 28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+29 : [[29, 60, -30]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+30 : [[-29, 27, -60]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+31 : [[-34, 35, 33]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+32 : [[-61, -34, -35]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+33 : [[32, -34, 33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+34 : [[34, 61, -35]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+35 : [[-34, 32, -61]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+36 : [[-39, 40, 38]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+37 : [[-62, -39, -40]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+38 : [[37, -39, 38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+39 : [[39, 62, -40]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+40 : [[-39, 37, -62]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+41 : [[-44, 45, 43]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+42 : [[-63, -44, -45]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+43 : [[42, -44, 43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+44 : [[44, 63, -45]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+45 : [[-44, 42, -63]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+46 : [[-49, 50, 48]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+47 : [[-64, -49, -50]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+48 : [[47, -49, 48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+49 : [[49, 64, -50]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+50 : [[-49, 47, -64]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[-9, 10, 8]]
+51 : [[-54, 55, 53]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-11, -9, -10]]
+52 : [[-65, -54, -55]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[7, -9, 8]]
+53 : [[52, -54, 53]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[9, 11, -10]]
+54 : [[54, 65, -55]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[-9, 7, -11]]
+55 : [[-54, 52, -65]]
+Local network created : 11
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Experiment 1 of 2  TOPOLOGY: 4
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+1 : [[-3, -2, 1]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+2 : [[-2, 5, 3]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+3 : [[4, -5, 2]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+4 : [[4, -1, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+5 : [[-1, 4, 3]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+6 : [[-8, -7, 6]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+7 : [[-7, 10, 8]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+8 : [[9, -10, 7]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+9 : [[9, -6, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+10 : [[-6, 9, 8]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+11 : [[-13, -12, 11]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+12 : [[-12, 15, 13]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+13 : [[14, -15, 12]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+14 : [[14, -11, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+15 : [[-11, 14, 13]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+16 : [[-18, -17, 16]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+17 : [[-17, 20, 18]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+18 : [[19, -20, 17]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+19 : [[19, -16, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+20 : [[-16, 19, 18]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+21 : [[-23, -22, 21]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+22 : [[-22, 25, 23]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+23 : [[24, -25, 22]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+24 : [[24, -21, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+25 : [[-21, 24, 23]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+26 : [[-28, -27, 26]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+27 : [[-27, 30, 28]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+28 : [[29, -30, 27]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+29 : [[29, -26, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+30 : [[-26, 29, 28]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+31 : [[-33, -32, 31]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+32 : [[-32, 35, 33]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+33 : [[34, -35, 32]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+34 : [[34, -31, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+35 : [[-31, 34, 33]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+36 : [[-38, -37, 36]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+37 : [[-37, 40, 38]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+38 : [[39, -40, 37]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+39 : [[39, -36, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+40 : [[-36, 39, 38]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+41 : [[-43, -42, 41]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+42 : [[-42, 45, 43]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+43 : [[44, -45, 42]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+44 : [[44, -41, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+45 : [[-41, 44, 43]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+46 : [[-48, -47, 46]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+47 : [[-47, 50, 48]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+48 : [[49, -50, 47]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+49 : [[49, -46, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+50 : [[-46, 49, 48]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+51 : [[-53, -52, 51]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+52 : [[-52, 55, 53]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+53 : [[54, -55, 52]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+54 : [[54, -51, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+55 : [[-51, 54, 53]]
+Local network created : 11
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 12
+-------------------------------------------------
+Local Variable index: 56
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+56 : [[-58, -57, 56]]
+-------------------------------------------------
+Local Variable index: 57
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+57 : [[-57, 60, 58]]
+-------------------------------------------------
+Local Variable index: 58
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+58 : [[59, -60, 57]]
+-------------------------------------------------
+Local Variable index: 59
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+59 : [[59, -56, -58]]
+-------------------------------------------------
+Local Variable index: 60
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+60 : [[-56, 59, 58]]
+Local network created : 12
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 12
+-------------------------------------------------
+Network: 12  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 12  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 531441
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 1 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+1 : [[-3, -2, 1]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+2 : [[-2, 5, 3]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+3 : [[4, -5, 2]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+4 : [[4, -1, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+5 : [[-1, 4, 3]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+6 : [[-8, -7, 6]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+7 : [[-7, 10, 8]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+8 : [[9, -10, 7]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+9 : [[9, -6, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+10 : [[-6, 9, 8]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+11 : [[-13, -12, 11]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+12 : [[-12, 15, 13]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+13 : [[14, -15, 12]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+14 : [[14, -11, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+15 : [[-11, 14, 13]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+16 : [[-18, -17, 16]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+17 : [[-17, 20, 18]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+18 : [[19, -20, 17]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+19 : [[19, -16, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+20 : [[-16, 19, 18]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+21 : [[-23, -22, 21]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+22 : [[-22, 25, 23]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+23 : [[24, -25, 22]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+24 : [[24, -21, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+25 : [[-21, 24, 23]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+26 : [[-28, -27, 26]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+27 : [[-27, 30, 28]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+28 : [[29, -30, 27]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+29 : [[29, -26, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+30 : [[-26, 29, 28]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+31 : [[-33, -32, 31]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+32 : [[-32, 35, 33]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+33 : [[34, -35, 32]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+34 : [[34, -31, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+35 : [[-31, 34, 33]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+36 : [[-38, -37, 36]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+37 : [[-37, 40, 38]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+38 : [[39, -40, 37]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+39 : [[39, -36, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+40 : [[-36, 39, 38]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+41 : [[-43, -42, 41]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+42 : [[-42, 45, 43]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+43 : [[44, -45, 42]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+44 : [[44, -41, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+45 : [[-41, 44, 43]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+46 : [[-48, -47, 46]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+47 : [[-47, 50, 48]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+48 : [[49, -50, 47]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+49 : [[49, -46, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+50 : [[-46, 49, 48]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+51 : [[-53, -52, 51]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+52 : [[-52, 55, 53]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+53 : [[54, -55, 52]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+54 : [[54, -51, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+55 : [[-51, 54, 53]]
+Local network created : 11
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 12
+-------------------------------------------------
+Local Variable index: 56
+Template Variable index: 6
+CNF Function: [[-8, -7, 6]]
+56 : [[-58, -57, 56]]
+-------------------------------------------------
+Local Variable index: 57
+Template Variable index: 7
+CNF Function: [[-7, 10, 8]]
+57 : [[-57, 60, 58]]
+-------------------------------------------------
+Local Variable index: 58
+Template Variable index: 8
+CNF Function: [[9, -10, 7]]
+58 : [[59, -60, 57]]
+-------------------------------------------------
+Local Variable index: 59
+Template Variable index: 9
+CNF Function: [[9, -6, -8]]
+59 : [[59, -56, -58]]
+-------------------------------------------------
+Local Variable index: 60
+Template Variable index: 10
+CNF Function: [[-6, 9, 8]]
+60 : [[-56, 59, 58]]
+Local network created : 12
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 12
+-------------------------------------------------
+Network: 12  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 12  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 531441
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+Experiment 2 of 2  TOPOLOGY: 4
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+1 : [[3, -2, 5]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+2 : [[1, -3]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+3 : [[-5, -3]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+4 : [[1, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+5 : [[5, 3, 4]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+6 : [[8, -7, 10]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+7 : [[-61, 6, -8]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+8 : [[-10, 61, -8]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+9 : [[61, 6, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+10 : [[10, 8, 9]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+11 : [[13, -12, 15]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+12 : [[-62, 11, -13]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+13 : [[-15, 62, -13]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+14 : [[62, 11, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+15 : [[15, 13, 14]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+16 : [[18, -17, 20]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+17 : [[-63, 16, -18]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+18 : [[-20, 63, -18]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+19 : [[63, 16, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+20 : [[20, 18, 19]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+21 : [[23, -22, 25]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+22 : [[-64, 21, -23]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+23 : [[-25, 64, -23]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+24 : [[64, 21, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+25 : [[25, 23, 24]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+26 : [[28, -27, 30]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+27 : [[-65, 26, -28]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+28 : [[-30, 65, -28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+29 : [[65, 26, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+30 : [[30, 28, 29]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+31 : [[33, -32, 35]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+32 : [[-66, 31, -33]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+33 : [[-35, 66, -33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+34 : [[66, 31, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+35 : [[35, 33, 34]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+36 : [[38, -37, 40]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+37 : [[-67, 36, -38]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+38 : [[-40, 67, -38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+39 : [[67, 36, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+40 : [[40, 38, 39]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+41 : [[43, -42, 45]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+42 : [[-68, 41, -43]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+43 : [[-45, 68, -43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+44 : [[68, 41, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+45 : [[45, 43, 44]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+46 : [[48, -47, 50]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+47 : [[-69, 46, -48]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+48 : [[-50, 69, -48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+49 : [[69, 46, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+50 : [[50, 48, 49]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+51 : [[53, -52, 55]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+52 : [[-70, 51, -53]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+53 : [[-55, 70, -53]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+54 : [[70, 51, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+55 : [[55, 53, 54]]
+Local network created : 11
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 12
+-------------------------------------------------
+Local Variable index: 56
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+56 : [[58, -57, 60]]
+-------------------------------------------------
+Local Variable index: 57
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+57 : [[-71, 56, -58]]
+-------------------------------------------------
+Local Variable index: 58
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+58 : [[-60, 71, -58]]
+-------------------------------------------------
+Local Variable index: 59
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+59 : [[71, 56, -58]]
+-------------------------------------------------
+Local Variable index: 60
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+60 : [[60, 58, 59]]
+Local network created : 12
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: None
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 12
+-------------------------------------------------
+Network: 12  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 12  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+Experiment 2 of 2  TOPOLOGY: 3
+-------------------------------------------------
+Local Network: 1
+-------------------------------------------------
+Local Variable index: 1
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+1 : [[3, -2, 5]]
+-------------------------------------------------
+Local Variable index: 2
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+2 : [[-72, 1, -3]]
+-------------------------------------------------
+Local Variable index: 3
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+3 : [[-5, 72, -3]]
+-------------------------------------------------
+Local Variable index: 4
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+4 : [[72, 1, -3]]
+-------------------------------------------------
+Local Variable index: 5
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+5 : [[5, 3, 4]]
+Local network created : 1
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 2
+-------------------------------------------------
+Local Variable index: 6
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+6 : [[8, -7, 10]]
+-------------------------------------------------
+Local Variable index: 7
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+7 : [[-61, 6, -8]]
+-------------------------------------------------
+Local Variable index: 8
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+8 : [[-10, 61, -8]]
+-------------------------------------------------
+Local Variable index: 9
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+9 : [[61, 6, -8]]
+-------------------------------------------------
+Local Variable index: 10
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+10 : [[10, 8, 9]]
+Local network created : 2
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 3
+-------------------------------------------------
+Local Variable index: 11
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+11 : [[13, -12, 15]]
+-------------------------------------------------
+Local Variable index: 12
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+12 : [[-62, 11, -13]]
+-------------------------------------------------
+Local Variable index: 13
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+13 : [[-15, 62, -13]]
+-------------------------------------------------
+Local Variable index: 14
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+14 : [[62, 11, -13]]
+-------------------------------------------------
+Local Variable index: 15
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+15 : [[15, 13, 14]]
+Local network created : 3
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 4
+-------------------------------------------------
+Local Variable index: 16
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+16 : [[18, -17, 20]]
+-------------------------------------------------
+Local Variable index: 17
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+17 : [[-63, 16, -18]]
+-------------------------------------------------
+Local Variable index: 18
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+18 : [[-20, 63, -18]]
+-------------------------------------------------
+Local Variable index: 19
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+19 : [[63, 16, -18]]
+-------------------------------------------------
+Local Variable index: 20
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+20 : [[20, 18, 19]]
+Local network created : 4
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 5
+-------------------------------------------------
+Local Variable index: 21
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+21 : [[23, -22, 25]]
+-------------------------------------------------
+Local Variable index: 22
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+22 : [[-64, 21, -23]]
+-------------------------------------------------
+Local Variable index: 23
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+23 : [[-25, 64, -23]]
+-------------------------------------------------
+Local Variable index: 24
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+24 : [[64, 21, -23]]
+-------------------------------------------------
+Local Variable index: 25
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+25 : [[25, 23, 24]]
+Local network created : 5
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 6
+-------------------------------------------------
+Local Variable index: 26
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+26 : [[28, -27, 30]]
+-------------------------------------------------
+Local Variable index: 27
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+27 : [[-65, 26, -28]]
+-------------------------------------------------
+Local Variable index: 28
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+28 : [[-30, 65, -28]]
+-------------------------------------------------
+Local Variable index: 29
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+29 : [[65, 26, -28]]
+-------------------------------------------------
+Local Variable index: 30
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+30 : [[30, 28, 29]]
+Local network created : 6
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 7
+-------------------------------------------------
+Local Variable index: 31
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+31 : [[33, -32, 35]]
+-------------------------------------------------
+Local Variable index: 32
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+32 : [[-66, 31, -33]]
+-------------------------------------------------
+Local Variable index: 33
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+33 : [[-35, 66, -33]]
+-------------------------------------------------
+Local Variable index: 34
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+34 : [[66, 31, -33]]
+-------------------------------------------------
+Local Variable index: 35
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+35 : [[35, 33, 34]]
+Local network created : 7
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 8
+-------------------------------------------------
+Local Variable index: 36
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+36 : [[38, -37, 40]]
+-------------------------------------------------
+Local Variable index: 37
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+37 : [[-67, 36, -38]]
+-------------------------------------------------
+Local Variable index: 38
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+38 : [[-40, 67, -38]]
+-------------------------------------------------
+Local Variable index: 39
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+39 : [[67, 36, -38]]
+-------------------------------------------------
+Local Variable index: 40
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+40 : [[40, 38, 39]]
+Local network created : 8
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 9
+-------------------------------------------------
+Local Variable index: 41
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+41 : [[43, -42, 45]]
+-------------------------------------------------
+Local Variable index: 42
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+42 : [[-68, 41, -43]]
+-------------------------------------------------
+Local Variable index: 43
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+43 : [[-45, 68, -43]]
+-------------------------------------------------
+Local Variable index: 44
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+44 : [[68, 41, -43]]
+-------------------------------------------------
+Local Variable index: 45
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+45 : [[45, 43, 44]]
+Local network created : 9
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 10
+-------------------------------------------------
+Local Variable index: 46
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+46 : [[48, -47, 50]]
+-------------------------------------------------
+Local Variable index: 47
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+47 : [[-69, 46, -48]]
+-------------------------------------------------
+Local Variable index: 48
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+48 : [[-50, 69, -48]]
+-------------------------------------------------
+Local Variable index: 49
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+49 : [[69, 46, -48]]
+-------------------------------------------------
+Local Variable index: 50
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+50 : [[50, 48, 49]]
+Local network created : 10
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 11
+-------------------------------------------------
+Local Variable index: 51
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+51 : [[53, -52, 55]]
+-------------------------------------------------
+Local Variable index: 52
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+52 : [[-70, 51, -53]]
+-------------------------------------------------
+Local Variable index: 53
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+53 : [[-55, 70, -53]]
+-------------------------------------------------
+Local Variable index: 54
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+54 : [[70, 51, -53]]
+-------------------------------------------------
+Local Variable index: 55
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+55 : [[55, 53, 54]]
+Local network created : 11
+-------------------------------------------------
+-------------------------------------------------
+Local Network: 12
+-------------------------------------------------
+Local Variable index: 56
+Template Variable index: 6
+CNF Function: [[8, -7, 10]]
+56 : [[58, -57, 60]]
+-------------------------------------------------
+Local Variable index: 57
+Template Variable index: 7
+CNF Function: [[-11, 6, -8]]
+57 : [[-71, 56, -58]]
+-------------------------------------------------
+Local Variable index: 58
+Template Variable index: 8
+CNF Function: [[-10, 11, -8]]
+58 : [[-60, 71, -58]]
+-------------------------------------------------
+Local Variable index: 59
+Template Variable index: 9
+CNF Function: [[11, 6, -8]]
+59 : [[71, 56, -58]]
+-------------------------------------------------
+Local Variable index: 60
+Template Variable index: 10
+CNF Function: [[10, 8, 9]]
+60 : [[60, 58, 59]]
+Local network created : 12
+-------------------------------------------------
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 12
+-------------------------------------------------
+Network: 12  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 12  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 10
+-------------------------------------------------
+Network: 10  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 10  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 9
+-------------------------------------------------
+Network: 9  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 9  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 11
+-------------------------------------------------
+Network: 11  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 11  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 1
+Experiment saved in: exp5_aleatory_linear_circle_10_12_2.csv
+=================================================
+*************************************************
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Time experiment (in seconds):  23083.047779083252
+End experiment
+Filename: experiments/structural/3_linear_circle/exp5_aleatory_linear_circle.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+    17    124.5 MiB    124.5 MiB           1   @profile
+    18                                         def run_script():
+    19                                             # experiment parameters
+    20    124.5 MiB      0.0 MiB           1       N_SAMPLES = 2
+    21    124.5 MiB      0.0 MiB           1       N_LOCAL_NETWORKS_MIN = 10
+    22    124.5 MiB      0.0 MiB           1       N_LOCAL_NETWORKS_MAX = 12
+    23    124.5 MiB      0.0 MiB           1       N_VAR_NETWORK = 5
+    24    124.5 MiB      0.0 MiB           1       N_OUTPUT_VARIABLES = 2
+    25    124.5 MiB      0.0 MiB           1       N_INPUT_VARIABLES = 2
+    26                                             # V_TOPOLOGY = 3  # cycle graph
+    27    124.5 MiB      0.0 MiB           1       N_CLAUSES_FUNCTION = 2
+    28    124.5 MiB      0.0 MiB           1       N_DIRECTED_EDGES = 1
+    29
+    30                                             # verbose parameters
+    31    124.5 MiB      0.0 MiB           1       SHOW_MESSAGES = True
+    32
+    33                                             # Begin the Experiment
+    34                                             # Capture the time for all the experiment
+    35    124.5 MiB      0.0 MiB           1       v_begin_exp = time.time()
+    36
+    37                                             # generate the experiment path and save the data in csv
+    38    124.5 MiB      0.0 MiB           7       path = ("exp5_aleatory_linear_circle_"
+    39    124.5 MiB      0.0 MiB           2               + str(N_LOCAL_NETWORKS_MIN) + "_"
+    40    124.5 MiB      0.0 MiB           1               + str(N_LOCAL_NETWORKS_MAX)
+    41    124.5 MiB      0.0 MiB           3               + "_" + str(N_SAMPLES) + ".csv")
+    42
+    43                                             # Erase the file if exists
+    44    124.5 MiB      0.0 MiB           1       if os.path.exists(path):
+    45                                                 os.remove(path)
+    46                                                 print("Existing file deleted:", path)
+    47
+    48                                             # Begin the process
+    49    154.7 MiB      0.0 MiB           4       for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
+    50    821.2 MiB  -1930.2 MiB           9           for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
+    51                                                     # generate the aleatory local network template
+    52    821.2 MiB  -2527.3 MiB          12               d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(
+    53    821.2 MiB  -1263.6 MiB           6                   n_var_network=N_VAR_NETWORK)
+    54    821.2 MiB  -5128.6 MiB          18               for v_topology in [4, 3]:
+    55    821.2 MiB  -3198.5 MiB          12                   l_data_sample = []
+    56    821.2 MiB  -3198.5 MiB          12                   print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", v_topology)
+    57
+    58    821.2 MiB  -7831.9 MiB          24                   o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=v_topology,
+    59    821.2 MiB  -3198.5 MiB          12                                                                         d_variable_cnf_function=d_variable_cnf_function,
+    60    821.2 MiB  -3198.5 MiB          12                                                                         l_var_exit=l_var_exit,
+    61    821.2 MiB  -3198.5 MiB          12                                                                         n_local_networks=n_local_networks,
+    62    821.2 MiB  -3198.5 MiB          12                                                                         n_var_network=N_VAR_NETWORK)
+    63
+    64                                                         # find attractors
+    65    154.7 MiB  -4633.6 MiB          12                   v_begin_find_attractors = time.time()
+    66    154.7 MiB     -0.2 MiB          12                   o_cbn.find_local_attractors_optimized()
+    67    154.7 MiB     -1.0 MiB          12                   v_end_find_attractors = time.time()
+    68    154.7 MiB     -1.0 MiB          12                   n_time_find_attractors = v_end_find_attractors - v_begin_find_attractors
+    69
+    70                                                         # find the compatible pairs
+    71    154.7 MiB     -1.0 MiB          12                   v_begin_find_pairs = time.time()
+    72    154.7 MiB     -1.0 MiB          12                   o_cbn.find_compatible_pairs()
+    73    154.7 MiB     -1.0 MiB          12                   v_end_find_pairs = time.time()
+    74    154.7 MiB     -1.0 MiB          12                   n_time_find_pairs = v_end_find_pairs - v_begin_find_pairs
+    75
+    76                                                         # Find attractor fields
+    77    154.7 MiB     -1.0 MiB          12                   v_begin_find_fields = time.time()
+    78    821.2 MiB   1462.7 MiB          12                   o_cbn.find_attractor_fields()
+    79    821.2 MiB  -3865.0 MiB          12                   v_end_find_fields = time.time()
+    80    821.2 MiB  -3865.0 MiB          12                   n_time_find_fields = v_end_find_fields - v_begin_find_fields
+    81
+    82                                                         # collect indicators
+    83    821.2 MiB  -3865.0 MiB          12                   d_collect_indicators = {
+    84                                                             # initial parameters
+    85    821.2 MiB  -3865.0 MiB          12                       "i_sample": i_sample,
+    86    821.2 MiB  -3865.0 MiB          12                       "n_local_networks": n_local_networks,
+    87    821.2 MiB  -3865.0 MiB          12                       "n_var_network": N_VAR_NETWORK,
+    88    821.2 MiB  -3865.0 MiB          12                       "v_topology": v_topology,
+    89    821.2 MiB  -3865.0 MiB          12                       "n_output_variables": N_OUTPUT_VARIABLES,
+    90    821.2 MiB  -3865.0 MiB          12                       "n_clauses_function": N_CLAUSES_FUNCTION,
+    91                                                             # calculate parameters
+    92    821.2 MiB  -3865.0 MiB          12                       "n_local_attractors": o_cbn.get_n_local_attractors(),
+    93    821.2 MiB  -3865.0 MiB          12                       "n_pair_attractors": o_cbn.get_n_pair_attractors(),
+    94    821.2 MiB  -3865.0 MiB          12                       "n_attractor_fields": o_cbn.get_n_attractor_fields(),
+    95                                                             # time parameters
+    96    821.2 MiB  -3865.0 MiB          12                       "n_time_find_attractors": n_time_find_attractors,
+    97    821.2 MiB  -3865.0 MiB          12                       "n_time_find_pairs": n_time_find_pairs,
+    98    821.2 MiB  -3865.0 MiB          12                       "n_time_find_fields": n_time_find_fields
+    99                                                         }
+   100    821.2 MiB  -3865.0 MiB          12                   l_data_sample.append(d_collect_indicators)
+   101
+   102                                                         # save the collected indicator to analysis
+   103    821.2 MiB  -3864.6 MiB          12                   pf_res = pd.DataFrame(l_data_sample)
+   104    821.2 MiB  -3865.0 MiB          12                   pf_res.reset_index(drop=True, inplace=True)
+   105
+   106                                                         # if the file exist, open the 'a' mode (append), else create a new file
+   107    821.2 MiB  -3865.0 MiB          12                   mode = 'a' if os.path.exists(path) else 'w'
+   108                                                         # Add the header only if is a new file
+   109    821.2 MiB  -3865.0 MiB          12                   header = not os.path.exists(path)
+   110                                                         #  save the data in csv file
+   111    821.2 MiB  -3864.6 MiB          12                   pf_res.to_csv(path, mode=mode, header=header, index=False)
+   112
+   113    821.2 MiB  -3865.0 MiB          12                   print("Experiment saved in:", path)
+   114    821.2 MiB  -3865.0 MiB          12                   CustomText.print_duplex_line()
+   115    821.2 MiB  -1930.2 MiB           6               CustomText.print_stars()
+   116    154.7 MiB  -1339.4 MiB           3           CustomText.print_dollars()
+   117
+   118                                             # Take the time of the experiment
+   119    154.7 MiB      0.0 MiB           1       v_end_exp = time.time()
+   120    154.7 MiB      0.0 MiB           1       v_time_exp = v_end_exp - v_begin_exp
+   121    154.7 MiB      0.0 MiB           1       print("Time experiment (in seconds): ", v_time_exp)
+   122
+   123    154.7 MiB      0.0 MiB           1       print("End experiment")
+
+
+(venv) carlos@carlos-desktop:~/Projects/cbnetwork$
+
+
+
+
