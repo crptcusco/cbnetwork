@@ -1,4 +1,5 @@
 # external imports
+import itertools
 import random                                           # generate random numbers
 import networkx as nx                                   # generate networks
 from itertools import product                           # generate the permutations te result in tuples
@@ -13,7 +14,6 @@ import heapq
 from string import ascii_lowercase, ascii_uppercase     # import the list of uppercase and lowercase letters
 from itertools import product                           # generate combinations of numbers
 from collections import namedtuple                      # structures like trees
-from classes.utils.customtext import CustomText         # utils for texts
 
 # external imports
 import os
