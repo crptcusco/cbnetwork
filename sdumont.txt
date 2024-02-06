@@ -1,0 +1,132 @@
+Number of attractor fields found: 0
+Experiment saved in: exp5_aleatory_linear_circle_10_12_20.csv
+=================================================
+*************************************************
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+Time experiment (in seconds):  54.88234543800354
+End experiment
+Filename: sdumont.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+  1829     57.7 MiB     57.7 MiB           1   @profile
+  1830                                         def run_script():
+  1831                                             # experiment parameters
+  1832     57.7 MiB      0.0 MiB           1       N_SAMPLES = 20
+  1833     57.7 MiB      0.0 MiB           1       N_LOCAL_NETWORKS_MIN = 10
+  1834     57.7 MiB      0.0 MiB           1       N_LOCAL_NETWORKS_MAX = 12
+  1835     57.7 MiB      0.0 MiB           1       N_VAR_NETWORK = 5
+  1836     57.7 MiB      0.0 MiB           1       N_OUTPUT_VARIABLES = 2
+  1837     57.7 MiB      0.0 MiB           1       N_INPUT_VARIABLES = 2
+  1838                                             # V_TOPOLOGY = 3  # cycle graph
+  1839     57.7 MiB      0.0 MiB           1       N_CLAUSES_FUNCTION = 2
+  1840     57.7 MiB      0.0 MiB           1       N_DIRECTED_EDGES = 1
+  1841
+  1842                                             # verbose parameters
+  1843     57.7 MiB      0.0 MiB           1       SHOW_MESSAGES = True
+  1844
+  1845                                             # Begin the Experiment
+  1846                                             # Capture the time for all the experiment
+  1847     57.7 MiB      0.0 MiB           1       v_begin_exp = time.time()
+  1848
+  1849                                             # generate the experiment path and save the data in csv
+  1850                                             path = ("exp5_aleatory_linear_circle_"
+  1851                                                     + str(N_LOCAL_NETWORKS_MIN) + "_"
+  1852                                                     + str(N_LOCAL_NETWORKS_MAX)
+  1853     57.7 MiB      0.0 MiB           1               + "_" + str(N_SAMPLES) + ".csv")
+  1854
+  1855                                             # Erase the file if exists
+  1856     57.7 MiB      0.0 MiB           1       if os.path.exists(path):
+  1857                                                 os.remove(path)
+  1858                                                 print("Existing file deleted:", path)
+  1859
+  1860                                             # Begin the process
+  1861     59.7 MiB      0.0 MiB           4       for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
+  1862     59.7 MiB      0.0 MiB          63           for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
+  1863                                                     # generate the aleatory local network template
+  1864     59.7 MiB      0.0 MiB          60               d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(
+  1865     59.7 MiB      0.0 MiB          60                   n_var_network=N_VAR_NETWORK)
+  1866     59.7 MiB      0.0 MiB         180               for v_topology in [4, 3]:
+  1867     59.7 MiB      0.0 MiB         120                   l_data_sample = []
+  1868     59.7 MiB      0.0 MiB         120                   print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", v_topology)
+  1869
+  1870     59.7 MiB      0.0 MiB         120                   o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=v_topology,
+  1871     59.7 MiB      0.0 MiB         120                                                                         d_variable_cnf_function=d_variable_cnf_function,
+  1872     59.7 MiB      0.0 MiB         120                                                                         l_var_exit=l_var_exit,
+  1873     59.7 MiB      0.0 MiB         120                                                                         n_local_networks=n_local_networks,
+  1874     59.7 MiB      1.3 MiB         120                                                                         n_var_network=N_VAR_NETWORK)
+  1875
+  1876                                                         # find attractors
+  1877     59.7 MiB      0.0 MiB         120                   v_begin_find_attractors = time.time()
+  1878     59.7 MiB      0.3 MiB         120                   o_cbn.find_local_attractors_optimized()
+  1879     59.7 MiB      0.0 MiB         120                   v_end_find_attractors = time.time()
+  1880     59.7 MiB      0.0 MiB         120                   n_time_find_attractors = v_end_find_attractors - v_begin_find_attractors
+  1881
+  1882                                                         # find the compatible pairs
+  1883     59.7 MiB      0.0 MiB         120                   v_begin_find_pairs = time.time()
+  1884     59.7 MiB      0.0 MiB         120                   o_cbn.find_compatible_pairs()
+  1885     59.7 MiB      0.0 MiB         120                   v_end_find_pairs = time.time()
+  1886     59.7 MiB      0.0 MiB         120                   n_time_find_pairs = v_end_find_pairs - v_begin_find_pairs
+  1887
+  1888                                                         # Find attractor fields
+  1889     59.7 MiB      0.0 MiB         120                   v_begin_find_fields = time.time()
+  1890     59.7 MiB      0.0 MiB         120                   o_cbn.find_attractor_fields()
+  1891     59.7 MiB      0.0 MiB         120                   v_end_find_fields = time.time()
+  1892     59.7 MiB      0.0 MiB         120                   n_time_find_fields = v_end_find_fields - v_begin_find_fields
+  1893
+  1894                                                         # collect indicators
+  1895                                                         d_collect_indicators = {
+  1896                                                             # initial parameters
+  1897     59.7 MiB      0.0 MiB         120                       "i_sample": i_sample,
+  1898     59.7 MiB      0.0 MiB         120                       "n_local_networks": n_local_networks,
+  1899     59.7 MiB      0.0 MiB         120                       "n_var_network": N_VAR_NETWORK,
+  1900     59.7 MiB      0.0 MiB         120                       "v_topology": v_topology,
+  1901     59.7 MiB      0.0 MiB         120                       "n_output_variables": N_OUTPUT_VARIABLES,
+  1902     59.7 MiB      0.0 MiB         120                       "n_clauses_function": N_CLAUSES_FUNCTION,
+  1903                                                             # calculate parameters
+  1904     59.7 MiB      0.0 MiB         120                       "n_local_attractors": o_cbn.get_n_local_attractors(),
+  1905     59.7 MiB      0.0 MiB         120                       "n_pair_attractors": o_cbn.get_n_pair_attractors(),
+  1906     59.7 MiB      0.0 MiB         120                       "n_attractor_fields": o_cbn.get_n_attractor_fields(),
+  1907                                                             # time parameters
+  1908     59.7 MiB      0.0 MiB         120                       "n_time_find_attractors": n_time_find_attractors,
+  1909     59.7 MiB      0.0 MiB         120                       "n_time_find_pairs": n_time_find_pairs,
+  1910     59.7 MiB      0.0 MiB         120                       "n_time_find_fields": n_time_find_fields
+  1911                                                         }
+  1912     59.7 MiB      0.0 MiB         120                   l_data_sample.append(d_collect_indicators)
+  1913
+  1914                                                         # save the collected indicator to analysis
+  1915     59.7 MiB      0.2 MiB         120                   pf_res = pd.DataFrame(l_data_sample)
+  1916     59.7 MiB      0.0 MiB         120                   pf_res.reset_index(drop=True, inplace=True)
+  1917
+  1918                                                         # if the file exist, open the 'a' mode (append), else create a new file
+  1919     59.7 MiB      0.0 MiB         120                   mode = 'a' if os.path.exists(path) else 'w'
+  1920                                                         # Add the header only if is a new file
+  1921     59.7 MiB      0.0 MiB         120                   header = not os.path.exists(path)
+  1922                                                         #  save the data in csv file
+  1923     59.7 MiB      0.2 MiB         120                   pf_res.to_csv(path, mode=mode, header=header, index=False)
+  1924
+  1925     59.7 MiB      0.0 MiB         120                   print("Experiment saved in:", path)
+  1926     59.7 MiB      0.0 MiB         120                   CustomText.print_duplex_line()
+  1927     59.7 MiB      0.0 MiB          60               CustomText.print_stars()
+  1928     59.7 MiB      0.0 MiB           3           CustomText.print_dollars()
+  1929
+  1930                                             # Take the time of the experiment
+  1931     59.7 MiB      0.0 MiB           1       v_end_exp = time.time()
+  1932     59.7 MiB      0.0 MiB           1       v_time_exp = v_end_exp - v_begin_exp
+  1933     59.7 MiB      0.0 MiB           1       print("Time experiment (in seconds): ", v_time_exp)
+  1934
+  1935     59.7 MiB      0.0 MiB           1       print("End experiment")
+
+
+(venv) [carlos.tovar@sdumont14 classes]$ sudo apt install minisat
+
+We trust you have received the usual lecture from the local System
+Administrator. It usually boils down to these three things:
+
+    #1) Respect the privacy of others.
+    #2) Think before you type.
+    #3) With great power comes great responsibility.
+
+[sudo] password for carlos.tovar:
+
+[7]+  Stopped                 sudo apt install minisat

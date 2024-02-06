@@ -1829,7 +1829,7 @@ using aleatory generated template for the local network
 @profile
 def run_script():
     # experiment parameters
-    N_SAMPLES = 20
+    N_SAMPLES = 500
     N_LOCAL_NETWORKS_MIN = 10
     N_LOCAL_NETWORKS_MAX = 12
     N_VAR_NETWORK = 5
