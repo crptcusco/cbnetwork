@@ -17,9 +17,9 @@ using aleatory generated template for the local network
 @profile
 def run_script():
     # experiment parameters
-    N_SAMPLES = 20
-    N_LOCAL_NETWORKS_MIN = 10
-    N_LOCAL_NETWORKS_MAX = 12
+    N_SAMPLES = 10000
+    N_LOCAL_NETWORKS_MIN = 9
+    N_LOCAL_NETWORKS_MAX = 9
     N_VAR_NETWORK = 5
     N_OUTPUT_VARIABLES = 2
     N_INPUT_VARIABLES = 2
