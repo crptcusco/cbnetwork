@@ -3,6 +3,7 @@ import os
 import time
 import pandas as pd
 from memory_profiler import profile
+import pickle
 
 # local imports
 from PathCircleTemplate import PathCircleTemplate
@@ -17,9 +18,9 @@ using aleatory generated template for the local network
 @profile
 def run_script():
     # experiment parameters
-    N_SAMPLES = 10000
-    N_LOCAL_NETWORKS_MIN = 9
-    N_LOCAL_NETWORKS_MAX = 9
+    N_SAMPLES = 10
+    N_LOCAL_NETWORKS_MIN = 12
+    N_LOCAL_NETWORKS_MAX = 12
     N_VAR_NETWORK = 5
     N_OUTPUT_VARIABLES = 2
     N_INPUT_VARIABLES = 2
@@ -34,16 +35,27 @@ def run_script():
     # Capture the time for all the experiment
     v_begin_exp = time.time()
 
-    # generate the experiment path and save the data in csv
-    path = ("exp5_aleatory_linear_circle_"
-            + str(N_LOCAL_NETWORKS_MIN) + "_"
-            + str(N_LOCAL_NETWORKS_MAX)
-            + "_" + str(N_SAMPLES) + ".csv")
+    # Experiment Name
+    experiment_name = "exp5_aleatory_linear_circle"
+
+    # Create the 'outputs' directory if it doesn't exist
+    output_folder = 'outputs'
+    os.makedirs(output_folder, exist_ok=True)
+
+    # create an experiment directory by parameters
+    directory_path = (output_folder + "/" + experiment_name + "_"
+                      + str(N_LOCAL_NETWORKS_MIN) + "_"
+                      + str(N_LOCAL_NETWORKS_MAX)
+                      + "_" + str(N_SAMPLES))
+    os.makedirs(directory_path, exist_ok=True)
+
+    # generate the experiment data file in csv
+    file_path = directory_path + '/data.csv'
 
     # Erase the file if exists
-    if os.path.exists(path):
-        os.remove(path)
-        print("Existing file deleted:", path)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print("Existing file deleted:", file_path)
 
     # Begin the process
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
@@ -104,13 +116,24 @@ def run_script():
                 pf_res.reset_index(drop=True, inplace=True)
 
                 # if the file exist, open the 'a' mode (append), else create a new file
-                mode = 'a' if os.path.exists(path) else 'w'
+                mode = 'a' if os.path.exists(file_path) else 'w'
                 # Add the header only if is a new file
-                header = not os.path.exists(path)
+                header = not os.path.exists(file_path)
                 #  save the data in csv file
-                pf_res.to_csv(path, mode=mode, header=header, index=False)
+                pf_res.to_csv(file_path, mode=mode, header=header, index=False)
 
-                print("Experiment saved in:", path)
+                print("Experiment data saved in:", file_path)
+
+                # Open a file in binary write mode (wb)
+                pickle_path = directory_path + '/cbn_' + str(i_sample) + '_' + str(v_topology) + ".pkl"
+                with open(pickle_path, 'wb') as file:
+                    # Use pickle.dump to save the object to the file
+                    pickle.dump(o_cbn, file)
+
+                # Close the file
+                file.close()
+                print("Pickle object saved in:", pickle_path)
+
                 CustomText.print_duplex_line()
             CustomText.print_stars()
         CustomText.print_dollars()
