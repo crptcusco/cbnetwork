@@ -12,6 +12,8 @@ class PathCircleTemplate:
     def __init__(self):
         pass
 
+    import random
+
     @staticmethod
     def generate_aleatory_template(n_var_network):
         """
@@ -21,7 +23,6 @@ class PathCircleTemplate:
         """
 
         # basic properties
-        index = 0
         l_var_intern = list(range(n_var_network + 1, (n_var_network * 2) + 1))
         l_var_exit = random.sample(range(1, n_var_network + 1), 2)
         l_var_external = [n_var_network * 2 + 1]
@@ -31,18 +32,27 @@ class PathCircleTemplate:
 
         # generate the aleatory dynamic
         d_variable_cnf_function = {}
-        b_flag = True
-        while b_flag:
-            for i_variable in l_var_intern:
-                # generate cnf function
-                d_variable_cnf_function[i_variable] = random.sample(l_var_total, 3)
-                d_variable_cnf_function[i_variable] = [
-                    [-element if random.choice([True, False]) else element for element
-                     in d_variable_cnf_function[i_variable]]]
-            # check if any function has the coupling signal
-            for key, value in d_variable_cnf_function.items():
-                if l_var_external[0] or -l_var_external[0] in value:
-                    b_flag = False
+
+        # select the internal variables that are going to have external variables
+        internal_vars_for_external = random.sample(l_var_intern, 2)
+
+        # generate cnf function for every internal variable
+        for i_variable in l_var_intern:
+            # evaluate if the variable is in internal_vars_for_external
+            if i_variable in internal_vars_for_external:
+                external_flag = False
+                while not external_flag:
+                    d_variable_cnf_function[i_variable] = [random.sample(l_var_total, 3)]
+                    if any(element in d_variable_cnf_function[i_variable][0] for element in l_var_external):
+                        external_flag = True
+            else:
+                # generate cnf function without external variables
+                d_variable_cnf_function[i_variable] = [random.sample(l_var_intern, 3)]
+
+            # apply negation randomly
+            d_variable_cnf_function[i_variable][0] = [
+                -element if random.choice([True, False]) else element for element
+                in d_variable_cnf_function[i_variable][0]]
 
         return d_variable_cnf_function, l_var_exit
 
@@ -63,6 +73,7 @@ class PathCircleTemplate:
                                     l_directed_edges, v_topology):
         """
         update clause from template
+        :param l_directed_edges:
         :param v_topology:
         :param l_local_networks:
         :param o_local_network:
