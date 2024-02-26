@@ -19,8 +19,8 @@ using aleatory generated template for the local network
 def run_script():
     # experiment parameters
     N_SAMPLES = 10
-    N_LOCAL_NETWORKS_MIN = 12
-    N_LOCAL_NETWORKS_MAX = 12
+    N_LOCAL_NETWORKS_MIN = 9
+    N_LOCAL_NETWORKS_MAX = 9
     N_VAR_NETWORK = 5
     N_OUTPUT_VARIABLES = 2
     N_INPUT_VARIABLES = 2
@@ -61,17 +61,14 @@ def run_script():
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
         for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
             # generate the aleatory local network template
-            d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(
-                n_var_network=N_VAR_NETWORK)
+            o_path_circle_template = PathCircleTemplate.generate_aleatory_template(
+                n_var_network=N_VAR_NETWORK, n_input_variables=2)
             for v_topology in [4, 3]:
                 l_data_sample = []
                 print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", v_topology)
 
-                o_cbn = PathCircleTemplate.generate_cbn_from_template(v_topology=v_topology,
-                                                                      d_variable_cnf_function=d_variable_cnf_function,
-                                                                      l_var_exit=l_var_exit,
-                                                                      n_local_networks=n_local_networks,
-                                                                      n_var_network=N_VAR_NETWORK)
+                o_cbn = o_path_circle_template.generate_cbn_from_template(v_topology=v_topology,
+                                                                          n_local_networks=n_local_networks)
 
                 # find attractors
                 v_begin_find_attractors = time.time()

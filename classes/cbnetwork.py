@@ -177,7 +177,7 @@ class CBN:
         pass
 
     @staticmethod
-    def generate_cbn(n_local_networks, n_var_network, v_topology, n_output_variables=2, n_input_variables=2):
+    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, n_output_variables=2, n_input_variables=2):
         """
          Generates an instance of a CBN.
 
@@ -187,7 +187,6 @@ class CBN:
              v_topology (int): The topology of the global network
              n_output_variables (int): The number of output variables
              n_input_variables (int): The number of input variables
-             o_local_network_template (object): A template for all the local networks
 
          Returns:
              CBN: The generated CBN object

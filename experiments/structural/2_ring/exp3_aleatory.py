@@ -39,8 +39,8 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
         # generate a Coupled Boolean Network with the parameters
         CustomText.print_duplex_line()
         CustomText.print_message(message="Generating the CBN...", show=SHOW_MESSAGES)
-        o_cbn = CBN.generate_cbn(n_local_networks=n_local_networks, n_var_network=N_VAR_NETWORK, v_topology=V_TOPOLOGY,
-                                 n_output_variables=N_OUTPUT_VARIABLES, n_input_variables=N_INPUT_VARIABLES)
+        o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=N_VAR_NETWORK, v_topology=V_TOPOLOGY,
+                                                      n_output_variables=N_OUTPUT_VARIABLES, n_input_variables=N_INPUT_VARIABLES)
 
         # Find attractors
         v_begin_find_attractors = time.time()

@@ -9,68 +9,80 @@ from classes.utils.customtext import CustomText
 
 
 class PathCircleTemplate:
-    def __init__(self):
-        pass
+    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes):
+        self.n_var_network = n_var_network
+        self.d_variable_cnf_function = d_variable_cnf_function
+        self.l_output_var_indexes = l_output_var_indexes
 
-    import random
+    def show(self):
+        print("Template for Path and Circle CBNs")
+        print("-" * 80)
+        print("Local dynamic:")
+        for key, value in self.d_variable_cnf_function.items():
+            print(key, ":", value)
+        print("Output variables for the coupling signal:")
+        print(self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network):
+    def generate_aleatory_template(n_var_network, n_input_variables=2, n_output_variables=2):
         """
         Generates aleatory template for a local network
+        :param n_output_variables:
+        :param n_input_variables:
         :param n_var_network:
         :return: Dictionary of cnf function for variable and list of exit variables
         """
 
         # basic properties
-        l_var_intern = list(range(n_var_network + 1, (n_var_network * 2) + 1))
-        l_var_exit = random.sample(range(1, n_var_network + 1), 2)
-        l_var_external = [n_var_network * 2 + 1]
+        l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
+        l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
+        l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
 
         # calculate properties
-        l_var_total = l_var_intern + l_var_external
+        l_var_total_indexes = l_internal_var_indexes + l_input_coupling_signal_indexes
 
         # generate the aleatory dynamic
         d_variable_cnf_function = {}
 
         # select the internal variables that are going to have external variables
-        internal_vars_for_external = random.sample(l_var_intern, 2)
+        internal_vars_for_external = random.sample(l_internal_var_indexes, n_input_variables)
 
         # generate cnf function for every internal variable
-        for i_variable in l_var_intern:
+        for i_variable in l_internal_var_indexes:
             # evaluate if the variable is in internal_vars_for_external
             if i_variable in internal_vars_for_external:
                 external_flag = False
                 while not external_flag:
-                    d_variable_cnf_function[i_variable] = [random.sample(l_var_total, 3)]
-                    if any(element in d_variable_cnf_function[i_variable][0] for element in l_var_external):
+                    d_variable_cnf_function[i_variable] = [random.sample(l_var_total_indexes, 3)]
+                    if any(element in d_variable_cnf_function[i_variable][0] for element in
+                           l_input_coupling_signal_indexes):
                         external_flag = True
             else:
                 # generate cnf function without external variables
-                d_variable_cnf_function[i_variable] = [random.sample(l_var_intern, 3)]
+                d_variable_cnf_function[i_variable] = [random.sample(l_internal_var_indexes, 3)]
 
             # apply negation randomly
             d_variable_cnf_function[i_variable][0] = [
                 -element if random.choice([True, False]) else element for element
                 in d_variable_cnf_function[i_variable][0]]
 
-        return d_variable_cnf_function, l_var_exit
+        # Generate the object of PathCircleTemplate
+        o_path_circle_template = PathCircleTemplate(n_var_network, d_variable_cnf_function, l_output_var_indexes)
+        return o_path_circle_template
 
-    @staticmethod
-    def get_output_variables_from_template(i_local_network, l_local_networks, l_var_exit):
+    def get_output_variables_from_template(self, i_local_network, l_local_networks):
         # select the internal variables
         l_variables = []
         for o_local_network in l_local_networks:
             if o_local_network.index == i_local_network:
                 # select the specific variables from variable list intern
-                for position in l_var_exit:
+                for position in self.l_output_var_indexes:
                     l_variables.append(o_local_network.l_var_intern[position - 1])
 
         return l_variables
 
-    @staticmethod
-    def update_clause_from_template(l_local_networks, o_local_network, i_local_variable, d_variable_cnf_function,
-                                    l_directed_edges, v_topology):
+    def update_clause_from_template(self, l_local_networks, o_local_network, i_local_variable, l_directed_edges,
+                                    v_topology):
         """
         update clause from template
         :param l_directed_edges:
@@ -78,7 +90,6 @@ class PathCircleTemplate:
         :param l_local_networks:
         :param o_local_network:
         :param i_local_variable:
-        :param d_variable_cnf_function:
         :return: l_clauses_node
         """
 
@@ -89,7 +100,7 @@ class PathCircleTemplate:
         # find the correct cnf function for the variables
         n_local_variables = len(l_local_networks[0].l_var_intern)
         i_template_variable = i_local_variable - ((o_local_network.index - 1) * n_local_variables) + n_local_variables
-        pre_l_clauses_node = d_variable_cnf_function[i_template_variable]
+        pre_l_clauses_node = self.d_variable_cnf_function[i_template_variable]
 
         print("Local Variable index:", i_local_variable)
         print("Template Variable index:", i_template_variable)
@@ -101,9 +112,9 @@ class PathCircleTemplate:
             # update the number of the variable
             l_clause = []
             for template_value in pre_clause:
-                # evaluate if the topology is 1_linear(4) and is the first local network and not in the list of dictionary
+                # evaluate if the topology is linear(4) and is the first local network and not in the list of dictionary
                 if (v_topology == 4 and o_local_network.index == 1
-                        and abs(template_value) not in list(d_variable_cnf_function.keys())):
+                        and abs(template_value) not in list(self.d_variable_cnf_function.keys())):
                     continue
                 else:
                     # save the symbol (+ or -) of the value True for "+" and False for "-"
@@ -131,14 +142,12 @@ class PathCircleTemplate:
         print(i_local_variable, ":", l_clauses_node)
         return l_clauses_node
 
-    @staticmethod
-    def generate_local_dynamic_with_template(l_local_networks, l_directed_edges, d_variable_cnf_function, v_topology):
+    def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
         """
         GENERATE THE DYNAMICS OF EACH LOCAL NETWORK
         :param v_topology:
         :param l_local_networks:
         :param l_directed_edges:
-        :param d_variable_cnf_function:
         :return: l_local_networks updated
         """
         number_max_of_clauses = 2
@@ -167,12 +176,11 @@ class PathCircleTemplate:
             for i_local_variable in o_local_network.l_var_intern:
                 CustomText.print_simple_line()
                 # adapting the clause template to the specific variable
-                l_clauses_node = PathCircleTemplate.update_clause_from_template(l_local_networks=l_local_networks,
-                                                                                o_local_network=o_local_network,
-                                                                                i_local_variable=i_local_variable,
-                                                                                d_variable_cnf_function=d_variable_cnf_function,
-                                                                                l_directed_edges=l_directed_edges,
-                                                                                v_topology=v_topology)
+                l_clauses_node = self.update_clause_from_template(l_local_networks=l_local_networks,
+                                                                  o_local_network=o_local_network,
+                                                                  i_local_variable=i_local_variable,
+                                                                  l_directed_edges=l_directed_edges,
+                                                                  v_topology=v_topology)
                 # generate an internal variable from satispy
                 o_variable_model = InternalVariable(index=i_local_variable,
                                                     cnf_function=l_clauses_node)
@@ -188,33 +196,20 @@ class PathCircleTemplate:
         # actualized the list of local networks
         return l_local_networks_updated
 
-    @staticmethod
-    def get_last_variable(l_local_networks):
-        """
-        search the last variable from the local network variables
-        :param l_local_networks:
-        :return:
-        """
-        last_index_variable = l_local_networks[-1].l_var_intern[-1]
-        return last_index_variable
-
-    @staticmethod
-    def generate_cbn_from_template(v_topology, d_variable_cnf_function, l_var_exit, n_local_networks, n_var_network):
+    def generate_cbn_from_template(self, v_topology, n_local_networks):
         """
         Generate a special CBN
 
         Args:
-            v_topology:
-            d_variable_cnf_function:
-            l_var_exit:
-            n_local_networks:
+            v_topology: The topology of the CBN cam be 'linear' or 'ring'
+            n_local_networks: The number of local networks
         Returns:
             A CBN generated from a template
         """
 
         # generate the local networks with the indexes and variables (without relations or dynamics)
         l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks=n_local_networks,
-                                                                         n_var_network=n_var_network)
+                                                                         n_var_network=self.n_var_network)
 
         # generate the directed edges between the local networks
         l_directed_edges = []
@@ -224,7 +219,7 @@ class PathCircleTemplate:
                                                 v_topology=v_topology)
 
         # Get the last index of the variables for the indexes of the directed edges
-        i_last_variable = PathCircleTemplate.get_last_variable(l_local_networks=l_local_networks) + 1
+        i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
 
         # generate the directed edges given the last variable generated and the selected output variables
         for relation in l_relations:
@@ -232,8 +227,8 @@ class PathCircleTemplate:
             input_local_network = relation[1]
 
             # get the output variables from template
-            l_output_variables = PathCircleTemplate.get_output_variables_from_template(output_local_network,
-                                                                                       l_local_networks, l_var_exit)
+            l_output_variables = self.get_output_variables_from_template(output_local_network,
+                                                                         l_local_networks)
 
             # generate the coupling function
             coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
@@ -256,10 +251,9 @@ class PathCircleTemplate:
             o_local_network.process_input_signals(l_input_signals=l_input_signals)
 
         # generate dynamic of the local networks with template
-        l_local_networks = PathCircleTemplate.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
-                                                                                   l_directed_edges=l_directed_edges,
-                                                                                   d_variable_cnf_function=d_variable_cnf_function,
-                                                                                   v_topology=v_topology)
+        l_local_networks = self.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
+                                                                     l_directed_edges=l_directed_edges,
+                                                                     v_topology=v_topology)
 
         # generate the special coupled boolean network
         o_special_cbn = CBN(l_local_networks=l_local_networks,

@@ -38,7 +38,8 @@ l_data_sample = []
 
 
 def process_sample(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK):
-    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK)
+    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
+                                                                                        n_input_variables=2)
 
     print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
