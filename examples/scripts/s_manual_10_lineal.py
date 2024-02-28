@@ -93,7 +93,7 @@ for o_directed_edge in o_cbn.l_directed_edges:
           "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
 
 # show attractors
-o_cbn.show_attractors()
+o_cbn.show_local_attractors()
 
 # find the compatible pairs
 o_cbn.find_compatible_pairs()

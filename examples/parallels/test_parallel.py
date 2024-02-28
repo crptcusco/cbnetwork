@@ -90,7 +90,7 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 o_cbn.find_local_attractors_parallel()
 
 # # show attractors
-o_cbn.show_attractors()
+o_cbn.show_local_attractors()
 
 # # find the compatible pairs
 # o_cbn.find_compatible_pairs()

@@ -69,7 +69,7 @@ print("CBN object created")
 
 # Find attractors
 o_cbn.find_local_attractors_optimized()
-o_cbn.show_attractors()
+o_cbn.show_local_attractors()
 
 # find the compatible pairs
 o_cbn.find_compatible_pairs()

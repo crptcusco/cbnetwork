@@ -725,19 +725,6 @@ class CBN:
         G.add_edges_from(l_networks)
         nx.draw(G)
 
-    def show_attractor_pairs(self):
-        CustomText.print_duplex_line()
-        print("LIST OF THE COMPATIBLE ATTRACTOR PAIRS")
-        for o_directed_edge in self.l_directed_edges:
-            CustomText.print_simple_line()
-            print("Edge: ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
-            for key in o_directed_edge.d_comp_pairs_attractors_by_value.keys():
-                CustomText.print_simple_line()
-                print("Coupling Variable:", o_directed_edge.index_variable, "Scene:", key)
-                for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
-                    o_pair[0].show_short()
-                    o_pair[1].show_short()
-
     def show_directed_edges(self):
         CustomText.print_duplex_line()
         print("SHOW THE DIRECTED EDGES OF THE CBN")
@@ -770,7 +757,13 @@ class CBN:
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.show()
 
-    def show_attractors(self):
+    def show_global_scenes(self):
+        CustomText.print_duplex_line()
+        print("LIST OF GLOBAL SCENES")
+        for o_global_scene in self.l_global_scenes:
+            o_global_scene.show()
+
+    def show_local_attractors(self):
         for o_network in self.l_local_networks:
             CustomText.print_duplex_line()
             print("Network:", o_network.index)
@@ -783,11 +776,18 @@ class CBN:
                     for o_state in o_attractor.l_states:
                         print(o_state.l_variable_values)
 
-    def show_global_scenes(self):
+    def show_attractor_pairs(self):
         CustomText.print_duplex_line()
-        print("LIST OF GLOBAL SCENES")
-        for o_global_scene in self.l_global_scenes:
-            o_global_scene.show()
+        print("LIST OF THE COMPATIBLE ATTRACTOR PAIRS")
+        for o_directed_edge in self.l_directed_edges:
+            CustomText.print_simple_line()
+            print("Edge: ", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network)
+            for key in o_directed_edge.d_comp_pairs_attractors_by_value.keys():
+                CustomText.print_simple_line()
+                print("Coupling Variable:", o_directed_edge.index_variable, "Scene:", key)
+                for o_pair in o_directed_edge.d_comp_pairs_attractors_by_value[key]:
+                    o_pair[0].show_short()
+                    o_pair[1].show_short()
 
     def show_attractors_fields(self):
         CustomText.print_duplex_line()
@@ -802,9 +802,9 @@ class CBN:
     def show_resume(self):
         CustomText.print_duplex_line()
         print("CBN Resume Indicators")
-        print("n_local_attractors", self.get_n_local_attractors())
-        print("n_pair_attractors", self.get_n_pair_attractors())
-        print("n_attractor_fields", self.get_n_attractor_fields())
+        print("Number of local attractors:", self.get_n_local_attractors())
+        print("Number of attractor pairs:", self.get_n_pair_attractors())
+        print("Number of attractor fields:", self.get_n_attractor_fields())
 
     # GET FUNCTIONS
     def get_network_by_index(self, index):
