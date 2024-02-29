@@ -15,8 +15,8 @@ using aleatory generated template for the local network
 
 # experiment parameters
 N_SAMPLES = 10
-N_LOCAL_NETWORKS_MIN = 9
-N_LOCAL_NETWORKS_MAX = 9
+N_LOCAL_NETWORKS_MIN = 8
+N_LOCAL_NETWORKS_MAX = 8
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -46,6 +46,10 @@ DIRECTORY_PATH = (OUTPUT_FOLDER + "/" + EXPERIMENT_NAME + "_"
                   + str(N_LOCAL_NETWORKS_MAX)
                   + "_" + str(N_SAMPLES))
 os.makedirs(DIRECTORY_PATH, exist_ok=True)
+
+# create a directory to save the pkl files
+DIRECTORY_PKL = DIRECTORY_PATH + "/pkl_cbn"
+os.makedirs(DIRECTORY_PKL, exist_ok=True)
 
 # generate the experiment data file in csv
 file_path = DIRECTORY_PATH + '/data.csv'
@@ -120,7 +124,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
             print("Experiment data saved in:", file_path)
 
             # Open a file in binary write mode (wb)
-            pickle_path = DIRECTORY_PATH + '/cbn_' + str(i_sample) + '_' + str(i_topology) + ".pkl"
+            pickle_path = DIRECTORY_PKL + '/cbn_' + str(i_sample) + '_' + str(i_topology) + ".pkl"
             with open(pickle_path, 'wb') as file:
                 # Use pickle.dump to save the object to the file
                 pickle.dump(o_cbn, file)
