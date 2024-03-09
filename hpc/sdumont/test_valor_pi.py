@@ -1,11 +1,11 @@
 #!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+# -*- coding: utf-8 -*-
 
 import parsl
 from parsl.app.app import python_app
 import random
 
-# Configura parsl
+# Configure Parsl
 parsl.load()
 
 @python_app
@@ -16,40 +16,40 @@ def monte_carlo_pi(num_samples):
         x = random.uniform(0, 1)
         y = random.uniform(0, 1)
 
-        # Verifica si el punto está dentro del círculo unitario
+        # Check if the point is inside the unit circle
         if x**2 + y**2 <= 1:
             count_inside_circle += 1
 
     return count_inside_circle
 
 def estimate_pi(num_samples, num_tasks):
-    # Calcula el número de muestras por tarea
+    # Calculate the number of samples per task
     samples_per_task = num_samples // num_tasks
 
-    # Lanza tareas paralelas para realizar la estimación
+    # Launch parallel tasks to perform the estimation
     results = [monte_carlo_pi(samples_per_task).result() for _ in range(num_tasks)]
 
-    # Suma los resultados de todas las tareas
+    # Sum the results from all tasks
     total_inside_circle = sum(results)
 
-    # Calcula la estimación de pi
+    # Calculate the estimate of pi
     pi_estimate = (total_inside_circle / num_samples) * 4
 
     return pi_estimate
 
-# Número total de muestras
+# Total number of samples
 total_samples = 1000000
 
-# Número de tareas paralelas
+# Number of parallel tasks
 num_tasks = 4
 
-# Estima el valor de pi
+# Estimate the value of pi
 pi_value = estimate_pi(total_samples, num_tasks)
 
-print(f"Estimación de pi: {pi_value}")
+print(f"Estimated value of pi: {pi_value}")
 
-# Cerrar parsl
+# Close Parsl
 parsl.clear()
 
-# Execute code in Sdumont
+# Execute code in Slurm
 # srun -N 3 -n 3 -c 1 python test_valor_pi.py
