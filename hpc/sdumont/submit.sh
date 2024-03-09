@@ -25,11 +25,11 @@ ip addr >> $NETINFO
 echo Loading modules
 #Language, applications, and other configurations
 module load python/3.8.2
-module load /scratch/app/minisat/2.2.0/
+module load /scratch/app/minisat/2.2.0
 #source /scratch/app/modulos/julia-1.5.1.sh
 
 #acessa o diretório onde o script está localizado
-/scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
+cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
 
 #executa o script
 echo Starting Test Script
