@@ -46,7 +46,7 @@ num_tasks = 4
 # Estimate the value of pi
 pi_value = estimate_pi(total_samples, num_tasks)
 
-print(f"Estimated value of pi: {pi_value}")
+print("Estimated value of pi: {}".format(pi_value))
 
 # Close Parsl
 parsl.clear()
