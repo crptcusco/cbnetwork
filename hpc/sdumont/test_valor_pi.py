@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: iso-8859-15 -*-
+
 import parsl
 from parsl.app.app import python_app
 import random
@@ -13,37 +16,37 @@ def monte_carlo_pi(num_samples):
         x = random.uniform(0, 1)
         y = random.uniform(0, 1)
 
-        # Verifica si el punto est√° dentro del c√≠rculo unitario
+        # Verifica si el punto est· dentro del cÌrculo unitario
         if x**2 + y**2 <= 1:
             count_inside_circle += 1
 
     return count_inside_circle
 
 def estimate_pi(num_samples, num_tasks):
-    # Calcula el n√∫mero de muestras por tarea
+    # Calcula el n˙mero de muestras por tarea
     samples_per_task = num_samples // num_tasks
 
-    # Lanza tareas paralelas para realizar la estimaci√≥n
+    # Lanza tareas paralelas para realizar la estimaciÛn
     results = [monte_carlo_pi(samples_per_task).result() for _ in range(num_tasks)]
 
     # Suma los resultados de todas las tareas
     total_inside_circle = sum(results)
 
-    # Calcula la estimaci√≥n de pi
+    # Calcula la estimaciÛn de pi
     pi_estimate = (total_inside_circle / num_samples) * 4
 
     return pi_estimate
 
-# N√∫mero total de muestras
+# N˙mero total de muestras
 total_samples = 1000000
 
-# N√∫mero de tareas paralelas
+# N˙mero de tareas paralelas
 num_tasks = 4
 
 # Estima el valor de pi
 pi_value = estimate_pi(total_samples, num_tasks)
 
-print(f"Estimaci√≥n de pi: {pi_value}")
+print(f"EstimaciÛn de pi: {pi_value}")
 
 # Cerrar parsl
 parsl.clear()
