@@ -36,13 +36,13 @@ module load minisat/2.2.0
 
 echo Creating the virtual enviroment
 # Try creating the virtual environment using venv (assuming Python 3.7+)
-python3 -m venv venv
+python3 -m venv /scratch/deephash/carlos.tovar/cbnetwork/venv
 
 # If 'venv' fails due to missing 'dataclasses' module, use an alternative method
 # (consult your cluster documentation or system administrator for compatible tools)
 #  <alternative_venv_creation_command> venv
 
-source venv/bin/activate  # Activate virtual environment
+source /scratch/deephash/carlos.tovar/cbnetwork/venv/activate  # Activate virtual environment
 
 # Install libraries within the virtual environment
 pip install --upgrade pip
