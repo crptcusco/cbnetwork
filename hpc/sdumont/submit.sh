@@ -22,19 +22,19 @@ cd $SLURM_SUBMIT_DIR
 echo $SLURM_SUBMIT_HOST >> $NETINFO
 ip addr >> $NETINFO
 
-echo Loading modules
+echo Loading modules ...
 #Language, applications, and other configurations
 #module load python/3.12.1
 #module load python/3.9.12
 #module load python/3.9.6
-#module load python/3.8.2
+module load python/3.8.2
 #module load python/3.9.1
 #module load python/3.7.2
-module load python/3.6.9
+#module load python/3.6.9
 module load minisat/2.2.0
 
 
-echo Creating the virtual enviroment
+echo Creating the virtual enviroment ...
 # Try creating the virtual environment using venv (assuming Python 3.7+)
 python3 -m venv venv
 
