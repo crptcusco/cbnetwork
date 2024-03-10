@@ -2,7 +2,7 @@
 #SBATCH --nodes=3            # Numero de Nós
 #SBATCH --ntasks-per-node=24 # Numero de tarefas por Nó
 #SBATCH --ntasks=384         # Numero de tarefas
-#SBATCH -p cpu_share         # Fila (partition) a ser utilizada
+#SBATCH -p cpu_shared         # Fila (partition) a ser utilizada
 #SBATCH -J CRPT              # Nome job
 #SBATCH --time=01:00:00
 #SBATCH -e log/slurm-%j.err
@@ -37,7 +37,7 @@ module load minisat/2.2.0
 echo Creating the virtual enviroment ...
 # Try creating the virtual environment using venv (assuming Python 3.7+)
 python3 -m venv venv
-
+# Path /prj/deephash/carlos.tovar/venv
 source venv/bin/activate  # Activate virtual environment
 
 # Install libraries within the virtual environment
