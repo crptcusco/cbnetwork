@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --nodes=3            # Numero de Nós
-#SBATCH --ntasks-per-node=24 # Numero de tarefas por Nó
+#SBATCH --ntasks-per-node=16 # Numero de tarefas por Nó
 #SBATCH --ntasks=384         # Numero de tarefas
 #SBATCH -p cpu         # Fila (partition) a ser utilizada
 #SBATCH -J CRPT              # Nome job
