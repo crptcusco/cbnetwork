@@ -45,6 +45,8 @@ python3 -m venv venv
 source venv/bin/activate  # Activate virtual environment
 
 # Install libraries within the virtual environment
+pip install --upgrade pip
+pip install --upgrade typeguard
 pip install parsl satispy  # Assuming you have internet access on the cluster
 
 # Now the script can access the installed libraries
