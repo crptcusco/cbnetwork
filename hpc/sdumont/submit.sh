@@ -2,7 +2,7 @@
 #SBATCH --nodes=3            # Numero de Nós
 #SBATCH --ntasks-per-node=24 # Numero de tarefas por Nó
 #SBATCH --ntasks=384         # Numero de tarefas
-#SBATCH -p cpu_shared         # Fila (partition) a ser utilizada
+#SBATCH -p cpu         # Fila (partition) a ser utilizada
 #SBATCH -J CRPT              # Nome job
 #SBATCH --time=01:00:00
 #SBATCH -e log/slurm-%j.err
