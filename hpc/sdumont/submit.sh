@@ -49,4 +49,5 @@ pip install parsl satispy  # Assuming you have internet access on the cluster
 cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
 
 echo Starting Test Script
-python3 test_valor_pi.py
+python3 test_square.py
+#python3 test_valor_pi.py
