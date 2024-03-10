@@ -1,3 +1,17 @@
+import os
+import venv
+
+
+def crear_entorno_virtual(nombre_entorno):
+    ruta_entorno = os.path.join(os.getcwd(), nombre_entorno)
+    venv.create(ruta_entorno, with_pip=True)
+
+
+# Ejemplo de uso
+crear_entorno_virtual("venv")
+
+
+
 from multiprocessing import Process
 
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --nodes=16           #Numero de Nós
+#SBATCH --nodes=3            #Numero de Nós
 #SBATCH --ntasks-per-node=24 #Numero de tarefas por Nó
 #SBATCH --ntasks=384         #Numero de tarefas
 #SBATCH -p cpu_share         #Fila (partition) a ser utilizada
@@ -24,9 +24,13 @@ ip addr >> $NETINFO
 
 echo Loading modules
 #Language, applications, and other configurations
-module load python/3.8.2
-module load /scratch/app/minisat/2.2.0
-#source /scratch/app/modulos/julia-1.5.1.sh
+module load python/3.9.12
+module load minisat/2.2.0
+
+echo Creating the virtual enviroment
+python3 -m venv venv
+source venv/bin/activate
+pip install parsl satispy
 
 #acessa o diretório onde o script está localizado
 cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont

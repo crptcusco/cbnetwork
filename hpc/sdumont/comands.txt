@@ -1,0 +1,16 @@
+# Conect by VPN to Santos Dumont
+
+# Make conecction by ssh
+ssh carlos.tovar@login.sdumont.lncc.br
+
+# Go to Directory Work
+cd /scratch/deephash/carlos.tovar/
+
+# Go to the script directory
+cd cbnetwork/hpc/sdumont/
+
+# Simple command
+cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
+
+# execute the script
+srun -p cpu_shared -N 3 -n 3 -c 1 python test_valor_pi.py
