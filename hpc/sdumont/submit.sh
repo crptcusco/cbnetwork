@@ -24,7 +24,7 @@ ip addr >> $NETINFO
 
 echo Loading modules
 #Language, applications, and other configurations
-module load python/3.9.12
+module load python/3.8.2
 module load minisat/2.2.0
 
 echo Creating the virtual enviroment
