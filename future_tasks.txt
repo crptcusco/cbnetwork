@@ -1,0 +1,43 @@
+Actually work
+- Optimized Mount attractor field's method
+- Detailed Network Graph
+- Coupled Boolean Network Dynamics Checker
+- Analise the attractors that are part of attractor fields.
+- Why the memory full
+
+
+Future Work
+- Adapt the method with parallelism and distributed
+ computing to use HPC.
+
+- With the information of topology, local functions can be
+Estimates:
+    - Estimate the number of attractor fields
+    - Infer network stability
+
+- GAN, GAT Graphy attention networks
+
+- Explore other experiments:
+    - Use attractors with more quantity of states.
+
+- Explore other forms of solutions:
+    - Heuristic Approach to find attractor fields :
+    can be (cut method, Degenerated samples...)
+    because is a factorial method (Exponential Method)
+    - Compute the fields with bases and bases
+
+- Explore other kind of networks:
+    - Probabilistic Boolean Networks
+
+
+
+
+
+
+
+
+-
+
+
+
+

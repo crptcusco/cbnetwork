@@ -1,6 +1,8 @@
 # internal imports
 import multiprocessing
 
+from matplotlib import pyplot as plt
+
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -717,13 +719,23 @@ class CBN:
         for key, value in allowed_topologies.items():
             print(key, "-", value)
 
-    def show_cbn_graph(self):
+    def show_global_cbn_graph(self):
         G = nx.DiGraph()
         l_networks = []
         for o_edge in self.l_directed_edges:
             l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
         G.add_edges_from(l_networks)
         nx.draw(G)
+        plt.show()  # show the graph explicit
+
+    def show_detailed_cbn_graph(self):
+        G = nx.DiGraph()
+        l_networks = []
+        for o_edge in self.l_directed_edges:
+            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
+        G.add_edges_from(l_networks)
+        nx.draw(G)
+        plt.show()  # show the graph explicit
 
     def show_directed_edges(self):
         CustomText.print_duplex_line()
