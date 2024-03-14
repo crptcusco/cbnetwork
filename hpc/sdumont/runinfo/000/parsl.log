@@ -1,0 +1,39 @@
+1710374685.410705 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:91 __init__ INFO: Starting DataFlowKernel with config
+Config(
+    app_cache=True, 
+    checkpoint_files=None, 
+    checkpoint_mode=None, 
+    checkpoint_period=None, 
+    executors=(ThreadPoolExecutor(
+        label='threads', 
+        max_threads=2, 
+        storage_access=None, 
+        thread_name_prefix='', 
+        working_dir=None
+    ),), 
+    garbage_collect=True, 
+    initialize_logging=True, 
+    internal_tasks_max_threads=10, 
+    max_idletime=120.0, 
+    monitoring=None, 
+    retries=0, 
+    retry_handler=None, 
+    run_dir='runinfo', 
+    strategy='simple', 
+    usage_tracking=False
+)
+1710374685.410805 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:93 __init__ INFO: Parsl version: 2024.03.04
+1710374685.410872 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.usage_tracking.usage:111 __init__ DEBUG: Tracking status: False
+1710374685.410942 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:121 __init__ INFO: Run id is: d2d7558c-8c42-4392-9c5f-76f40be3d55e
+1710374685.443480 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:128 __init__ DEBUG: Considering candidate for workflow name: /home/carlos/Projects/cbnetwork/venv/lib/python3.10/site-packages/parsl/dataflow/dflow.py
+1710374685.443549 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:128 __init__ DEBUG: Considering candidate for workflow name: /home/carlos/Projects/cbnetwork/venv/lib/python3.10/site-packages/parsl/dataflow/dflow.py
+1710374685.443578 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:128 __init__ DEBUG: Considering candidate for workflow name: /home/carlos/Projects/cbnetwork/hpc/sdumont/test_valor_pi.py
+1710374685.443602 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:134 __init__ DEBUG: Using test_valor_pi.py as workflow name
+1710374685.443696 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.memoization:163 __init__ INFO: App caching initialized
+1710374685.443735 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.jobs.strategy:143 __init__ DEBUG: Scaling strategy: simple
+1710374685.445875 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:949 submit DEBUG: Task 0 will be sent to executor threads
+1710374685.445946 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:764 _add_output_deps DEBUG: Adding output dependencies
+1710374685.445981 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:1031 submit INFO: Task 0 submitted for App monte_carlo_pi, not waiting on any dependency
+1710374685.446018 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:1037 submit DEBUG: Task 0 set to pending state with AppFuture: <AppFuture at 0x7a557c909270 state=pending>
+1710374685.446055 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.memoization:222 check_memo DEBUG: Task 0 will not be memoized
+1710374685.451359 2024-03-13 21:04:45 MainProcess-19506 MainThread-134508002467840 parsl.dataflow.dflow:727 launch_task INFO: Parsl task 0 try 0 launched on executor threads

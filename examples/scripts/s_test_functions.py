@@ -5,7 +5,7 @@ from classes.cbnetwork import CBN
 # CONSTANTS
 N_LOCAL_NETWORKS = 5
 N_LOCAL_VARIABLES = 5
-V_TOPOLOGY = 4
+V_TOPOLOGY = 3
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
 
@@ -18,8 +18,8 @@ o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               )
 o_cbn.show_cbn()
 
-# o_cbn.show_global_cbn_graph()
+o_cbn.generate_global_graph()
 
-o_cbn.show_detailed_cbn_graph()
+# o_cbn.generate_detailed_graph()
 
-CBN.show_allowed_topologies()
+# CBN.show_allowed_topologies()
