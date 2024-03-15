@@ -943,5 +943,7 @@ class CBN:
         plt.title('Global Graph')
         plt.show()
 
-    def plot_detailed_graph(self):
+    def plot_global_detailed_graph(self):
+        # Future Work
         pass
+

@@ -2,6 +2,7 @@ import random
 
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
+from igraph import Graph, plot      # Library to make graphs
 
 from classes.localscene import LocalScene, LocalAttractor, LocalState
 from classes.utils.customtext import CustomText
@@ -338,3 +339,29 @@ class LocalNetwork:
 
         print("end find attractors")
         return res
+
+    def plot_local_detailed_graph(self):
+        # Create a new directed graph
+        g = Graph(directed=True)
+
+        # Add vertices for internal and external variables
+        for var in self.l_var_intern:
+            g.add_vertex(name=var, color='blue')  # Internal variables are blue
+            print()
+        for var in self.l_var_exterm:
+            g.add_vertex(name=var, color='red')  # External variables are red
+
+        # Add edges based on the relationships in des_funct_variables
+        for o_internal_variable in self.des_funct_variables:
+            for v_clause in o_internal_variable.cnf_function:
+                for v_variable in v_clause:
+                    print(v_variable)
+                    print(o_internal_variable.index)
+                    g.add_edge(abs(v_variable), o_internal_variable.index)
+
+        # Check if the graph is not empty
+        if len(g.vs) > 0:
+            # Plot the graph
+            plot(g, bbox=(800, 600), margin=20, vertex_size=30, vertex_label=g.vs['name'], vertex_color=g.vs['color'])
+        else:
+            print("The graph is empty.")
