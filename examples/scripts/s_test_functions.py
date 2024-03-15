@@ -18,7 +18,9 @@ o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               )
 o_cbn.show_cbn()
 
-o_cbn.generate_global_graph()
+o_cbn.plot_global_graph()
+
+o_cbn.plot_detailed_graph()
 
 # o_cbn.generate_detailed_graph()
 

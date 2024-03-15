@@ -32,6 +32,7 @@ class CBN:
         self.global_graph = None
         self.d_network_color = {}
         self.graph_generate_local_nets_colors()  # Generate the colors for every local network
+        self.detailed_graph = None
 
     # FUNCTIONS
     @staticmethod
@@ -910,9 +911,37 @@ class CBN:
     def get_n_attractor_fields(self):
         return len(self.l_attractor_fields)
 
+    def create_global_graph(self):
+        # Create the global graph
+        self.global_graph = nx.DiGraph()
+
+        # Add edges from DirectedEdge objects
+        for directed_edge in self.l_directed_edges:
+            input_node = directed_edge.input_local_network
+            output_node = directed_edge.output_local_network
+            self.global_graph.add_edge(input_node, output_node)
+
     def graph_generate_local_nets_colors(self):
         # generate a list of colors for the local networks
+        self.create_global_graph()
         l_colors = list(mco.CSS4_COLORS.keys())
         random.shuffle(l_colors)
         for i, color in enumerate(l_colors):
             self.d_network_color[i] = color
+
+    def plot_global_graph(self):
+        if self.global_graph is None:
+            self.create_global_graph()
+
+        # Plot the global graph
+        plt.figure(figsize=(8, 6))
+
+        # Retrieve node colors from d_network_color dictionary
+        node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.global_graph.nodes()]
+
+        nx.draw(self.global_graph, with_labels=True, node_color=node_colors, node_size=1500, edge_color='gray', arrowsize=20)
+        plt.title('Global Graph')
+        plt.show()
+
+    def plot_detailed_graph(self):
+        pass
