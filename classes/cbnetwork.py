@@ -1,6 +1,5 @@
 # internal imports
 import multiprocessing
-
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -12,8 +11,11 @@ from classes.utils.customtext import CustomText
 import itertools
 import random  # generate random numbers
 import networkx as nx  # generate networks
-from itertools import product  # generate the permutations te result in tuples
+import igraph as ig  # library to make graphs
+import matplotlib.pyplot as plt  # library to make draws
+import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
+from itertools import product  # generate combinations of numbers
 
 
 class CBN:
@@ -25,6 +27,12 @@ class CBN:
         # calculated attributes
         self.l_global_scenes = []
         self.l_attractor_fields = []
+
+        # graphs
+        self.global_graph = None
+        self.d_network_color = {}
+        self.graph_generate_local_nets_colors()  # Generate the colors for every local network
+        self.detailed_graph = None
 
     # FUNCTIONS
     @staticmethod
@@ -177,7 +185,8 @@ class CBN:
         pass
 
     @staticmethod
-    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, n_output_variables=2, n_input_variables=2):
+    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, n_output_variables=2,
+                                          n_input_variables=2):
         """
          Generates an instance of a CBN.
 
@@ -717,13 +726,54 @@ class CBN:
         for key, value in allowed_topologies.items():
             print(key, "-", value)
 
-    def show_cbn_graph(self):
+    def generate_global_graph(self):
+        """
+        Genera un grafo que muestra las redes locales y las relaciones entre ellas utilizando la biblioteca igraph.
+        """
+
+        G = ig.Graph()
+
+        # Agregar nodos para las redes locales
+        for local_network in self.l_local_networks:
+            color = self.d_network_color[local_network.index]
+            G.add_node(local_network.index, label=f"Red {local_network.index}", color=color)
+
+        # Agregar aristas para las relaciones
+        for relation in self.des_global_relations:
+            source_network = relation[0]
+            target_network = relation[1]
+            G.add_edge(source_network, target_network)
+
+        # Mostrar el grafo
+        layout = G.layout("fr")  # Ejemplo de layout
+        visual_style = {}
+        visual_style["node_color"] = [color for color in G.vs["color"]]
+        visual_style["edge_color"] = "black"
+        ig.plot(G, layout=layout, **visual_style)
+
+    def generate_detailed_graph(self):
+        """
+        Genera un grafo detallado que muestra las variables de cada red local y las relaciones entre ellas.
+        """
+
         G = nx.DiGraph()
-        l_networks = []
-        for o_edge in self.l_directed_edges:
-            l_networks.append((o_edge.input_local_network, o_edge.output_local_network))
-        G.add_edges_from(l_networks)
-        nx.draw(G)
+
+        # Agregar nodos para las variables
+        for local_network in self.l_local_networks:
+            for variable in local_network.l_variables:
+                color = self.get_color_by_network(local_network)
+                G.add_node(variable.index, label=str(variable.index), color=color)
+
+        # Agregar aristas para las relaciones
+        for relation in self.des_funct_variables:
+            source_variable = relation[0]
+            target_variable = relation[1]
+            G.add_edge(source_variable, target_variable)
+
+        # Mostrar el grafo
+        pos = nx.spring_layout(G)  # Ejemplo de layout
+        nx.draw(G, pos=pos, with_labels=True, node_size=600, cmap="Set1")
+        plt.show()
 
     def show_directed_edges(self):
         CustomText.print_duplex_line()
@@ -860,3 +910,40 @@ class CBN:
 
     def get_n_attractor_fields(self):
         return len(self.l_attractor_fields)
+
+    def create_global_graph(self):
+        # Create the global graph
+        self.global_graph = nx.DiGraph()
+
+        # Add edges from DirectedEdge objects
+        for directed_edge in self.l_directed_edges:
+            input_node = directed_edge.input_local_network
+            output_node = directed_edge.output_local_network
+            self.global_graph.add_edge(input_node, output_node)
+
+    def graph_generate_local_nets_colors(self):
+        # generate a list of colors for the local networks
+        self.create_global_graph()
+        l_colors = list(mco.CSS4_COLORS.keys())
+        random.shuffle(l_colors)
+        for i, color in enumerate(l_colors):
+            self.d_network_color[i] = color
+
+    def plot_global_graph(self):
+        if self.global_graph is None:
+            self.create_global_graph()
+
+        # Plot the global graph
+        plt.figure(figsize=(8, 6))
+
+        # Retrieve node colors from d_network_color dictionary
+        node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.global_graph.nodes()]
+
+        nx.draw(self.global_graph, with_labels=True, node_color=node_colors, node_size=1500, edge_color='gray', arrowsize=20)
+        plt.title('Global Graph')
+        plt.show()
+
+    def plot_global_detailed_graph(self):
+        # Future Work
+        pass
+
