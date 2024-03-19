@@ -5,7 +5,7 @@ import pandas as pd
 import pickle
 
 # local imports
-from PathCircleTemplate import PathCircleTemplate
+from classes.pathcircletemplate import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """
@@ -14,7 +14,7 @@ using aleatory generated template for the local network
 """
 
 # experiment parameters
-N_SAMPLES = 1000
+N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 12
 N_LOCAL_NETWORKS_MAX = 12
 N_VAR_NETWORK = 5

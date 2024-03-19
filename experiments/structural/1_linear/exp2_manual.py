@@ -147,7 +147,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
         }
         l_data_sample.append(d_collect_indicators)
         # show the important outputs
-        o_cbn.show_resume()
+        o_cbn.show_resume_indicators()
 CustomText.print_duplex_line()
 # Take the time of the experiment
 v_end_exp = time.time()

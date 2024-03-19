@@ -87,7 +87,7 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 # Find attractors
 # o_cbn.find_local_attractors_optimized_method()
 # parallel method
-o_cbn.find_local_attractors_parallel()
+o_cbn.find_local_attractors_parsl()
 
 # # show attractors
 o_cbn.show_local_attractors()
