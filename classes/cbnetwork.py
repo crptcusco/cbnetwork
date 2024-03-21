@@ -1,5 +1,5 @@
 # internal imports
-import multiprocessing
+from parsl import python_app
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -946,4 +946,36 @@ class CBN:
     def plot_global_detailed_graph(self):
         # Future Work
         pass
+
+    @staticmethod
+    @python_app
+    def find_local_attractors_task(o_local_network, l_local_scenes):
+        from classes.localscene import LocalScene
+        from classes.localnetwork import LocalNetwork
+
+        print('=' * 80)
+        print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
+        if l_local_scenes is None:
+            o_local_scene = LocalScene(index=1)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
+            o_local_network.l_local_scenes.append(o_local_scene)
+        else:
+            v_cont_index = 1
+            for scene in l_local_scenes:
+                o_local_scene = LocalScene(v_cont_index, scene, o_local_network.l_var_exterm)
+                s_scene = ''.join(scene)
+                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
+                o_local_network.l_local_scenes.append(o_local_scene)
+                v_cont_index = v_cont_index + 1
+        return o_local_network
+
+    @staticmethod
+    def find_local_attractors_parsl(local_networks):
+        tasks = []
+        for local_network in local_networks:
+            l_local_scenes = None
+            if len(local_network.l_var_exterm) != 0:
+                l_local_scenes = list(product(list('01'), repeat=len(local_network.l_var_exterm)))
+            tasks.append(CBN.find_local_attractors_task(local_network, l_local_scenes))
+        return tasks
 
