@@ -1082,7 +1082,7 @@ class CBN:
         for directed_edge in self.l_directed_edges:
             input_node = directed_edge.input_local_network
             output_node = directed_edge.output_local_network
-            self.global_graph.add_edge(input_node, output_node)
+            self.global_graph.add_edge(output_node, input_node)
 
     def graph_generate_local_nets_colors(self):
         # generate a list of colors for the local networks
