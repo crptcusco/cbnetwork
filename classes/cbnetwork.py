@@ -625,8 +625,6 @@ class CBN:
         #     # print("New weight:", weight)
         #     o_custom_heap.update_node(o_edge.output_local_network, weight)
 
-
-
     def find_compatible_pairs(self):
         CustomText.print_duplex_line()
         print("FIND COMPATIBLE ATTRACTOR PAIRS")
@@ -819,23 +817,6 @@ class CBN:
             for base_pair in base_pairs:
                 # Iterate over the candidate attractor pairs.
                 for candidate_pair in candidate_pairs:
-                    # CustomText.print_simple_line()
-                    # print("Evaluate Candidate")
-                    # show the base
-                    # print("Base")
-                    # if isinstance(base_pair, list):
-                    #     for pair in base_pair:
-                    #         pair[0].show()
-                    #         pair[1].show()
-                    # elif isinstance(base_pair, tuple):
-                    #     base_pair[0].show()
-                    #     base_pair[1].show()
-                    # else:
-                    #     raise TypeError("Unsupported base_pair type.")
-                    # show the candidate
-                    # print("Candidate")
-                    # candidate_pair[0].show()
-                    # candidate_pair[1].show()
 
                     # Check if the candidate attractor pair is compatible with the base attractor pair.
                     if isinstance(base_pair, tuple):
