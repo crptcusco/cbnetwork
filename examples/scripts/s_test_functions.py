@@ -16,7 +16,7 @@ o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               n_output_variables=N_OUTPUT_VARIABLES,
                                               n_input_variables=N_INPUT_VARIABLES)
 
-o_cbn.show_cbn()
+o_cbn.show_description()
 
 o_cbn.find_local_attractors_optimized()
 o_cbn.show_local_attractors()

@@ -1,5 +1,9 @@
 # internal imports
+
+
 from parsl import python_app
+
+
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -19,7 +23,8 @@ from itertools import product  # generate combinations of numbers
 
 
 class CBN:
-    def __init__(self, l_local_networks, l_directed_edges):
+    def __init__(self, l_local_networks,
+                 l_directed_edges):
         # basic attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
@@ -36,7 +41,8 @@ class CBN:
 
     # FUNCTIONS
     @staticmethod
-    def generate_cbn_topology(n_nodes, v_topology=1):
+    def generate_cbn_topology(n_nodes,
+                              v_topology=1):
         # Generate a directed graph begin in 1
         G = nx.DiGraph()
         # classical topologies
@@ -73,7 +79,8 @@ class CBN:
         return list(G.edges)
 
     @staticmethod
-    def generate_local_networks_indexes_variables(n_local_networks, n_var_network):
+    def generate_local_networks_indexes_variables(n_local_networks,
+                                                  n_var_network):
         l_local_networks = []
         v_cont_var = 1
         for v_num_network in range(1, n_local_networks + 1):
@@ -88,7 +95,10 @@ class CBN:
         return l_local_networks
 
     @staticmethod
-    def generate_directed_edges(i_last_variable, l_local_networks, l_relations, n_output_variables=2):
+    def generate_directed_edges(i_last_variable,
+                                l_local_networks,
+                                l_relations,
+                                n_output_variables=2):
         l_directed_edges = []
         i_directed_edge = i_last_variable + 1
 
@@ -117,7 +127,8 @@ class CBN:
         return l_directed_edges
 
     @staticmethod
-    def find_input_edges_by_network_index(index, l_directed_edges):
+    def find_input_edges_by_network_index(index,
+                                          l_directed_edges):
         res = []
         for o_directed_edge in l_directed_edges:
             if o_directed_edge.input_local_network == index:
@@ -125,7 +136,8 @@ class CBN:
         return res
 
     @staticmethod
-    def find_output_edges_by_network_index(index, l_directed_edges):
+    def find_output_edges_by_network_index(index,
+                                           l_directed_edges):
         res = []
         for o_directed_edge in l_directed_edges:
             if o_directed_edge.output_local_network == index:
@@ -133,7 +145,9 @@ class CBN:
         return res
 
     @staticmethod
-    def generate_local_networks_variables_dynamic(l_local_networks, l_directed_edges, n_input_variables=2):
+    def generate_local_networks_variables_dynamic(l_local_networks,
+                                                  l_directed_edges,
+                                                  n_input_variables=2):
         # GENERATE THE DYNAMICS OF EACH LOCAL NETWORK
         number_max_of_clauses = 2
         number_max_of_literals = 3
@@ -180,12 +194,17 @@ class CBN:
         return l_local_networks_updated
 
     @staticmethod
-    def generate_local_networks_dynamic_from_template(l_local_networks, l_directed_edges, n_input_variables,
+    def generate_local_networks_dynamic_from_template(l_local_networks,
+                                                      l_directed_edges,
+                                                      n_input_variables,
                                                       o_local_network_template):
         pass
 
     @staticmethod
-    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, n_output_variables=2,
+    def generate_aleatory_cbn_by_topology(n_local_networks,
+                                          n_var_network,
+                                          v_topology,
+                                          n_output_variables=2,
                                           n_input_variables=2):
         """
          Generates an instance of a CBN.
@@ -510,7 +529,8 @@ class CBN:
 
     @staticmethod
     @python_app
-    def find_local_attractors_task(o_local_network, l_local_scenes):
+    def find_local_attractors_task(o_local_network,
+                                   l_local_scenes):
         from classes.localscene import LocalScene
         from classes.localnetwork import LocalNetwork
 
@@ -673,7 +693,8 @@ class CBN:
 
     @staticmethod
     @python_app
-    def find_compatible_pairs_task(o_cbn, o_output_signal):
+    def find_compatible_pairs_task(o_cbn,
+                                   o_output_signal):
         # o_output_signal.show()
         # begin functions
         l_attractors_input_0 = o_output_signal.d_out_value_to_attractor[0]
@@ -854,6 +875,105 @@ class CBN:
         print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
+    def find_attractor_fields_parsl(self):
+        """
+        Assembles compatible attractor fields.
+
+        Args:
+          List of compatible attractor pairs.
+
+        Returns:
+          List of attractor fields.
+        """
+
+        # Define una función Parsl para evaluar la compatibilidad de pares de atractores
+        @python_app
+        def evaluate_pair(base_pairs, candidate_pair):
+            """
+            Checks if a candidate attractor pair is compatible with a base attractor pair.
+
+            Args:
+              base_pairs: Base attractor pairs.
+              candidate_pair: Candidate attractor pair.
+
+            Returns:
+              Boolean value of True or False.
+            """
+
+            # Extract the RDDs from each attractor pair.
+            base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
+
+            # generate the already networks visited
+            l_already_networks = {o_attractor.network_index for o_attractor in base_attractor_pairs}
+
+            # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
+            double_check = sum(1 for candidate_attractor in candidate_pair
+                               if candidate_attractor.network_index in l_already_networks
+                               and candidate_attractor in base_attractor_pairs)
+
+            return double_check == 2
+
+        # Define una función Parsl para procesar un par de candidatos y agregarlos a la lista de campos de atracción
+        @python_app
+        def process_pair(base_pair, candidate_pair):
+            if isinstance(base_pair, tuple):
+                base_pair = [base_pair]
+            if evaluate_pair(base_pair, candidate_pair):
+                new_pair = base_pair + [candidate_pair]
+                return new_pair
+            else:
+                return None
+
+        def cartesian_product_mod_parallel(base_pairs, candidate_pairs):
+            """
+            Performs the modified Cartesian product of the attractor pairs lists.
+
+            Args:
+              base_pairs: List of base attractor pairs.
+              candidate_pairs: List of candidate attractor pairs.
+
+            Returns:
+              List of candidate attractor fields.
+            """
+
+            # Initialize the list of futures
+            futures = []
+
+            # Procesa cada par de candidatos en paralelo utilizando Parsl
+            for base_pair in base_pairs:
+                for candidate_pair in candidate_pairs:
+                    future = process_pair(base_pair, candidate_pair)
+                    futures.append(future)
+
+            # Espera a que se completen todas las tareas de Parsl y obtiene los resultados
+            field_pair_list = [task.result() for task in futures]
+
+            # Filtra los resultados nulos y devuelve la lista final
+            return [result for result in field_pair_list if result is not None]
+
+        CustomText.print_duplex_line()
+        print("FIND ATTRACTOR FIELDS")
+
+        # Order the edges by compatibility
+        self.order_edges_by_compatibility()
+
+        # generate a base list of the pairs
+        l_base = self.l_directed_edges[:2]
+
+        # generate the list of pairs made with 0 or 1
+        l_base_pairs = l_base[0].d_comp_pairs_attractors_by_value[0] + l_base[0].d_comp_pairs_attractors_by_value[1]
+
+        # for every edge make the union to the base
+        for o_directed_edge in self.l_directed_edges[1:]:
+            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
+                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
+            # join the base list with the new directed edge
+            l_base_pairs = cartesian_product_mod_parallel(l_base_pairs, l_candidate_pairs)
+
+        CustomText.print_simple_line()
+        print("Number of attractor fields found:", len(l_base_pairs))
+        self.l_attractor_fields = l_base_pairs
+
     # SHOW FUNCTIONS
     @staticmethod
     def show_allowed_topologies():
@@ -869,55 +989,6 @@ class CBN:
         }
         for key, value in allowed_topologies.items():
             print(key, "-", value)
-
-    def generate_global_graph(self):
-        """
-        Genera un grafo que muestra las redes locales y las relaciones entre ellas utilizando la biblioteca igraph.
-        """
-
-        G = ig.Graph()
-
-        # Agregar nodos para las redes locales
-        for local_network in self.l_local_networks:
-            color = self.d_network_color[local_network.index]
-            G.add_node(local_network.index, label=f"Red {local_network.index}", color=color)
-
-        # Agregar aristas para las relaciones
-        for relation in self.des_global_relations:
-            source_network = relation[0]
-            target_network = relation[1]
-            G.add_edge(source_network, target_network)
-
-        # Mostrar el grafo
-        layout = G.layout("fr")  # Ejemplo de layout
-        visual_style = {}
-        visual_style["node_color"] = [color for color in G.vs["color"]]
-        visual_style["edge_color"] = "black"
-        ig.plot(G, layout=layout, **visual_style)
-
-    def generate_detailed_graph(self):
-        """
-        Genera un grafo detallado que muestra las variables de cada red local y las relaciones entre ellas.
-        """
-
-        G = nx.DiGraph()
-
-        # Agregar nodos para las variables
-        for local_network in self.l_local_networks:
-            for variable in local_network.l_variables:
-                color = self.get_color_by_network(local_network)
-                G.add_node(variable.index, label=str(variable.index), color=color)
-
-        # Agregar aristas para las relaciones
-        for relation in self.des_funct_variables:
-            source_variable = relation[0]
-            target_variable = relation[1]
-            G.add_edge(source_variable, target_variable)
-
-        # Mostrar el grafo
-        pos = nx.spring_layout(G)  # Ejemplo de layout
-        nx.draw(G, pos=pos, with_labels=True, node_size=600, cmap="Set1")
-        plt.show()
 
     def show_directed_edges(self):
         CustomText.print_duplex_line()
@@ -938,7 +1009,7 @@ class CBN:
                 print("RESTRICTED SIGNAL")
         print("Number of restricted signals :", n_restricted_signals)
 
-    def show_cbn(self):
+    def show_description(self):
         CustomText.print_duplex_line()
         print("CBN description")
         l_local_networks_indexes = [o_local_network.index for o_local_network in self.l_local_networks]
@@ -1026,7 +1097,8 @@ class CBN:
             indexes_networks.append(i_network)
         return indexes_networks
 
-    def get_attractors_by_input_signal_value(self, index_variable_signal, signal_value):
+    def get_attractors_by_input_signal_value(self, index_variable_signal,
+                                             signal_value):
         l_attractors = []
         for o_local_network in self.l_local_networks:
             for scene in o_local_network.l_local_scenes:
