@@ -1,9 +1,4 @@
 # internal imports
-
-
-from parsl import python_app
-
-
 from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -20,6 +15,7 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
+from parsl import python_app
 
 
 class CBN:
@@ -43,40 +39,38 @@ class CBN:
     @staticmethod
     def generate_cbn_topology(n_nodes,
                               v_topology=1):
-        # Generate a directed graph begin in 1
-        G = nx.DiGraph()
         # classical topologies
         # complete_graph
         if v_topology == 1:
-            G = nx.complete_graph(n_nodes, nx.DiGraph())
+            o_graph = nx.complete_graph(n_nodes, nx.DiGraph())
         # binomial_tree
         elif v_topology == 2:
-            G = nx.binomial_tree(n_nodes, nx.DiGraph())
+            o_graph = nx.binomial_tree(n_nodes, nx.DiGraph())
         # cycle_graph
         elif v_topology == 3:
-            G = nx.cycle_graph(n_nodes, nx.DiGraph())
+            o_graph = nx.cycle_graph(n_nodes, nx.DiGraph())
         # path_graph
         elif v_topology == 4:
-            G = nx.path_graph(n_nodes, nx.DiGraph())
+            o_graph = nx.path_graph(n_nodes, nx.DiGraph())
         # aleatory topologies
         # gn_graph
         elif v_topology == 5:
-            G = nx.gn_graph(n_nodes)
+            o_graph = nx.gn_graph(n_nodes)
         elif v_topology == 6:
-            G = nx.gnc_graph(n_nodes)
+            o_graph = nx.gnc_graph(n_nodes)
         # linear_graph
         elif v_topology == 7:
-            G = nx.DiGraph()
-            G.add_nodes_from(range(1, n_nodes + 1))
+            o_graph = nx.DiGraph()
+            o_graph.add_nodes_from(range(1, n_nodes + 1))
             for i in range(1, n_nodes):
-                G.add_edge(i, i + 1)
+                o_graph.add_edge(i, i + 1)
         else:
-            G = nx.complete_graph(n_nodes, nx.DiGraph())
+            o_graph = nx.complete_graph(n_nodes, nx.DiGraph())
 
         # Renaming the label of the nodes for beginning in 1
-        mapping = {node: node + 1 for node in G.nodes()}
-        G = nx.relabel_nodes(G, mapping)
-        return list(G.edges)
+        mapping = {node: node + 1 for node in o_graph.nodes()}
+        o_graph = nx.relabel_nodes(o_graph, mapping)
+        return list(o_graph.edges)
 
     @staticmethod
     def generate_local_networks_indexes_variables(n_local_networks,
@@ -102,7 +96,6 @@ class CBN:
         l_directed_edges = []
         i_directed_edge = i_last_variable + 1
 
-        # aux1_l_local_networks = []
         for o_local_network in l_local_networks:
             l_local_networks_co = []
             for t_relation in l_relations:
@@ -121,8 +114,6 @@ class CBN:
                                                l_output_variables, coupling_function)
                 l_directed_edges.append(o_directed_edge)
                 i_directed_edge = i_directed_edge + 1
-        #     aux1_l_local_networks.append(l_var_intern)
-        # l_local_networks = aux1_l_local_networks.copy()
 
         return l_directed_edges
 
@@ -763,7 +754,7 @@ class CBN:
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         # print("Directed Edges ordered.")
 
-    def find_attractor_fields(self):
+    def find_stable_attractor_fields(self):
         """
         Assembles compatible attractor fields.
 
@@ -1054,7 +1045,7 @@ class CBN:
                     o_pair[0].show_short()
                     o_pair[1].show_short()
 
-    def show_attractors_fields(self):
+    def show_stable_attractor_fields(self):
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
         print("Number Stable Attractor Fields:", len(self.l_attractor_fields))

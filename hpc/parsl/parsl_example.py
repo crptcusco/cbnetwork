@@ -5,19 +5,13 @@ from classes.pathcircletemplate import PathCircleTemplate
 # libraries imports
 import parsl
 import logging
-from concurrent.futures import ProcessPoolExecutor
 from parsl.dataflow.dflow import logger
 
+# Parsl Configurations
 logger.disabled = True
-
-# Configura el ejecutor de Parsl con un ProcessPoolExecutor
-# parsl.set_stream_logger()
-# executor = ProcessPoolExecutor()
-logger.disabled = True
-# Configurar el nivel de registro de Parsl
+# config error messages
 parsl.set_stream_logger(level=logging.ERROR)
-
-# Cargar Parsl con la configuración proporcionada
+# load Parsl configuration
 parsl.load()
 
 
@@ -58,10 +52,11 @@ def run_experiment():
     o_cbn.show_attractor_pairs()
 
     # Find and show stable attractor fields
+    print("normal function")
     # o_cbn.find_attractor_fields()
-    print("segundo algoritmo")
+    print("parallel function")
     o_cbn.find_attractor_fields_parsl()
-    o_cbn.show_attractors_fields()
+    o_cbn.show_stable_attractor_fields()
 
     print("END OF EXPERIMENT")
 
