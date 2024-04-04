@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
-from parsl import python_app
+from parsl import python_app  # use scientific workflow
+from memory_profiler import profile  # make memory profiler analysis
 
 
 class CBN:
@@ -754,6 +755,7 @@ class CBN:
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         # print("Directed Edges ordered.")
 
+    @profile
     def find_stable_attractor_fields(self):
         """
         Assembles compatible attractor fields.
