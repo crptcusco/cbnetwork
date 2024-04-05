@@ -127,7 +127,7 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         # find the compatible pairs
         o_cbn.find_compatible_pairs()
         # Find attractor fields
-        o_cbn.find_attractor_fields()
+        o_cbn.find_stable_attractor_fields()
 
         # collect indicators
         d_collect_indicators = {

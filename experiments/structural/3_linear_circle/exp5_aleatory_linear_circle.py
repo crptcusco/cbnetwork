@@ -14,9 +14,9 @@ using aleatory generated template for the local network
 """
 
 # experiment parameters
-N_SAMPLES = 695
-N_LOCAL_NETWORKS_MIN = 10
-N_LOCAL_NETWORKS_MAX = 10
+N_SAMPLES = 10
+N_LOCAL_NETWORKS_MIN = 7
+N_LOCAL_NETWORKS_MAX = 7
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -86,7 +86,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
 
             # Find attractor fields
             v_begin_find_fields = time.time()
-            o_cbn.find_attractor_fields()
+            o_cbn.find_stable_attractor_fields()
             v_end_find_fields = time.time()
             n_time_find_fields = v_end_find_fields - v_begin_find_fields
 

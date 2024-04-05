@@ -56,7 +56,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
 
         # Find attractor fields
         v_begin_find_fields = time.time()
-        o_cbn.find_attractor_fields()
+        o_cbn.find_stable_attractor_fields()
         v_end_find_fields = time.time()
         n_time_find_fields = v_end_find_fields - v_begin_find_fields
 

@@ -1,6 +1,6 @@
-# imports
+# external imports
 
-# import locals
+# local imports
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 
@@ -25,7 +25,7 @@ o_cbn.find_local_attractors_optimized()
 o_cbn.find_compatible_pairs()
 # o_cbn.show_attractor_pairs()
 
-o_cbn.find_attractor_fields()
+o_cbn.find_stable_attractor_fields()
 # o_cbn.show_attractors_fields()
 
 # o_cbn.show_coupled_signals_kind()

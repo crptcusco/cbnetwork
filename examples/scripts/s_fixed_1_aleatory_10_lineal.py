@@ -95,7 +95,7 @@ o_cbn.find_compatible_pairs()
 o_cbn.show_attractor_pairs()
 
 # Find attractor fields
-o_cbn.find_attractor_fields()
+o_cbn.find_stable_attractor_fields()
 # o_cbn.show_attractors_fields()
 
 # show the kind of every coupled signal
