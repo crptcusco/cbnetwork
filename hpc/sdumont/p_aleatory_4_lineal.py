@@ -1,6 +1,6 @@
-# imports
+# external imports
 
-# import locals
+# local imports
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 

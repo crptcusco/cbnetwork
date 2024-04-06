@@ -1,0 +1,742 @@
+/home/carlos/Projects/cbnetwork/venv/bin/python /home/carlos/Projects/cbnetwork/analysis/memoryprofiler_analysis.py
+<classes.cbnetwork.CBN object at 0x753da78f36d0>
+=================================================
+CBN description
+-------------------------------------------------
+Local Networks: [1, 2, 3, 4, 5, 6, 7, 8]
+--------------------------------------------
+Local Network: 1
+Internal Variables:  [1, 2, 3, 4, 5]
+External Variables:  [48]
+Total Variables:  [1, 2, 3, 4, 5, 48]
+Variable Index: 1 -> CNF :[[-1, -48, 4]]
+Variable Index: 2 -> CNF :[[2, -4, 5]]
+Variable Index: 3 -> CNF :[[-4, 5, -1]]
+Variable Index: 4 -> CNF :[[2, -1, 48]]
+Variable Index: 5 -> CNF :[[-3, -5, 4]]
+--------------------------------------------
+Local Network: 2
+Internal Variables:  [6, 7, 8, 9, 10]
+External Variables:  [41]
+Total Variables:  [6, 7, 8, 9, 10, 41]
+Variable Index: 6 -> CNF :[[-6, -41, 9]]
+Variable Index: 7 -> CNF :[[7, -9, 10]]
+Variable Index: 8 -> CNF :[[-9, 10, -6]]
+Variable Index: 9 -> CNF :[[7, -6, 41]]
+Variable Index: 10 -> CNF :[[-8, -10, 9]]
+--------------------------------------------
+Local Network: 3
+Internal Variables:  [11, 12, 13, 14, 15]
+External Variables:  [42]
+Total Variables:  [11, 12, 13, 14, 15, 42]
+Variable Index: 11 -> CNF :[[-11, -42, 14]]
+Variable Index: 12 -> CNF :[[12, -14, 15]]
+Variable Index: 13 -> CNF :[[-14, 15, -11]]
+Variable Index: 14 -> CNF :[[12, -11, 42]]
+Variable Index: 15 -> CNF :[[-13, -15, 14]]
+--------------------------------------------
+Local Network: 4
+Internal Variables:  [16, 17, 18, 19, 20]
+External Variables:  [43]
+Total Variables:  [16, 17, 18, 19, 20, 43]
+Variable Index: 16 -> CNF :[[-16, -43, 19]]
+Variable Index: 17 -> CNF :[[17, -19, 20]]
+Variable Index: 18 -> CNF :[[-19, 20, -16]]
+Variable Index: 19 -> CNF :[[17, -16, 43]]
+Variable Index: 20 -> CNF :[[-18, -20, 19]]
+--------------------------------------------
+Local Network: 5
+Internal Variables:  [21, 22, 23, 24, 25]
+External Variables:  [44]
+Total Variables:  [21, 22, 23, 24, 25, 44]
+Variable Index: 21 -> CNF :[[-21, -44, 24]]
+Variable Index: 22 -> CNF :[[22, -24, 25]]
+Variable Index: 23 -> CNF :[[-24, 25, -21]]
+Variable Index: 24 -> CNF :[[22, -21, 44]]
+Variable Index: 25 -> CNF :[[-23, -25, 24]]
+--------------------------------------------
+Local Network: 6
+Internal Variables:  [26, 27, 28, 29, 30]
+External Variables:  [45]
+Total Variables:  [26, 27, 28, 29, 30, 45]
+Variable Index: 26 -> CNF :[[-26, -45, 29]]
+Variable Index: 27 -> CNF :[[27, -29, 30]]
+Variable Index: 28 -> CNF :[[-29, 30, -26]]
+Variable Index: 29 -> CNF :[[27, -26, 45]]
+Variable Index: 30 -> CNF :[[-28, -30, 29]]
+--------------------------------------------
+Local Network: 7
+Internal Variables:  [31, 32, 33, 34, 35]
+External Variables:  [46]
+Total Variables:  [31, 32, 33, 34, 35, 46]
+Variable Index: 31 -> CNF :[[-31, -46, 34]]
+Variable Index: 32 -> CNF :[[32, -34, 35]]
+Variable Index: 33 -> CNF :[[-34, 35, -31]]
+Variable Index: 34 -> CNF :[[32, -31, 46]]
+Variable Index: 35 -> CNF :[[-33, -35, 34]]
+--------------------------------------------
+Local Network: 8
+Internal Variables:  [36, 37, 38, 39, 40]
+External Variables:  [47]
+Total Variables:  [36, 37, 38, 39, 40, 47]
+Variable Index: 36 -> CNF :[[-36, -47, 39]]
+Variable Index: 37 -> CNF :[[37, -39, 40]]
+Variable Index: 38 -> CNF :[[-39, 40, -36]]
+Variable Index: 39 -> CNF :[[37, -36, 47]]
+Variable Index: 40 -> CNF :[[-38, -40, 39]]
+-------------------------------------------------
+Directed edges:
+-------------------------------------------------
+Edge: 1 -> 2 , Index: 41
+Variables: [2, 4] , Coupling Function:  2 ∨ 4
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 2 -> 3 , Index: 42
+Variables: [7, 9] , Coupling Function:  7 ∨ 9
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 3 -> 4 , Index: 43
+Variables: [12, 14] , Coupling Function:  12 ∨ 14
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 4 -> 5 , Index: 44
+Variables: [17, 19] , Coupling Function:  17 ∨ 19
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 5 -> 6 , Index: 45
+Variables: [22, 24] , Coupling Function:  22 ∨ 24
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 6 -> 7 , Index: 46
+Variables: [27, 29] , Coupling Function:  27 ∨ 29
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 7 -> 8 , Index: 47
+Variables: [32, 34] , Coupling Function:  32 ∨ 34
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+-------------------------------------------------
+Edge: 8 -> 1 , Index: 48
+Variables: [37, 39] , Coupling Function:  37 ∨ 39
+Truth table: {'11': '1', '10': '1', '01': '1', '00': '0'}
+Kind signal: 1 - RESTRICTED
+=================================================
+FIND ATTRACTORS USING OPTIMIZED METHOD
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 1
+-------------------------------------------------
+Network: 1  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 1  Local Scene: 1
+end find attractors
+Local Network updated
+the output signal is restricted
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 8
+-------------------------------------------------
+Network: 8  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 8  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 7
+-------------------------------------------------
+Network: 7  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 7  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 6
+-------------------------------------------------
+Network: 6  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 6  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 3
+-------------------------------------------------
+Network: 3  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 3  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 2
+-------------------------------------------------
+Network: 2  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 2  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 5
+-------------------------------------------------
+Network: 5  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 5  Local Scene: 1
+end find attractors
+-------------------------------------------------
+FIND ATTRACTORS FOR NETWORK: 4
+-------------------------------------------------
+Network: 4  Local Scene: 0
+end find attractors
+-------------------------------------------------
+Network: 4  Local Scene: 1
+end find attractors
+ALL THE ATTRACTORS ARE COMPUTED
+=================================================
+Network: 1
+-------------------------------------------------
+Network: 1 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 1 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 1 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 1 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 2
+-------------------------------------------------
+Network: 2 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 2 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 2 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 2 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 3
+-------------------------------------------------
+Network: 3 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 3 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 3 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 3 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 4
+-------------------------------------------------
+Network: 4 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 4 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 4 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 4 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 5
+-------------------------------------------------
+Network: 5 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 5 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 5 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 5 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 6
+-------------------------------------------------
+Network: 6 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 6 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 6 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 6 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 7
+-------------------------------------------------
+Network: 7 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 7 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 7 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 7 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+Network: 8
+-------------------------------------------------
+Network: 8 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 8 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+-------------------------------------------------
+Network: 8 - Scene: ('0',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '0']
+-------------------------------------------------
+Network: 8 - Scene: ('1',)
+Attractors number: 1
+-------------------------------------------------
+['1', '1', '1', '1', '1', '1']
+=================================================
+FIND COMPATIBLE ATTRACTOR PAIRS
+END FIND ATTRACTOR PAIRS
+=================================================
+LIST OF THE COMPATIBLE ATTRACTOR PAIRS
+-------------------------------------------------
+Edge:  1 -> 2
+-------------------------------------------------
+Coupling Variable: 41 Scene: 0
+-------------------------------------------------
+Coupling Variable: 41 Scene: 1
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  2 -> 3
+-------------------------------------------------
+Coupling Variable: 42 Scene: 0
+-------------------------------------------------
+Coupling Variable: 42 Scene: 1
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 2 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  3 -> 4
+-------------------------------------------------
+Coupling Variable: 43 Scene: 0
+-------------------------------------------------
+Coupling Variable: 43 Scene: 1
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 3 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  4 -> 5
+-------------------------------------------------
+Coupling Variable: 44 Scene: 0
+-------------------------------------------------
+Coupling Variable: 44 Scene: 1
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 4 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  5 -> 6
+-------------------------------------------------
+Coupling Variable: 45 Scene: 0
+-------------------------------------------------
+Coupling Variable: 45 Scene: 1
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 5 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  6 -> 7
+-------------------------------------------------
+Coupling Variable: 46 Scene: 0
+-------------------------------------------------
+Coupling Variable: 46 Scene: 1
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 6 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  7 -> 8
+-------------------------------------------------
+Coupling Variable: 47 Scene: 0
+-------------------------------------------------
+Coupling Variable: 47 Scene: 1
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 7 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+-------------------------------------------------
+Edge:  8 -> 1
+-------------------------------------------------
+Coupling Variable: 48 Scene: 0
+-------------------------------------------------
+Coupling Variable: 48 Scene: 1
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,0,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 8 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+Net. Index: 1 , Attrac. Index: 1 , States:[1,1,1,1,1,1,]
+=================================================
+FIND ATTRACTOR FIELDS
+-------------------------------------------------
+Number of attractor fields found: 6561
+Filename: /home/carlos/Projects/cbnetwork/classes/cbnetwork.py
+
+Line #    Mem usage    Increment  Occurrences   Line Contents
+=============================================================
+   758    115.3 MiB    115.3 MiB           1       @profile
+   759                                             def find_stable_attractor_fields(self):
+   760                                                 """
+   761                                                 Assembles compatible attractor fields.
+   762
+   763                                                 Args:
+   764                                                   List of compatible attractor pairs.
+   765
+   766                                                 Returns:
+   767                                                   List of attractor fields.
+   768                                                 """
+   769
+   770    117.0 MiB      0.0 MiB      157393           def evaluate_pair(base_pairs, candidate_pair):
+   771                                                     """
+   772                                                     Checks if a candidate attractor pair is compatible with a base attractor pair.
+   773
+   774                                                     Args:
+   775                                                       base_pairs: Base attractor pairs.
+   776                                                       candidate_pair: Candidate attractor pair.
+   777
+   778                                                     Returns:
+   779                                                       Boolean value of True or False.
+   780                                                     """
+   781
+   782                                                     # Extract the RDDs from each attractor pair.
+   783                                                     # print("Base pair")
+   784                                                     # print(base_pair)
+   785    117.0 MiB      1.8 MiB     3542832               base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
+   786                                                     # for o_attractor in base_attractor_pairs:
+   787                                                     #     print("Network:", o_attractor.network_index)
+   788                                                     #     print(o_attractor)
+   789
+   790                                                     # print("Base List")
+   791                                                     # print(base_attractor_pairs)
+   792
+   793                                                     # generate the already networks visited
+   794    117.0 MiB      0.0 MiB      157392               l_already_networks = []
+   795    117.0 MiB      0.0 MiB     2204496               for o_attractor in base_attractor_pairs:
+   796    117.0 MiB      0.0 MiB     2047104                   l_already_networks.append(o_attractor.network_index)
+   797    117.0 MiB      0.0 MiB      157392               l_already_networks = set(l_already_networks)
+   798
+   799                                                     # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
+   800    117.0 MiB      0.0 MiB      157392               double_check = 0
+   801    117.0 MiB      0.0 MiB      472176               for candidate_attractor in candidate_pair:
+   802                                                         # print(base_attractor_pairs)
+   803                                                         # print("candidate attractor")
+   804                                                         # print(candidate_attractor)
+   805    117.0 MiB      0.0 MiB      314784                   if candidate_attractor.network_index in l_already_networks:
+   806    117.0 MiB      0.0 MiB      262368                       if candidate_attractor in base_attractor_pairs:
+   807    117.0 MiB      0.0 MiB       65592                           double_check = double_check + 1
+   808                                                         else:
+   809    116.3 MiB      0.0 MiB       52416                       double_check = double_check + 1
+   810    117.0 MiB      0.0 MiB      157392               if double_check == 2:
+   811    117.0 MiB      0.0 MiB       19665                   return True
+   812                                                     else:
+   813    117.0 MiB      0.0 MiB      137727                   return False
+   814
+   815    116.3 MiB      0.0 MiB           8           def cartesian_product_mod(base_pairs, candidate_pairs):
+   816                                                     """
+   817                                                     Performs the modified Cartesian product the attractor pairs lists.
+   818
+   819                                                     Args:
+   820                                                       base_pairs: List of base attractor pairs.
+   821                                                       candidate_pairs: List of candidate attractor pairs.
+   822
+   823                                                     Returns:
+   824                                                       List of candidate attractor fields.
+   825                                                     """
+   826
+   827                                                     # Initialize the list of candidate attractor fields.
+   828    116.3 MiB      0.0 MiB           7               field_pair_list = []
+   829
+   830                                                     # Iterate over the base attractor pairs.
+   831    117.0 MiB      0.0 MiB       13123               for base_pair in base_pairs:
+   832                                                         # Iterate over the candidate attractor pairs.
+   833    117.0 MiB      0.0 MiB      170508                   for candidate_pair in candidate_pairs:
+   834
+   835                                                             # Check if the candidate attractor pair is compatible with the base attractor pair.
+   836    117.0 MiB      0.0 MiB      157392                       if isinstance(base_pair, tuple):
+   837    115.3 MiB      0.0 MiB          12                           base_pair = [base_pair]
+   838                                                             # Evaluate if the pair is compatible with the base
+   839    117.0 MiB      0.0 MiB      157392                       if evaluate_pair(base_pair, candidate_pair):
+   840                                                                 # print("compatible pair")
+   841    117.0 MiB      0.0 MiB       19665                           new_pair = base_pair + [candidate_pair]
+   842                                                                 # Add the new attractor pair to the list of candidate attractor fields.
+   843    117.0 MiB      0.0 MiB       19665                           field_pair_list.append(new_pair)
+   844                                                             # else:
+   845                                                             #   print("incompatible pair")
+   846    117.0 MiB      0.0 MiB           7               return field_pair_list
+   847
+   848    115.3 MiB      0.0 MiB           1           CustomText.print_duplex_line()
+   849    115.3 MiB      0.0 MiB           1           print("FIND ATTRACTOR FIELDS")
+   850
+   851                                                 # Order the edges by compatibility
+   852    115.3 MiB      0.0 MiB           1           self.order_edges_by_compatibility()
+   853
+   854                                                 # generate a base list of the pairs
+   855    115.3 MiB      0.0 MiB           1           l_base = self.l_directed_edges[:2]
+   856
+   857                                                 # generate the list of pairs made with 0 or 1
+   858    115.3 MiB      0.0 MiB           1           l_base_pairs = l_base[0].d_comp_pairs_attractors_by_value[0] + l_base[0].d_comp_pairs_attractors_by_value[1]
+   859
+   860                                                 # for every edge make the union to the base
+   861    117.0 MiB      0.0 MiB           8           for o_directed_edge in self.l_directed_edges[1:]:
+   862    116.3 MiB      0.0 MiB          14               l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
+   863    116.3 MiB      0.0 MiB           7                                   o_directed_edge.d_comp_pairs_attractors_by_value[1]
+   864                                                     # join the base list with the new directed edge
+   865    117.0 MiB      0.0 MiB           7               l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+   866
+   867    117.0 MiB      0.0 MiB           1           CustomText.print_simple_line()
+   868    117.0 MiB      0.0 MiB           1           print("Number of attractor fields found:", len(l_base_pairs))
+   869    117.0 MiB      0.0 MiB           1           self.l_attractor_fields = l_base_pairs
+
+
+
+Process finished with exit code 0
