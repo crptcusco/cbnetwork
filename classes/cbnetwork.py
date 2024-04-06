@@ -853,10 +853,11 @@ class CBN:
 
         # generate a base list of the pairs
         # l_base = self.l_directed_edges[:1]
-        l_base = self.l_directed_edges[:2]
+        # l_base = self.l_directed_edges[:2]
 
-        # generate the list of pairs made with 0 or 1
-        l_base_pairs = l_base[0].d_comp_pairs_attractors_by_value[0] + l_base[0].d_comp_pairs_attractors_by_value[1]
+        # generate the base list of pairs made with the pairs made with 0 or 1 coupĺing signal
+        l_base_pairs = (self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
+                        + self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
 
         # for every edge make the union to the base
         for o_directed_edge in self.l_directed_edges[1:]:
@@ -864,6 +865,10 @@ class CBN:
                                 o_directed_edge.d_comp_pairs_attractors_by_value[1]
             # join the base list with the new directed edge
             l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+
+            # If the base of pairs don't have elements, break the for and ends the algorithm ends
+            if len(l_base_pairs) == 0:
+                break
 
         CustomText.print_simple_line()
         print("Number of attractor fields found:", len(l_base_pairs))
