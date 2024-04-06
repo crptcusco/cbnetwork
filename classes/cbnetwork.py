@@ -852,6 +852,7 @@ class CBN:
         self.order_edges_by_compatibility()
 
         # generate a base list of the pairs
+        # l_base = self.l_directed_edges[:1]
         l_base = self.l_directed_edges[:2]
 
         # generate the list of pairs made with 0 or 1
@@ -868,7 +869,7 @@ class CBN:
         print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
-    def find_attractor_fields_parsl(self):
+    def find_stable_attractor_fields_parsl(self):
         """
         Assembles compatible attractor fields.
 
