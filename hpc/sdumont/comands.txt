@@ -15,6 +15,9 @@ cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
 # execute the script
 srun -p cpu_shared -N 3 -n 3 -c 1 python test_valor_pi.py
 
+# Execute code in Slurm
+# srun -N 3 -n 3 -c 1 python s_example_valor_pi.py
+
 # ejecutar desde basch
 sbatch hpc/sdumont/submit.sh
 

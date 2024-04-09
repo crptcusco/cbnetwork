@@ -6,9 +6,8 @@ from classes.localnetwork import LocalNetwork
 from classes.utils.customtext import CustomText
 
 # external imports
-import multiprocessing
-
-# import threading
+import parsl
+parsl.load()
 
 # script to put a manual parameters for the example of 4 networks
 print("MESSAGE:", "TEST PARALLEL - LINEAL CBN MANUAL SCRIPT EXAMPLE")
@@ -75,7 +74,7 @@ for key, value in d_var_cnf_func.items():
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
     o_local_network.process_input_signals(l_input_signals)
     for i_local_variable in o_local_network.l_var_intern:
         o_variable_model = InternalVariable(i_local_variable, d_var_cnf_func[i_local_variable])
@@ -84,26 +83,30 @@ for o_local_network in l_local_networks:
 # generating the CBN network
 o_cbn = CBN(l_local_networks, l_directed_edges)
 
-# Find attractors
-# o_cbn.find_local_attractors_optimized_method()
-# parallel method
-o_cbn.find_local_attractors_parsl()
+# Show the CBN Information
+o_cbn.show_description()
 
-# # show attractors
+# Find local attractors parallelized with Parsl
+tasks1 = CBN.find_local_attractors_parsl(o_cbn.l_local_networks)
+# Wait for all tasks to complete
+o_cbn.l_local_networks = [task.result() for task in tasks1]
+
+# Process
+for o_local_network in o_cbn.l_local_networks:
+    o_cbn.process_local_attractors(o_local_network)
+
+# Show local attractors after all tasks have completed
 o_cbn.show_local_attractors()
 
-# # find the compatible pairs
-# o_cbn.find_compatible_pairs()
-# #
-# # show attractor pairs
-# o_cbn.show_attractor_pairs()
-#
-# # Find attractor fields
+# Find attractor pairs parallelized with Parsl
+tasks2 = CBN.find_compatible_pairs_parsl(o_cbn)
+# Wait for all tasks to complete
+o_cbn.l_directed_edges = [task.result() for task in tasks2]
+o_cbn.show_attractor_pairs()
+
+# Find and show stable attractor fields
+print("normal function")
 # o_cbn.find_attractor_fields()
-# o_cbn.show_attractors_fields()
-#
-# # show the kind of every coupled signal
-# o_cbn.show_coupled_signals_kind()
-#
-# # show the kind of the edges
-# o_cbn.show_directed_edges()
+print("parallel function")
+o_cbn.find_stable_attractor_fields_parsl()
+o_cbn.show_stable_attractor_fields()

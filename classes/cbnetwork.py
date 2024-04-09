@@ -33,8 +33,10 @@ class CBN:
         # graphs
         self.global_graph = None
         self.d_network_color = {}
-        self.graph_generate_local_nets_colors()  # Generate the colors for every local network
         self.detailed_graph = None
+
+        # Generate the colors for every local network
+        self.generate_local_nets_colors()
 
     # FUNCTIONS
     @staticmethod
@@ -755,8 +757,126 @@ class CBN:
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         # print("Directed Edges ordered.")
 
-    @profile
     def find_stable_attractor_fields(self):
+        """
+        Assembles compatible attractor fields.
+
+        Args:
+          List of compatible attractor pairs.
+
+        Returns:
+          List of attractor fields.
+        """
+
+        def evaluate_pair(base_pairs, candidate_pair):
+            """
+            Checks if a candidate attractor pair is compatible with a base attractor pair.
+
+            Args:
+              base_pairs: Base attractor pairs.
+              candidate_pair: Candidate attractor pair.
+
+            Returns:
+              Boolean value of True or False.
+            """
+
+            # Extract the RDDs from each attractor pair.
+            # print("Base pair")
+            # print(base_pair)
+            base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
+            # for o_attractor in base_attractor_pairs:
+            #     print("Network:", o_attractor.network_index)
+            #     print(o_attractor)
+
+            # print("Base List")
+            # print(base_attractor_pairs)
+
+            # generate the already networks visited
+            l_already_networks = []
+            for o_attractor in base_attractor_pairs:
+                l_already_networks.append(o_attractor.network_index)
+            l_already_networks = set(l_already_networks)
+
+            # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
+            double_check = 0
+            for candidate_attractor in candidate_pair:
+                # print(base_attractor_pairs)
+                # print("candidate attractor")
+                # print(candidate_attractor)
+                if candidate_attractor.network_index in l_already_networks:
+                    if candidate_attractor in base_attractor_pairs:
+                        double_check = double_check + 1
+                else:
+                    double_check = double_check + 1
+            if double_check == 2:
+                return True
+            else:
+                return False
+
+        def cartesian_product_mod(base_pairs, candidate_pairs):
+            """
+            Performs the modified Cartesian product the attractor pairs lists.
+
+            Args:
+              base_pairs: List of base attractor pairs.
+              candidate_pairs: List of candidate attractor pairs.
+
+            Returns:
+              List of candidate attractor fields.
+            """
+
+            # Initialize the list of candidate attractor fields.
+            field_pair_list = []
+
+            # Iterate over the base attractor pairs.
+            for base_pair in base_pairs:
+                # Iterate over the candidate attractor pairs.
+                for candidate_pair in candidate_pairs:
+
+                    # Check if the candidate attractor pair is compatible with the base attractor pair.
+                    if isinstance(base_pair, tuple):
+                        base_pair = [base_pair]
+                    # Evaluate if the pair is compatible with the base
+                    if evaluate_pair(base_pair, candidate_pair):
+                        # print("compatible pair")
+                        new_pair = base_pair + [candidate_pair]
+                        # Add the new attractor pair to the list of candidate attractor fields.
+                        field_pair_list.append(new_pair)
+                    # else:
+                    #   print("incompatible pair")
+            return field_pair_list
+
+        CustomText.print_duplex_line()
+        print("FIND ATTRACTOR FIELDS")
+
+        # Order the edges by compatibility
+        self.order_edges_by_compatibility()
+
+        # generate a base list of the pairs
+        # l_base = self.l_directed_edges[:1]
+        # l_base = self.l_directed_edges[:2]
+
+        # generate the base list of pairs made with the pairs made with 0 or 1 coupĺing signal
+        l_base_pairs = (self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
+                        + self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
+
+        # for every edge make the union to the base
+        for o_directed_edge in self.l_directed_edges[1:]:
+            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
+                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
+            # join the base list with the new directed edge
+            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+
+            # If the base of pairs don't have elements, break the for and ends the algorithm ends
+            if len(l_base_pairs) == 0:
+                break
+
+        CustomText.print_simple_line()
+        print("Number of attractor fields found:", len(l_base_pairs))
+        self.l_attractor_fields = l_base_pairs
+
+    @profile
+    def find_stable_attractor_fields_profile(self):
         """
         Assembles compatible attractor fields.
 
@@ -1005,7 +1125,7 @@ class CBN:
                   "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
             if o_directed_edge.kind_signal == 1:
                 n_restricted_signals = n_restricted_signals + 1
-                print("RESTRICTED SIGNAL")
+                # print("RESTRICTED SIGNAL")
         print("Number of restricted signals :", n_restricted_signals)
 
     def show_description(self):
@@ -1136,7 +1256,7 @@ class CBN:
             output_node = directed_edge.output_local_network
             self.global_graph.add_edge(output_node, input_node)
 
-    def graph_generate_local_nets_colors(self):
+    def generate_local_nets_colors(self):
         # generate a list of colors for the local networks
         self.create_global_graph()
         l_colors = list(mco.CSS4_COLORS.keys())

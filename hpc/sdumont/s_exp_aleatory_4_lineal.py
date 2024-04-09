@@ -1,6 +1,6 @@
-# imports
+# -*- coding: utf-8 -*-
 
-# import locals
+# local imports
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 

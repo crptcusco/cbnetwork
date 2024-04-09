@@ -1,5 +1,3 @@
-# external imports
-
 # local imports
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
@@ -17,7 +15,6 @@ v_topology = 4  # path
 
 o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,
                                               n_output_variables=n_output_variables)
-# o_cbn.show_cbn_graph()
 
 o_cbn.find_local_attractors_optimized()
 # o_cbn.show_attractors()
@@ -28,4 +25,5 @@ o_cbn.find_compatible_pairs()
 o_cbn.find_stable_attractor_fields()
 # o_cbn.show_attractors_fields()
 
-# o_cbn.show_coupled_signals_kind()
+# show kind of coupling signals
+o_cbn.show_coupled_signals_kind()

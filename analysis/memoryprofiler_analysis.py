@@ -22,7 +22,6 @@ o_cbn.show_local_attractors()
 o_cbn.find_compatible_pairs()
 o_cbn.show_attractor_pairs()
 
-# Find stable attractor fields
-# Run the profiler on the function
-o_cbn.find_stable_attractor_fields()
-# o_cbn.show_stable_attractor_fields()
+# Find stable attractor fields, Run the profiler on the function
+o_cbn.find_stable_attractor_fields_profile()
+o_cbn.show_stable_attractor_fields()

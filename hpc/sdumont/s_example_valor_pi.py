@@ -23,12 +23,12 @@ def monte_carlo_pi(num_samples):
     return count_inside_circle
 
 
-def estimate_pi(num_samples, num_tasks):
+def estimate_pi(num_samples, n_tasks):
     # Calculate the number of samples per task
-    samples_per_task = num_samples // num_tasks
+    samples_per_task = num_samples // n_tasks
 
     # Launch parallel tasks to perform the estimation
-    results = [monte_carlo_pi(samples_per_task).result() for _ in range(num_tasks)]
+    results = [monte_carlo_pi(samples_per_task).result() for _ in range(n_tasks)]
 
     # Sum the results from all tasks
     total_inside_circle = sum(results)
@@ -43,7 +43,7 @@ def estimate_pi(num_samples, num_tasks):
 total_samples = 100000000
 
 # Number of parallel tasks
-num_tasks = 4
+num_tasks = 6
 
 # Estimate the value of pi
 pi_value = estimate_pi(total_samples, num_tasks)
@@ -54,4 +54,4 @@ print("Estimated value of pi: {}".format(pi_value))
 parsl.clear()
 
 # Execute code in Slurm
-# srun -N 3 -n 3 -c 1 python test_valor_pi.py
+# srun -N 3 -n 3 -c 1 python s_example_valor_pi.py
