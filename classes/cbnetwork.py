@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
+import parsl
 from parsl import python_app  # use scientific workflow
 from memory_profiler import profile  # make memory profiler analysis
 
@@ -25,6 +26,8 @@ class CBN:
         # basic attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
+
+        self.n_local_networks = len(self.l_local_networks)
 
         # calculated attributes
         self.l_global_scenes = []
@@ -1306,3 +1309,27 @@ class CBN:
     def get_n_output_variables(self):
         pass
 
+    @staticmethod
+    @python_app
+    def test_global_dynamic(o_attractor_field):
+        return True
+
+    @staticmethod
+    def test_attractor_fields(o_cbn):
+        # Lista para almacenar las futuras promesas de resultados
+        futures = []
+
+        # Iterar sobre los atractor_fields y crear tareas paralelas para probarlos
+        for o_attractor_field in o_cbn.l_attractor_fields:
+            # Llamar a la función `test_global_dynamic` para probar un solo atractor_field en paralelo
+            future = CBN.test_global_dynamic(o_attractor_field)
+            futures.append(future)
+
+        # Esperar a que todas las tareas se completen
+        parsl.wait_for_all(futures)
+
+        # Verificar si todos los resultados son True
+        if all(future.result() for future in futures):
+            print('attractor field passed test')
+        else:
+            print('test failed')

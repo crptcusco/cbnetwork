@@ -16,23 +16,39 @@ o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               n_output_variables=N_OUTPUT_VARIABLES,
                                               n_input_variables=N_INPUT_VARIABLES)
 
+# Show CBN Description
 o_cbn.show_description()
 
+# Find Local Attractors
 o_cbn.find_local_attractors_optimized()
 o_cbn.show_local_attractors()
 
 # show kind of coupling signals
 o_cbn.show_coupled_signals_kind()
 
+# Find compatible attractor pairs
+o_cbn.find_compatible_pairs()
+o_cbn.show_attractor_pairs()
+
+# Mount stable attractor fields
+o_cbn.find_stable_attractor_fields()
+o_cbn.show_stable_attractor_fields()
+
+# Show resume
 o_cbn.show_resume()
 
-# generate the global scenes
-o_cbn.generate_global_scenes()
-o_cbn.show_global_scenes()
+# Test the stable attractor fields
+o_cbn.test_attractor_fields()
 
-# generate a global transition from one transition to other
-# Generar un stado global
-# generate a global state aleatorio o manual
-o_cbn.total_variables = o_cbn.n_local_networks * o_cbn.get_n_local_variables()
-o_cbn.initial_state = [0] * o_cbn.total_variables
-dict_manual_global_state = []
+
+
+# # generate the global scenes
+# o_cbn.generate_global_scenes()
+# o_cbn.show_global_scenes()
+
+# # generate a global transition from one transition to other
+# # Generar un stado global
+# # generate a global state aleatorio o manual
+# o_cbn.total_variables = o_cbn.n_local_networks * o_cbn.get_n_local_variables()
+# o_cbn.initial_state = [0] * o_cbn.total_variables
+# dict_manual_global_state = []
