@@ -21,6 +21,18 @@ o_cbn.show_description()
 o_cbn.find_local_attractors_optimized()
 o_cbn.show_local_attractors()
 
-# o_cbn.plot_global_graph()
+# show kind of coupling signals
+o_cbn.show_coupled_signals_kind()
 
-# CBN.show_allowed_topologies()
+o_cbn.show_resume()
+
+# generate the global scenes
+o_cbn.generate_global_scenes()
+o_cbn.show_global_scenes()
+
+# generate a global transition from one transition to other
+# Generar un stado global
+# generate a global state aleatorio o manual
+o_cbn.total_variables = o_cbn.n_local_networks * o_cbn.get_n_local_variables()
+o_cbn.initial_state = [0] * o_cbn.total_variables
+dict_manual_global_state = []

@@ -31,5 +31,9 @@ o_cbn.show_attractor_pairs()
 o_cbn.find_stable_attractor_fields()
 o_cbn.show_stable_attractor_fields()
 
-# show kind of coupling signals
-o_cbn.show_coupled_signals_kind()
+
+
+
+
+
+

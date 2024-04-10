@@ -1185,10 +1185,21 @@ class CBN:
 
     def show_resume(self):
         CustomText.print_duplex_line()
+        print('CBN Detailed Resume')
+        CustomText.print_simple_line()
+        print('Number of local networks:', len(self.l_local_networks))
+        print('Number of variables per local network:', self.get_n_local_variables())
+        print('Kind Topology:', self.get_kind_topology())
+        print('Number of input variables:', self.get_n_input_variables())
+        print('Number of output variables:', self.get_n_output_variables())
+
+        CustomText.print_simple_line()
         print("CBN Resume Indicators")
+        CustomText.print_simple_line()
         print("Number of local attractors:", self.get_n_local_attractors())
         print("Number of attractor pairs:", self.get_n_pair_attractors())
         print("Number of attractor fields:", self.get_n_attractor_fields())
+        CustomText.print_simple_line()
 
     # GET FUNCTIONS
     def get_network_by_index(self, index):
@@ -1282,3 +1293,16 @@ class CBN:
     def plot_global_detailed_graph(self):
         # Future Work
         pass
+
+    def get_n_local_variables(self):
+        return len(self.l_local_networks[0].l_var_intern)
+
+    def get_kind_topology(self):
+        pass
+
+    def get_n_input_variables(self):
+        pass
+
+    def get_n_output_variables(self):
+        pass
+

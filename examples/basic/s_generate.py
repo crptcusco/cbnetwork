@@ -7,14 +7,16 @@ print("LINEAL CBN ALEATORY SCRIPT EXAMPLE")
 CustomText.print_duplex_line()
 
 # pass the parameters
-n_local_networks = 6
-n_var_network = 5
-n_output_variables = 2
-n_clauses_function = 2
-v_topology = 4  # path
+N_LOCAL_NETWORKS = 6
+N_VAR_NETWORK = 5
+N_OUTPUT_VARIABLES = 2
+N_INPUT_VARIABLES = 2
+V_TOPOLOGY = 3
 
-o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,
-                                              n_output_variables=n_output_variables)
+o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
+                                              n_var_network=N_VAR_NETWORK,
+                                              v_topology=V_TOPOLOGY,
+                                              n_output_variables=N_OUTPUT_VARIABLES)
 
 o_cbn.find_local_attractors_optimized()
 # o_cbn.show_attractors()
