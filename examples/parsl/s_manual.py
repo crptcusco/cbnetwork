@@ -93,7 +93,7 @@ o_cbn.l_local_networks = [task.result() for task in tasks1]
 
 # Process
 for o_local_network in o_cbn.l_local_networks:
-    o_cbn.process_local_attractors(o_local_network)
+    o_cbn.process_kind_signal(o_local_network)
 
 # Show local attractors after all tasks have completed
 o_cbn.show_local_attractors()

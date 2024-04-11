@@ -111,7 +111,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
 
         # Find attractors
         v_begin_find_attractors = time.time()
-        o_cbn.find_local_attractors_optimized()
+        o_cbn.find_local_attractors_heap()
         v_end_find_attractors = time.time()
         n_time_find_attractors = v_end_find_attractors - v_begin_find_attractors
 

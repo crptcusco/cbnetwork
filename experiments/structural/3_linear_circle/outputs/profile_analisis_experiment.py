@@ -14,7 +14,7 @@ with open(path_cbn, 'rb') as file:
 o_cbn.show_description()
 
 # Find Local attractors
-o_cbn.find_local_attractors_optimized()
+o_cbn.find_local_attractors_heap()
 o_cbn.show_local_attractors()
 
 # Find attractor pairs

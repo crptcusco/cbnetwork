@@ -12,33 +12,34 @@ N_INPUT_VARIABLES = 2
 # GENERATE THE NETWORK OBJECT
 o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               n_var_network=N_LOCAL_VARIABLES,
-                                              v_topology=V_TOPOLOGY,
+                                              n_input_variables=N_INPUT_VARIABLES,
                                               n_output_variables=N_OUTPUT_VARIABLES,
-                                              n_input_variables=N_INPUT_VARIABLES)
+                                              v_topology=V_TOPOLOGY)
 
 # Show CBN Description
 o_cbn.show_description()
 
 # Find Local Attractors
-o_cbn.find_local_attractors_optimized()
+# o_cbn.find_local_attractors_optimized()
+o_cbn.find_local_attractors_sequential()
 o_cbn.show_local_attractors()
 
 # show kind of coupling signals
 o_cbn.show_coupled_signals_kind()
 
-# Find compatible attractor pairs
-o_cbn.find_compatible_pairs()
-o_cbn.show_attractor_pairs()
-
-# Mount stable attractor fields
-o_cbn.find_stable_attractor_fields()
-o_cbn.show_stable_attractor_fields()
-
-# Show resume
-o_cbn.show_resume()
-
-# Test the stable attractor fields
-o_cbn.test_attractor_fields()
+# # Find compatible attractor pairs
+# o_cbn.find_compatible_pairs()
+# o_cbn.show_attractor_pairs()
+#
+# # Mount stable attractor fields
+# o_cbn.find_stable_attractor_fields()
+# o_cbn.show_stable_attractor_fields()
+#
+# # Show resume
+# o_cbn.show_resume()
+#
+# # Test the stable attractor fields
+# CBN.test_attractor_fields(o_cbn)
 
 
 

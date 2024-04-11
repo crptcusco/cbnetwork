@@ -15,8 +15,8 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
-import parsl
-from parsl import python_app  # use scientific workflow
+import parsl    # library to make scientific workflow
+from parsl import python_app  # make a function a parsel app
 from memory_profiler import profile  # make memory profiler analysis
 
 
@@ -285,7 +285,19 @@ class CBN:
         CustomText.print_simple_line()
         print("Global Scenes generated")
 
-    def find_local_attractors_optimized(self):
+    def find_local_attractors_sequential(self):
+        for o_local_network in self.l_local_networks:
+            l_local_scenes = None
+            if len(o_local_network.l_var_exterm) != 0:
+                l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
+                # calculate the attractors for the node in the top of the  heap
+                o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
+                # Update the coupling signals to analyzed
+                self.process_kind_signal(o_local_network)
+                # # update the network in the CBN
+                # self.update_network_by_index(o_local_network)
+
+    def find_local_attractors_heap(self):
         CustomText.print_duplex_line()
         print("FIND ATTRACTORS USING OPTIMIZED METHOD")
 
@@ -557,60 +569,43 @@ class CBN:
             tasks.append(CBN.find_local_attractors_task(local_network, l_local_scenes))
         return tasks
 
-    def process_local_attractors(self, o_local_network):
-        # validate if the output variables by attractor send a fixed value and update kind signals
+    def process_kind_signal(self, o_local_network):
+        """
+        validate if the output variables by attractor send a fixed value and update kind signals
+        and update the kind of signal
+        :param o_local_network:
+        :return: update kind of signals
+        """
+
+        # Find the edges who interact with the local network
         l_directed_edges = CBN.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-        # print("Local network:", l_var_intern.index)
+        # For every edge who interacts, compute the kind
         for o_output_signal in l_directed_edges:
-            # print("Index variable output signal:", o_output_signal.index_variable_signal)
-            # print("Output variables:", o_output_signal.l_output_variables)
-            # print(str(o_output_signal.true_table))
             l_signals_for_output = []
             for o_local_scene in o_local_network.l_local_scenes:
-                # print("Scene: ", str(o_local_scene.l_values))
                 l_signals_in_local_scene = []
                 for o_attractor in o_local_scene.l_attractors:
-                    # print("ATTRACTOR")
                     l_signals_in_attractor = []
                     for o_state in o_attractor.l_states:
-                        # print("STATE")
-                        # print(l_var_intern.l_var_total)
-                        # print(l_var_intern.l_var_intern)
-                        # print(o_state.l_variable_values)
-                        # # select the values of the output variables
                         true_table_index = ""
                         for v_output_variable in o_output_signal.l_output_variables:
-                            # print("Variables list:", l_var_intern.l_var_total)
-                            # print("Output variables list:", o_output_signal.l_output_variables)
-                            # print("Output variable:", v_output_variable)
                             pos = o_local_network.l_var_total.index(v_output_variable)
                             value = o_state.l_variable_values[pos]
                             true_table_index = true_table_index + str(value)
-                        # print(o_output_signal.l_output_variables)
-                        # print(true_table_index)
                         output_value_state = o_output_signal.true_table[true_table_index]
-                        # print("Output value :", output_value_state)
                         l_signals_in_attractor.append(output_value_state)
                     if len(set(l_signals_in_attractor)) == 1:
                         l_signals_in_local_scene.append(l_signals_in_attractor[0])
-                        # print("the attractor signal value is stable")
-
                         # add the attractor to the dictionary of output value -> attractors
                         if l_signals_in_attractor[0] == '0':
                             o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
                         elif l_signals_in_attractor[0] == '1':
                             o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
-                    # else:
-                    #     print("the attractor signal is not stable")
                 if len(set(l_signals_in_local_scene)) == 1:
                     l_signals_for_output.append(l_signals_in_local_scene[0])
-                    # print("the scene signal is restricted")
                 else:
                     if len(set(l_signals_in_local_scene)) == 2:
                         l_signals_for_output.extend(l_signals_in_local_scene)
-                        # print("the scene signal value is stable")
-                    # else:
-                    #     print("warning:", "the scene signal is not stable")
             if len(set(l_signals_for_output)) == 1:
                 o_output_signal.kind_signal = 1
                 print("the output signal is restricted")
@@ -620,27 +615,6 @@ class CBN:
             else:
                 o_output_signal.kind_signal = 4
                 print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
-
-        # # # print all the kinds of the signals
-        # CustomText.print_simple_line()
-        # print("Resume")
-        # print("Network:", l_var_intern.index)
-        # for o_directed_edge in self.l_directed_edges:
-        #     print(o_directed_edge.index_variable, ":", o_directed_edge.kind_signal)
-
-        # # Update the weights of the nodes
-        # # Add the output network to the list of modified networks
-        # l_modified_edges = CBN.find_input_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-        # for o_edge in l_modified_edges:
-        #     modified_network_index = o_edge.output_local_network
-        #     # print("Network", modified_network_index)
-        #     # print("Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
-        #     weight = 0
-        #     l_edges = CBN.find_input_edges_by_network_index(o_edge.output_local_network, self.l_directed_edges)
-        #     for o_updated_edge in l_edges:
-        #         weight = weight + o_updated_edge.kind_signal
-        #     # print("New weight:", weight)
-        #     o_custom_heap.update_node(o_edge.output_local_network, weight)
 
     def find_compatible_pairs(self):
         CustomText.print_duplex_line()
@@ -783,16 +757,8 @@ class CBN:
               Boolean value of True or False.
             """
 
-            # Extract the RDDs from each attractor pair.
-            # print("Base pair")
-            # print(base_pair)
+            # Extract the index local network from each attractor pair.
             base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
-            # for o_attractor in base_attractor_pairs:
-            #     print("Network:", o_attractor.network_index)
-            #     print(o_attractor)
-
-            # print("Base List")
-            # print(base_attractor_pairs)
 
             # generate the already networks visited
             l_already_networks = []
@@ -855,10 +821,6 @@ class CBN:
         # Order the edges by compatibility
         self.order_edges_by_compatibility()
 
-        # generate a base list of the pairs
-        # l_base = self.l_directed_edges[:1]
-        # l_base = self.l_directed_edges[:2]
-
         # generate the base list of pairs made with the pairs made with 0 or 1 coupĺing signal
         l_base_pairs = (self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
                         + self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
@@ -876,125 +838,7 @@ class CBN:
 
         CustomText.print_simple_line()
         print("Number of attractor fields found:", len(l_base_pairs))
-        self.l_attractor_fields = l_base_pairs
 
-    @profile
-    def find_stable_attractor_fields_profile(self):
-        """
-        Assembles compatible attractor fields.
-
-        Args:
-          List of compatible attractor pairs.
-
-        Returns:
-          List of attractor fields.
-        """
-
-        def evaluate_pair(base_pairs, candidate_pair):
-            """
-            Checks if a candidate attractor pair is compatible with a base attractor pair.
-
-            Args:
-              base_pairs: Base attractor pairs.
-              candidate_pair: Candidate attractor pair.
-
-            Returns:
-              Boolean value of True or False.
-            """
-
-            # Extract the RDDs from each attractor pair.
-            # print("Base pair")
-            # print(base_pair)
-            base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
-            # for o_attractor in base_attractor_pairs:
-            #     print("Network:", o_attractor.network_index)
-            #     print(o_attractor)
-
-            # print("Base List")
-            # print(base_attractor_pairs)
-
-            # generate the already networks visited
-            l_already_networks = []
-            for o_attractor in base_attractor_pairs:
-                l_already_networks.append(o_attractor.network_index)
-            l_already_networks = set(l_already_networks)
-
-            # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
-            double_check = 0
-            for candidate_attractor in candidate_pair:
-                # print(base_attractor_pairs)
-                # print("candidate attractor")
-                # print(candidate_attractor)
-                if candidate_attractor.network_index in l_already_networks:
-                    if candidate_attractor in base_attractor_pairs:
-                        double_check = double_check + 1
-                else:
-                    double_check = double_check + 1
-            if double_check == 2:
-                return True
-            else:
-                return False
-
-        def cartesian_product_mod(base_pairs, candidate_pairs):
-            """
-            Performs the modified Cartesian product the attractor pairs lists.
-
-            Args:
-              base_pairs: List of base attractor pairs.
-              candidate_pairs: List of candidate attractor pairs.
-
-            Returns:
-              List of candidate attractor fields.
-            """
-
-            # Initialize the list of candidate attractor fields.
-            field_pair_list = []
-
-            # Iterate over the base attractor pairs.
-            for base_pair in base_pairs:
-                # Iterate over the candidate attractor pairs.
-                for candidate_pair in candidate_pairs:
-
-                    # Check if the candidate attractor pair is compatible with the base attractor pair.
-                    if isinstance(base_pair, tuple):
-                        base_pair = [base_pair]
-                    # Evaluate if the pair is compatible with the base
-                    if evaluate_pair(base_pair, candidate_pair):
-                        # print("compatible pair")
-                        new_pair = base_pair + [candidate_pair]
-                        # Add the new attractor pair to the list of candidate attractor fields.
-                        field_pair_list.append(new_pair)
-                    # else:
-                    #   print("incompatible pair")
-            return field_pair_list
-
-        CustomText.print_duplex_line()
-        print("FIND ATTRACTOR FIELDS")
-
-        # Order the edges by compatibility
-        self.order_edges_by_compatibility()
-
-        # generate a base list of the pairs
-        # l_base = self.l_directed_edges[:1]
-        # l_base = self.l_directed_edges[:2]
-
-        # generate the base list of pairs made with the pairs made with 0 or 1 coupĺing signal
-        l_base_pairs = (self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
-                        + self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
-
-        # for every edge make the union to the base
-        for o_directed_edge in self.l_directed_edges[1:]:
-            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
-                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
-            # join the base list with the new directed edge
-            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
-
-            # If the base of pairs don't have elements, break the for and ends the algorithm ends
-            if len(l_base_pairs) == 0:
-                break
-
-        CustomText.print_simple_line()
-        print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
     def find_stable_attractor_fields_parsl(self):
@@ -1310,26 +1154,14 @@ class CBN:
         pass
 
     @staticmethod
-    @python_app
-    def test_global_dynamic(o_attractor_field):
-        return True
-
-    @staticmethod
     def test_attractor_fields(o_cbn):
-        # Lista para almacenar las futuras promesas de resultados
-        futures = []
+        def test_global_dynamic(o_attractor_field):
+            if o_attractor_field:
+                return 1
+            return 0
 
-        # Iterar sobre los atractor_fields y crear tareas paralelas para probarlos
-        for o_attractor_field in o_cbn.l_attractor_fields:
-            # Llamar a la función `test_global_dynamic` para probar un solo atractor_field en paralelo
-            future = CBN.test_global_dynamic(o_attractor_field)
-            futures.append(future)
-
-        # Esperar a que todas las tareas se completen
-        parsl.wait_for_all(futures)
-
-        # Verificar si todos los resultados son True
-        if all(future.result() for future in futures):
+        futures = list(map(test_global_dynamic(), o_cbn.l_attractor_fields))
+        if sum(futures) == len(futures):
             print('attractor field passed test')
         else:
             print('test failed')

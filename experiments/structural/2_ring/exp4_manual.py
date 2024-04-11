@@ -123,7 +123,7 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         o_cbn = CBN(l_local_networks, l_directed_edges)
 
         # Find attractors
-        o_cbn.find_local_attractors_optimized()
+        o_cbn.find_local_attractors_heap()
         # find the compatible pairs
         o_cbn.find_compatible_pairs()
         # Find attractor fields
