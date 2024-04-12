@@ -10,14 +10,11 @@ from classes.utils.customtext import CustomText
 import itertools
 import random  # generate random numbers
 import networkx as nx  # generate networks
-import igraph as ig  # library to make graphs
 import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
-import parsl    # library to make scientific workflow
 from parsl import python_app  # make a function a parsel app
-from memory_profiler import profile  # make memory profiler analysis
 
 
 class CBN:
@@ -286,16 +283,25 @@ class CBN:
         print("Global Scenes generated")
 
     def find_local_attractors_sequential(self):
+        """
+        Finds local attractors sequentially
+        return: update the list of local attractor in the object
+        """
+
         for o_local_network in self.l_local_networks:
             l_local_scenes = None
             if len(o_local_network.l_var_exterm) != 0:
                 l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
                 # calculate the attractors for the node in the top of the  heap
                 o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-                # Update the coupling signals to analyzed
-                self.process_kind_signal(o_local_network)
                 # # update the network in the CBN
                 # self.update_network_by_index(o_local_network)
+            else:
+                # calculate the attractors for local network without coupling signals
+                o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
+
+            # Update the coupling signals to analyzed
+            self.process_kind_signal(o_local_network)
 
     def find_local_attractors_heap(self):
         CustomText.print_duplex_line()
@@ -1160,8 +1166,12 @@ class CBN:
                 return 1
             return 0
 
-        futures = list(map(test_global_dynamic(), o_cbn.l_attractor_fields))
-        if sum(futures) == len(futures):
-            print('attractor field passed test')
-        else:
-            print('test failed')
+        b_flag = True
+        for o_attractor_field in o_cbn.l_attractor_fields:
+            if not test_global_dynamic(o_attractor_field):
+                return False
+
+        # if sum(futures) == len(futures):
+        #     print('attractor field passed test')
+        # else:
+        #     print('test failed')
