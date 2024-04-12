@@ -1,6 +1,3 @@
-from classes.cbnetwork import CBN
-
-
 class GlobalScene:
     def __init__(self, index, l_signal_indexes, l_values_signals):
         self.index = index
@@ -30,7 +27,7 @@ class AttractorField:
     def generate_global_states(self):
         global_states = []
         for attractor_index in self.l_attractor_indexes:
-            o_local_attractor = CBN.getLocalAttractor(attractor_index)
+            o_local_attractor = getLocalAttractor(attractor_index)
             for o_state in o_local_attractor.states:
                 global_states.append(o_state)
 

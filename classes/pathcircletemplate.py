@@ -215,8 +215,8 @@ class PathCircleTemplate:
         l_directed_edges = []
 
         # generate the CBN topology
-        l_relations = CBN.generate_cbn_topology(n_nodes=n_local_networks,
-                                                v_topology=v_topology)
+        l_relations = CBN.generate_global_topology(n_nodes=n_local_networks,
+                                                   v_topology=v_topology)
 
         # Get the last index of the variables for the indexes of the directed edges
         i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1

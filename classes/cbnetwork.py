@@ -34,14 +34,13 @@ class CBN:
         self.global_graph = None
         self.d_network_color = {}
         self.detailed_graph = None
-
         # Generate the colors for every local network
         self.generate_local_nets_colors()
 
     # FUNCTIONS
     @staticmethod
-    def generate_cbn_topology(n_nodes,
-                              v_topology=1):
+    def generate_global_topology(n_nodes,
+                                 v_topology=1):
         # classical topologies
         # complete_graph
         if v_topology == 1:
@@ -218,7 +217,7 @@ class CBN:
         l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, n_var_network)
 
         # generate the CBN topology
-        l_relations = CBN.generate_cbn_topology(n_local_networks, v_topology)
+        l_relations = CBN.generate_global_topology(n_local_networks, v_topology)
 
         # search the last variable from the local network variables
         i_last_variable = l_local_networks[-1].l_var_intern[-1]
