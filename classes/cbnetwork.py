@@ -1161,17 +1161,12 @@ class CBN:
 
     @staticmethod
     def test_attractor_fields(o_cbn):
-        def test_global_dynamic(o_attractor_field):
-            if o_attractor_field:
-                return 1
-            return 0
-
         b_flag = True
         for o_attractor_field in o_cbn.l_attractor_fields:
-            if not test_global_dynamic(o_attractor_field):
-                return False
+            if o_attractor_field.test_global_dynamic():
+                print("Attractor Field", o_attractor_field.index, ": Passed")
+            else:
+                print("Attractor Field", o_attractor_field.index, ": Failed")
+        return b_flag
 
-        # if sum(futures) == len(futures):
-        #     print('attractor field passed test')
-        # else:
-        #     print('test failed')
+
