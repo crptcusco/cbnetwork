@@ -23,7 +23,7 @@ o_cbn.find_local_attractors_heap()
 o_cbn.find_compatible_pairs()
 # o_cbn.show_attractor_pairs()
 
-o_cbn.find_stable_attractor_fields()
+o_cbn.mount_stable_attractor_fields()
 # o_cbn.show_attractors_fields()
 
 # o_cbn.show_coupled_signals_kind()

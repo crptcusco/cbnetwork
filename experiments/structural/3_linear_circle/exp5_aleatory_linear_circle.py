@@ -86,7 +86,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
 
             # Find attractor fields
             v_begin_find_fields = time.time()
-            o_cbn.find_stable_attractor_fields()
+            o_cbn.mount_stable_attractor_fields()
             v_end_find_fields = time.time()
             n_time_find_fields = v_end_find_fields - v_begin_find_fields
 
@@ -110,7 +110,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
             }
             l_data_sample.append(d_collect_indicators)
 
-            # save the collected indicator to analysis
+            # save the collected indicator to profiler_analysis
             pf_res = pd.DataFrame(l_data_sample)
             pf_res.reset_index(drop=True, inplace=True)
 

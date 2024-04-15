@@ -1,9 +1,8 @@
-import random
-
+# external imports
 from satispy import Variable  # Library to resolve SAT
 from satispy.solver import Minisat  # Library to resolve SAT
-from igraph import Graph, plot      # Library to make graphs
 
+# internal imports
 from classes.localscene import LocalScene, LocalAttractor, LocalState
 from classes.utils.customtext import CustomText
 
@@ -213,28 +212,30 @@ class LocalNetwork:
 
         CustomText.print_simple_line()
         print("Network:", o_local_network.index, " Local Scene:", scene)
-        # print("Begin to find attractors...")
-        # create boolean expression initial with "n" transitions
+
+        # First obligatory execution
         set_of_attractors = []
         v_num_transitions = 3
         l_attractors = []
         l_attractors_clauses = []
 
-        # REPEAT CODE
-        v_bool_function = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
-                                                                  l_attractors_clauses, scene)
+        # create boolean expression initial with 3 transitions
+        v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network,
+                                                                  v_num_transitions,
+                                                                  l_attractors_clauses,
+                                                                  scene)
         m_response_sat = []
+        # Solve with SAT the boolean formulation
         o_solver = Minisat()
-        o_solution = o_solver.solve(v_bool_function)
+        o_solution = o_solver.solve(v_boolean_formulation)
 
         if o_solution.success:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
-        # attractor_begin
 
-        # BLOCK ATTRACTORS
+
         m_aux_sat = []
         if len(m_response_sat) != 0:
             # TRANSFORM BOOLEAN TO MATRIZ BOOLEAN RESPONSE
@@ -252,9 +253,6 @@ class LocalNetwork:
         # REPEAT CODE
 
         while len(m_resp_boolean) > 0:
-            # print ("path")
-            # print (m_resp_boolean)
-            # print ("path")
             path_solution = []
             for path_transition in m_resp_boolean:
                 path_solution.append(path_transition)
@@ -292,11 +290,11 @@ class LocalNetwork:
 
             # print l_attractors_clauses
             # REPEAT CODE
-            v_bool_function = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
+            v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
                                                                       l_attractors_clauses, scene)
             m_response_sat = []
             o_solver = Minisat()
-            o_solution = o_solver.solve(v_bool_function)
+            o_solution = o_solver.solve(v_boolean_formulation)
 
             if o_solution.success:
                 for j in range(0, v_num_transitions):

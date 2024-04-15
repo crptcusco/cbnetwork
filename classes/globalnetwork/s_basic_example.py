@@ -1,4 +1,5 @@
 from classes.cbnetwork import CBN
+from globalnetwork import GlobalNetwork as gn
 
 # Script to test the Global Network class
 
@@ -20,12 +21,15 @@ o_cbn.show_description()
 # Find the global stable states
 o_cbn.find_local_attractors_sequential()
 o_cbn.find_compatible_pairs()
-o_cbn.find_stable_attractor_fields()
+o_cbn.mount_stable_attractor_fields()
 # o_cbn.show_stable_attractor_fields()
 
 # Generate Global Network
+o_gn = gn.generate_global_network(o_cbn)
 
 # transform the local attractor fields to global stable states
+l_global_stable_state = gn.transform_attractor_fields_to_global_states(o_cbn.l_attractor_fields)
+
 l_global_stable_states = []
 for o_attractor_field in o_cbn.l_attractor_fields:
     stable_state_index_attractors = []
@@ -33,3 +37,14 @@ for o_attractor_field in o_cbn.l_attractor_fields:
         stable_state_index_attractors.append(t_pair[0].index)
         stable_state_index_attractors.append(t_pair[1].index)
     print(stable_state_index_attractors)
+
+# # Test the stable attractor fields
+# CBN.test_attractor_fields(o_cbn)
+
+# # generate the global scenes
+# o_cbn.generate_global_scenes()
+# o_cbn.show_global_scenes()
+
+# # generate a global transition
+# # generate a global state
+# # generate a global state aleatorio or manual

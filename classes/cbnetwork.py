@@ -718,7 +718,7 @@ class CBN:
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         # print("Directed Edges ordered.")
 
-    def find_stable_attractor_fields(self):
+    def mount_stable_attractor_fields(self):
         """
         Assembles compatible attractor fields.
 
@@ -979,12 +979,12 @@ class CBN:
             o_global_scene.show()
 
     def show_local_attractors(self):
-        for o_network in self.l_local_networks:
+        for o_local_network in self.l_local_networks:
             CustomText.print_duplex_line()
-            print("Network:", o_network.index)
-            for o_scene in o_network.l_local_scenes:
+            print("Network:", o_local_network.index)
+            for o_scene in o_local_network.l_local_scenes:
                 CustomText.print_simple_line()
-                print("Network:", o_network.index, "- Scene:", o_scene.l_values)
+                print("Network:", o_local_network.index, "- Scene:", o_scene.l_values)
                 print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
                     CustomText.print_simple_line()

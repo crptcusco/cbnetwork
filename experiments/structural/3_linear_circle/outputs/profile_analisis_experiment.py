@@ -32,6 +32,6 @@ o_cbn.show_stable_attractor_fields()
 stats = pstats.Stats('profile_stats')
 # Print the statistics
 stats.print_stats()
-print("end profile analysis")
+print("end profile profiler_analysis")
 
 

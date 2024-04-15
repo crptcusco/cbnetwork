@@ -127,7 +127,7 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         # find the compatible pairs
         o_cbn.find_compatible_pairs()
         # Find attractor fields
-        o_cbn.find_stable_attractor_fields()
+        o_cbn.mount_stable_attractor_fields()
 
         # collect indicators
         d_collect_indicators = {
@@ -152,7 +152,7 @@ v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
 
-# Save the collected indicator to analysis
+# Save the collected indicator to profiler_analysis
 pf_res = pd.DataFrame(l_data_sample)
 pf_res.reset_index(drop=True, inplace=True)
 
