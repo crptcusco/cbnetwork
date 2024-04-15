@@ -67,13 +67,13 @@ class LocalNetwork:
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
             o_local_network.l_local_scenes.append(o_local_scene)
         else:
-            v_cont_index = 1
+            v_scene_index = 1
             for scene in l_local_scenes:
-                o_local_scene = LocalScene(v_cont_index, scene, o_local_network.l_var_exterm)
+                o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
                 s_scene = ''.join(scene)
                 o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
                 o_local_network.l_local_scenes.append(o_local_scene)
-                v_cont_index = v_cont_index + 1
+                v_scene_index = v_scene_index + 1
         return o_local_network
 
     @staticmethod
@@ -325,7 +325,7 @@ class LocalNetwork:
             # REPEAT CODE
 
         # Creating the objects of the attractor
-        res = []
+        l_scene_attractors = []
         v_index = 1
         for o_attractor in set_of_attractors:
             l_local_states = []
@@ -334,9 +334,9 @@ class LocalNetwork:
                 l_local_states.append(o_local_state)
             o_local_attractor = LocalAttractor(v_index, l_local_states, o_local_network.index,
                                                o_local_network.l_var_exterm, scene)
-            res.append(o_local_attractor)
+            l_scene_attractors.append(o_local_attractor)
             v_index = v_index + 1
 
         print("end find attractors")
-        return res
+        return l_scene_attractors
 

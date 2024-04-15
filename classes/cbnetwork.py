@@ -1,5 +1,4 @@
 # internal imports
-from classes.globalscene import GlobalScene
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
@@ -7,8 +6,8 @@ from classes.utils.customheap import Node, CustomHeap
 from classes.utils.customtext import CustomText
 
 # external imports
-import itertools
-import random  # generate random numbers
+import itertools    # libraries to iterate
+import random   # generate random numbers
 import networkx as nx  # generate networks
 import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
@@ -27,15 +26,16 @@ class CBN:
         self.n_local_networks = len(self.l_local_networks)
 
         # calculated attributes
-        self.l_global_scenes = []
-        self.l_attractor_fields = []
+        self.l_global_scenes = None
+        self.d_local_attractors = None
+        self.d_attractor_pair = None
+        self.l_attractor_fields = None
 
         # graphs
-        self.global_graph = None
-        self.d_network_color = {}
-        self.detailed_graph = None
-        # Generate the colors for every local network
-        self.generate_local_nets_colors()
+        self.global_graph = None  # A networkx Graph object to make the visualizations
+        self.d_network_color = {}  # Dictionary with the colors
+        self.generate_local_nets_colors()  # Generate the colors for every local network
+        self.detailed_graph = None  # Under Construction
 
     # FUNCTIONS
     @staticmethod
@@ -259,27 +259,6 @@ class CBN:
                 return True
         print("ERROR:", "Local Network not found")
         return False
-
-    def generate_global_scenes(self):
-        CustomText.print_duplex_line()
-        print("GENERATE GLOBAL SCENES")
-
-        # get the index for every directed_edge
-        l_global_signal_indexes = []
-        for o_directed_edge in self.l_directed_edges:
-            l_global_signal_indexes.append(o_directed_edge.index_variable)
-
-        # generate the global scenes using all the combinations
-        l_global_scenes_values = list(product(list('01'), repeat=len(self.l_directed_edges)))
-
-        cont_index_scene = 1
-        for global_scene_values in l_global_scenes_values:
-            o_global_scene = GlobalScene(cont_index_scene, l_global_signal_indexes, global_scene_values)
-            self.l_global_scenes.append(o_global_scene)
-            cont_index_scene = cont_index_scene + 1
-
-        CustomText.print_simple_line()
-        print("Global Scenes generated")
 
     def find_local_attractors_sequential(self):
         """
@@ -549,7 +528,7 @@ class CBN:
         from classes.localnetwork import LocalNetwork
 
         print('=' * 80)
-        print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
+        print("Find Attractors for Local Network:", o_local_network.index)
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
@@ -1157,15 +1136,4 @@ class CBN:
 
     def get_n_output_variables(self):
         pass
-
-    @staticmethod
-    def test_attractor_fields(o_cbn):
-        b_flag = True
-        for o_attractor_field in o_cbn.l_attractor_fields:
-            if o_attractor_field.test_global_dynamic():
-                print("Attractor Field", o_attractor_field.index, ": Passed")
-            else:
-                print("Attractor Field", o_attractor_field.index, ": Failed")
-        return b_flag
-
 
