@@ -28,7 +28,7 @@ o_cbn.find_compatible_pairs()
 o_cbn.show_attractor_pairs()
 
 # Find stable attractor fields
-o_cbn.find_stable_attractor_fields()
+o_cbn.mount_stable_attractor_fields()
 o_cbn.show_stable_attractor_fields()
 
 

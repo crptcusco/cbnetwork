@@ -1,4 +1,4 @@
-import re  # analysis of regular expressions
+import re  # profiler_analysis of regular expressions
 import operator  # unary operator management
 
 from string import ascii_lowercase, ascii_uppercase     # import the list of uppercase and lowercase letters

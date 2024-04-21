@@ -62,7 +62,7 @@ def process_sample(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK):
     n_time_find_pairs = v_end_find_pairs - v_begin_find_pairs
 
     v_begin_find_fields = time.time()
-    o_cbn.find_stable_attractor_fields()
+    o_cbn.mount_stable_attractor_fields()
     v_end_find_fields = time.time()
     n_time_find_fields = v_end_find_fields - v_begin_find_fields
 
@@ -100,7 +100,7 @@ v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
 
-# Save the collected indicator to analysis
+# Save the collected indicator to profiler_analysis
 pf_res = pd.DataFrame(l_data_sample)
 pf_res.reset_index(drop=True, inplace=True)
 
