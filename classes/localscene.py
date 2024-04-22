@@ -8,8 +8,9 @@ class LocalScene:
 
 
 class LocalAttractor:
-    def __init__(self, index, l_states, network_index, relation_index=None, local_scene=None):
+    def __init__(self, g_index, index, l_states, network_index, relation_index=None, local_scene=None):
         # base properties
+        self.g_index = g_index
         self.index = index
         self.l_states = l_states
         # extended properties

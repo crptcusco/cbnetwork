@@ -98,7 +98,7 @@ for o_local_network in l_local_networks:
 o_cbn = CBN(l_local_networks, l_directed_edges)
 
 # Find attractors
-o_cbn.find_local_attractors_heap()
+o_cbn.find_local_attractors_sequential()
 
 # show attractors
 o_cbn.show_local_attractors()

@@ -68,7 +68,7 @@ o_cbn = CBN(l_local_networks, l_directed_edges)
 print("CBN object created")
 
 # Find attractors
-o_cbn.find_local_attractors_heap()
+o_cbn.find_local_attractors_sequential()
 o_cbn.show_local_attractors()
 
 # find the compatible pairs

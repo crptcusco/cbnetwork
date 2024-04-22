@@ -24,11 +24,11 @@ class LocalNetwork:
         self.l_output_signals = []
 
         # Calculated properties
+        self.count_attractor = 1
         self.l_local_scenes = []
 
     def show(self):
-        print("--------------------------------------------")
-        print('Local Network:', self.index)
+        CustomText.make_sub_sub_title(f"Local Network: {self.index}")
         print('Internal Variables: ', self.l_var_intern)
         print('External Variables: ', self.l_var_exterm)
         print('Total Variables: ', self.l_var_total)
@@ -58,21 +58,30 @@ class LocalNetwork:
                 self.des_funct_variables[i] = o_internal_variable_to_update
 
     @staticmethod
-    def find_local_attractors(o_local_network, l_local_scenes=None):
+    def find_local_attractors(o_local_network, l_local_scenes=None, count_attractor=1):
         CustomText.print_simple_line()
         print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
-            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
+                                                                                  scene=None,
+                                                                                  count_attractor=count_attractor)
             o_local_network.l_local_scenes.append(o_local_scene)
         else:
             v_scene_index = 1
             for scene in l_local_scenes:
                 o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
                 s_scene = ''.join(scene)
-                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
+                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
+                                                                                      scene=s_scene,
+                                                                                      count_attractor=count_attractor)
                 o_local_network.l_local_scenes.append(o_local_scene)
+                # update the scenes index
                 v_scene_index = v_scene_index + 1
+                # update the attractors index
+                count_attractor += len(o_local_scene.l_attractors)
+
+        o_local_network.count_attractor = count_attractor
         return o_local_network
 
     @staticmethod
@@ -134,7 +143,7 @@ class LocalNetwork:
                     print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
                             o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
-                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
+                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
                 cont_clause_global = cont_clause_global + 1
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence
@@ -201,7 +210,7 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
-    def find_local_scene_attractors(o_local_network, scene=None):
+    def find_local_scene_attractors(o_local_network, scene=None, count_attractor=1):
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
             number_of_times = 0
@@ -221,9 +230,9 @@ class LocalNetwork:
 
         # create boolean expression initial with 3 transitions
         v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network,
-                                                                  v_num_transitions,
-                                                                  l_attractors_clauses,
-                                                                  scene)
+                                                                        v_num_transitions,
+                                                                        l_attractors_clauses,
+                                                                        scene)
         m_response_sat = []
         # Solve with SAT the boolean formulation
         o_solver = Minisat()
@@ -234,7 +243,6 @@ class LocalNetwork:
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
                     m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
-
 
         m_aux_sat = []
         if len(m_response_sat) != 0:
@@ -291,7 +299,7 @@ class LocalNetwork:
             # print l_attractors_clauses
             # REPEAT CODE
             v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
-                                                                      l_attractors_clauses, scene)
+                                                                            l_attractors_clauses, scene)
             m_response_sat = []
             o_solver = Minisat()
             o_solution = o_solver.solve(v_boolean_formulation)
@@ -330,11 +338,13 @@ class LocalNetwork:
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(v_index, l_local_states, o_local_network.index,
+            o_local_attractor = LocalAttractor(count_attractor, v_index, l_local_states, o_local_network.index,
                                                o_local_network.l_var_exterm, scene)
             l_scene_attractors.append(o_local_attractor)
-            v_index = v_index + 1
+            # update the attractors index locally
+            v_index += 1
+            # update the attractors index globally
+            count_attractor += 1
 
         print("end find attractors")
         return l_scene_attractors
-

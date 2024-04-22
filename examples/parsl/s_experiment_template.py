@@ -55,7 +55,7 @@ def run_experiment():
     print("normal function")
     # o_cbn.find_attractor_fields()
     print("parallel function")
-    o_cbn.find_stable_attractor_fields_parsl()
+    o_cbn.mount_stable_attractor_fields_parsl()
     o_cbn.show_stable_attractor_fields()
 
     print("END OF EXPERIMENT")

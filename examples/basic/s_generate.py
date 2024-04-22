@@ -18,7 +18,7 @@ o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               v_topology=V_TOPOLOGY,
                                               n_output_variables=N_OUTPUT_VARIABLES)
 
-o_cbn.find_local_attractors_heap()
+o_cbn.find_local_attractors_sequential()
 # o_cbn.show_attractors()
 
 o_cbn.find_compatible_pairs()
