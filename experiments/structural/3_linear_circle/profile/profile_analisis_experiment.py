@@ -5,7 +5,8 @@ import pstats
 # select the most cost cbn
 # path_cbn = '3_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/cbn_9_3.pkl'
 # path_cbn = 'exp5_aleatory_linear_circle_7_7_10/pkl_cbn/cbn_8_3.pkl'
-path_cbn = 'exp5_aleatory_linear_circle_7_7_10/pkl_cbn/cbn_10_3.pkl'
+# path_cbn = 'exp5_aleatory_linear_circle_7_7_10/pkl_cbn/cbn_10_3.pkl'
+path_cbn = '../outputs/2_0_data_slow/exp5_aleatory_linear_circle_3_3_10/pkl_cbn/cbn_10_4.pkl'
 
 with open(path_cbn, 'rb') as file:
     o_cbn = pickle.load(file)
@@ -24,7 +25,7 @@ o_cbn.show_attractor_pairs()
 # Find stable attractor fields
 # o_cbn.find_stable_attractor_fields()
 # Run the profiler on the function
-cProfile.run('o_cbn.find_stable_attractor_fields()',
+cProfile.run('o_cbn.mount_stable_attractor_fields()',
              'profile_stats')
 o_cbn.show_stable_attractor_fields()
 
