@@ -2,7 +2,6 @@
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
-from classes.utils.customheap import Node, CustomHeap
 from classes.utils.customtext import CustomText
 
 # external imports
@@ -13,12 +12,10 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
-from parsl import python_app  # make a function a parsel app
 
 
 class CBN:
-    def __init__(self, l_local_networks,
-                 l_directed_edges):
+    def __init__(self, l_local_networks, l_directed_edges):
         # basic attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
@@ -40,8 +37,7 @@ class CBN:
 
     # FUNCTIONS
     @staticmethod
-    def generate_global_topology(n_nodes,
-                                 v_topology=1):
+    def generate_global_topology(n_nodes, v_topology=1):
         # classical topologies
         # complete_graph
         if v_topology == 1:
@@ -76,8 +72,7 @@ class CBN:
         return list(o_graph.edges)
 
     @staticmethod
-    def generate_local_networks_indexes_variables(n_local_networks,
-                                                  n_var_network):
+    def generate_local_networks_indexes_variables(n_local_networks, n_var_network):
         l_local_networks = []
         v_cont_var = 1
         for v_num_network in range(1, n_local_networks + 1):
@@ -92,12 +87,10 @@ class CBN:
         return l_local_networks
 
     @staticmethod
-    def generate_directed_edges(i_last_variable,
-                                l_local_networks,
-                                l_relations,
-                                n_output_variables=2):
+    def generate_directed_edges(i_last_variable, l_local_networks, l_relations, n_output_variables=2):
         l_directed_edges = []
         i_directed_edge = i_last_variable + 1
+        index_edge = 1
 
         for o_local_network in l_local_networks:
             l_local_networks_co = []
@@ -113,10 +106,11 @@ class CBN:
                 else:
                     coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
                 # generate the directed-edge object
-                o_directed_edge = DirectedEdge(i_directed_edge, o_local_network.index, o_local_network_co.index,
-                                               l_output_variables, coupling_function)
+                o_directed_edge = DirectedEdge(index_edge, i_directed_edge, o_local_network.index,
+                                               o_local_network_co.index, l_output_variables, coupling_function)
                 l_directed_edges.append(o_directed_edge)
-                i_directed_edge = i_directed_edge + 1
+                i_directed_edge += 1
+                index_edge += 1
 
         return l_directed_edges
 
@@ -525,39 +519,6 @@ class CBN:
     #         # print("The Local attractors are computed")
     #     print("ALL THE ATTRACTORS ARE COMPUTED")
 
-    @staticmethod
-    @python_app
-    def find_local_attractors_task(o_local_network,
-                                   l_local_scenes):
-        from classes.localscene import LocalScene
-        from classes.localnetwork import LocalNetwork
-
-        print('=' * 80)
-        print("Find Attractors for Local Network:", o_local_network.index)
-        if l_local_scenes is None:
-            o_local_scene = LocalScene(index=1)
-            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, scene=None)
-            o_local_network.l_local_scenes.append(o_local_scene)
-        else:
-            v_cont_index = 1
-            for scene in l_local_scenes:
-                o_local_scene = LocalScene(v_cont_index, scene, o_local_network.l_var_exterm)
-                s_scene = ''.join(scene)
-                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network, s_scene)
-                o_local_network.l_local_scenes.append(o_local_scene)
-                v_cont_index = v_cont_index + 1
-        return o_local_network
-
-    @staticmethod
-    def find_local_attractors_parsl(local_networks):
-        tasks = []
-        for local_network in local_networks:
-            l_local_scenes = None
-            if len(local_network.l_var_exterm) != 0:
-                l_local_scenes = list(product(list('01'), repeat=len(local_network.l_var_exterm)))
-            tasks.append(CBN.find_local_attractors_task(local_network, l_local_scenes))
-        return tasks
-
     def process_kind_signal(self, o_local_network):
         """
         validate if the output variables by attractor send a fixed value and update kind signals
@@ -650,54 +611,6 @@ class CBN:
                 o_output_signal.d_comp_pairs_attractors_by_value[0] = l_pairs_edge_0
                 o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
         print("END FIND ATTRACTOR PAIRS")
-
-    @staticmethod
-    @python_app
-    def find_compatible_pairs_task(o_cbn,
-                                   o_output_signal):
-        # o_output_signal.show()
-        # begin functions
-        l_attractors_input_0 = o_output_signal.d_out_value_to_attractor[0]
-        l_attractors_input_1 = o_output_signal.d_out_value_to_attractor[1]
-        l_pairs_edge_0 = []
-        l_pairs_edge_1 = []
-
-        # print("-------------------------------")
-        # print("INPUT ATTRACTOR LIST")
-        # search the values for every signal
-        for signal_value in o_output_signal.d_out_value_to_attractor.keys():
-            print("-------------------------------")
-            print("Coupling signal value :", signal_value)
-            # find the attractors that generated by this signal
-            l_attractors_output = []
-            # select the attractor who generated the output value of the signal
-            for o_attractor in o_cbn.get_attractors_by_input_signal_value(o_output_signal.index_variable,
-                                                                          signal_value):
-                l_attractors_output.append(o_attractor)
-                o_attractor.show()
-            if signal_value == 0:
-                l_pairs_edge_0 = list(itertools.product(l_attractors_input_0, l_attractors_output))
-            elif signal_value == 1:
-                l_pairs_edge_1 = list(itertools.product(l_attractors_input_1, l_attractors_output))
-        # Join the two list in only one
-        o_output_signal.d_comp_pairs_attractors_by_value[0] = l_pairs_edge_0
-        o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
-        # print(l_pairs_edge_0)
-        # print(l_pairs_edge_1)
-        return o_output_signal
-
-    @staticmethod
-    def find_compatible_pairs_parsl(o_cbn):
-        CustomText.print_duplex_line()
-        print("FIND COMPATIBLE ATTRACTOR PAIRS")
-
-        # generate the pairs using the output signal
-        tasks = []
-        for o_output_signal in o_cbn.l_directed_edges:
-            task = CBN.find_compatible_pairs_task(o_cbn, o_output_signal)
-            tasks.append(task)
-
-        return tasks
 
     def order_edges_by_compatibility(self):
 
@@ -828,105 +741,6 @@ class CBN:
         CustomText.print_simple_line()
         print("Number of attractor fields found:", len(l_base_pairs))
 
-        self.l_attractor_fields = l_base_pairs
-
-    def mount_stable_attractor_fields_parsl(self):
-        """
-        Assembles compatible attractor fields.
-
-        Args:
-          List of compatible attractor pairs.
-
-        Returns:
-          List of attractor fields.
-        """
-
-        # Define una función Parsl para evaluar la compatibilidad de pares de atractores
-        @python_app
-        def evaluate_pair(base_pairs, candidate_pair):
-            """
-            Checks if a candidate attractor pair is compatible with a base attractor pair.
-
-            Args:
-              base_pairs: Base attractor pairs.
-              candidate_pair: Candidate attractor pair.
-
-            Returns:
-              Boolean value of True or False.
-            """
-
-            # Extract the RDDs from each attractor pair.
-            base_attractor_pairs = [attractor for pair in base_pairs for attractor in pair]
-
-            # generate the already networks visited
-            l_already_networks = {o_attractor.network_index for o_attractor in base_attractor_pairs}
-
-            # Check if any RDD from the candidate attractor pair is present in the RDDs from the base attractor pair.
-            double_check = sum(1 for candidate_attractor in candidate_pair
-                               if candidate_attractor.network_index in l_already_networks
-                               and candidate_attractor in base_attractor_pairs)
-
-            return double_check == 2
-
-        # Define una función Parsl para procesar un par de candidatos y agregarlos a la lista de campos de atracción
-        @python_app
-        def process_pair(base_pair, candidate_pair):
-            if isinstance(base_pair, tuple):
-                base_pair = [base_pair]
-            if evaluate_pair(base_pair, candidate_pair):
-                new_pair = base_pair + [candidate_pair]
-                return new_pair
-            else:
-                return None
-
-        def cartesian_product_mod_parallel(base_pairs, candidate_pairs):
-            """
-            Performs the modified Cartesian product of the attractor pairs lists.
-
-            Args:
-              base_pairs: List of base attractor pairs.
-              candidate_pairs: List of candidate attractor pairs.
-
-            Returns:
-              List of candidate attractor fields.
-            """
-
-            # Initialize the list of futures
-            futures = []
-
-            # Procesa cada par de candidatos en paralelo utilizando Parsl
-            for base_pair in base_pairs:
-                for candidate_pair in candidate_pairs:
-                    future = process_pair(base_pair, candidate_pair)
-                    futures.append(future)
-
-            # Espera a que se completen todas las tareas de Parsl y obtiene los resultados
-            field_pair_list = [task.result() for task in futures]
-
-            # Filtra los resultados nulos y devuelve la lista final
-            return [result for result in field_pair_list if result is not None]
-
-        CustomText.print_duplex_line()
-        print("FIND ATTRACTOR FIELDS")
-
-        # Order the edges by compatibility
-        self.order_edges_by_compatibility()
-
-        # generate a base list of the pairs
-        l_base = self.l_directed_edges[:2]
-
-        # generate the list of pairs made with 0 or 1
-        l_base_pairs = l_base[0].d_comp_pairs_attractors_by_value[0] + l_base[0].d_comp_pairs_attractors_by_value[1]
-
-        # for every edge make the union to the base
-        for o_directed_edge in self.l_directed_edges[1:]:
-            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
-                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
-            # join the base list with the new directed edge
-            l_base_pairs = cartesian_product_mod_parallel(l_base_pairs, l_candidate_pairs)
-
-        CustomText.print_simple_line()
-        print("Number of attractor fields found:", len(l_base_pairs))
         self.l_attractor_fields = l_base_pairs
 
     # SHOW FUNCTIONS

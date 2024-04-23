@@ -1,15 +1,16 @@
 import re  # profiler_analysis of regular expressions
 import operator  # unary operator management
 
-from string import ascii_lowercase, ascii_uppercase     # import the list of uppercase and lowercase letters
-from itertools import product                           # generate combinations of numbers
-from collections import namedtuple                      # structures like trees
-from classes.utils.customtext import CustomText         # utils for texts
+from string import ascii_lowercase, ascii_uppercase  # import the list of uppercase and lowercase letters
+from itertools import product  # generate combinations of numbers
+from collections import namedtuple  # structures like trees
+from classes.utils.customtext import CustomText  # utils for texts
 
 
 class DirectedEdge:
-    def __init__(self, index_variable_signal, input_local_network, output_local_network, l_output_variables,
+    def __init__(self, index, index_variable_signal, input_local_network, output_local_network, l_output_variables,
                  coupling_function):
+        self.index = index
         self.index_variable = index_variable_signal
         self.input_local_network = input_local_network
         self.output_local_network = output_local_network
@@ -32,9 +33,10 @@ class DirectedEdge:
         self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
 
     def show(self):
-        CustomText.print_simple_line()
-        print("Edge:", self.output_local_network, "->", self.input_local_network,
-              ", Index:", self.index_variable)
+        # CustomText.print_simple_line()
+        CustomText.make_sub_sub_title(f"Index Edge: {self.index} - "
+                                      f"Relation: {self.output_local_network} -> {self.input_local_network} - "
+                                      f"Variable: {self.index_variable}")
         print("Variables:", self.l_output_variables, ", Coupling Function:", self.coupling_function)
         print("Truth table:", self.true_table)
         print("Kind signal:", self.kind_signal,

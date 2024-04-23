@@ -27,10 +27,10 @@ o_cbn.find_local_attractors_sequential()
 o_cbn.generate_attractor_dictionary()
 # o_cbn.show_attractors_dictionary()
 
-# # Find compatible attractor pairs
-# o_cbn.find_compatible_pairs()
-# o_cbn.show_attractor_pairs()
-#
+# Find compatible attractor pairs
+o_cbn.find_compatible_pairs()
+o_cbn.show_attractor_pairs()
+
 # # Mount stable attractor fields
 # o_cbn.mount_stable_attractor_fields()
 # o_cbn.show_stable_attractor_fields()

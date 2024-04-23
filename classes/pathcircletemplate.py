@@ -222,6 +222,7 @@ class PathCircleTemplate:
         i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
 
         # generate the directed edges given the last variable generated and the selected output variables
+        i_directed_edge = 1
         for relation in l_relations:
             output_local_network = relation[0]
             input_local_network = relation[1]
@@ -233,12 +234,14 @@ class PathCircleTemplate:
             # generate the coupling function
             coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
             # generate the Directed-Edge object
-            o_directed_edge = DirectedEdge(index_variable_signal=i_last_variable,
+            o_directed_edge = DirectedEdge(index=i_directed_edge,
+                                           index_variable_signal=i_last_variable,
                                            input_local_network=input_local_network,
                                            output_local_network=output_local_network,
                                            l_output_variables=l_output_variables,
                                            coupling_function=coupling_function)
             i_last_variable += 1
+            i_directed_edge += 1
             # add the directed-edge object to the list
             l_directed_edges.append(o_directed_edge)
 
