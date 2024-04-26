@@ -49,12 +49,12 @@ class LocalNetwork:
 
     def get_internal_variable(self, i_variable):
         for o_internal_variable in self.des_funct_variables:
-            if o_internal_variable.index == i_variable:
+            if o_internal_variable.l_index == i_variable:
                 return o_internal_variable
 
     def update_internal_variable(self, o_internal_variable_to_update):
         for i, o_internal_variable in enumerate(self.des_funct_variables):
-            if o_internal_variable.index == o_internal_variable_to_update.index:
+            if o_internal_variable.l_index == o_internal_variable_to_update.l_index:
                 self.des_funct_variables[i] = o_internal_variable_to_update
 
     @staticmethod
@@ -142,8 +142,8 @@ class LocalNetwork:
                 if not o_variable_model.cnf_function:
                     print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
-                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
-                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
+                            o_local_network.dic_var_cnf[str(o_variable_model.l_index) + "_" + str(transition)] | -
+                    o_local_network.dic_var_cnf[str(o_variable_model.l_index) + "_" + str(transition)])
                 cont_clause_global = cont_clause_global + 1
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence

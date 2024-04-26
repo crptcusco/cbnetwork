@@ -38,9 +38,9 @@ class GlobalNetwork:
         b_flag = True
         for o_attractor_field in o_cbn.l_attractor_fields:
             if o_attractor_field.test_global_dynamic():
-                print("Attractor Field", o_attractor_field.index, ": Passed")
+                print("Attractor Field", o_attractor_field.l_index, ": Passed")
             else:
-                print("Attractor Field", o_attractor_field.index, ": Failed")
+                print("Attractor Field", o_attractor_field.l_index, ": Failed")
         return b_flag
 
     @staticmethod

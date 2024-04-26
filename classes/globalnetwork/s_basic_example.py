@@ -34,8 +34,8 @@ l_global_stable_states = []
 for o_attractor_field in o_cbn.l_attractor_fields:
     stable_state_index_attractors = []
     for t_pair in o_attractor_field:
-        stable_state_index_attractors.append(t_pair[0].index)
-        stable_state_index_attractors.append(t_pair[1].index)
+        stable_state_index_attractors.append(t_pair[0].l_index)
+        stable_state_index_attractors.append(t_pair[1].l_index)
     print(stable_state_index_attractors)
 
 # # Test the stable attractor fields

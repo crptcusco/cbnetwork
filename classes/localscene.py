@@ -8,10 +8,10 @@ class LocalScene:
 
 
 class LocalAttractor:
-    def __init__(self, g_index, index, l_states, network_index, relation_index=None, local_scene=None):
+    def __init__(self, g_index, l_index, l_states, network_index, relation_index=None, local_scene=None):
         # base properties
         self.g_index = g_index
-        self.index = index
+        self.l_index = l_index
         self.l_states = l_states
         # extended properties
         self.network_index = network_index
@@ -20,7 +20,7 @@ class LocalAttractor:
 
     def show(self):
         print("Network Index:", self.network_index, ", Input Signal Index:", self.relation_index,
-              ", Scene:", self.local_scene, ", Attractor Index:", self.index, ", States:", end="")
+              ", Scene:", self.local_scene, ", Attractor Index:", self.l_index, ", States:", end="")
         for o_state in self.l_states:
             print(end='[')
             for variable in o_state.l_variable_values:
@@ -29,7 +29,7 @@ class LocalAttractor:
         print()
 
     def show_short(self):
-        print("Net. Index:", self.network_index, ", Attrac. Index:", self.index, ", States:", end="")
+        print("Net. Index:", self.network_index, ", Attrac. Index:", self.l_index, ", States:", end="")
         for o_state in self.l_states:
             print(end='[')
             for variable in o_state.l_variable_values:
