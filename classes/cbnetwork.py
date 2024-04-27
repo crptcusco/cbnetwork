@@ -282,246 +282,8 @@ class CBN:
             # Update the index of the local_network
             self.i_attractor += o_local_network.count_attractor
 
+        print('Number of local attractors:', self.i_attractor)
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
-
-    # def find_local_attractors_heap(self):
-    #     CustomText.print_duplex_line()
-    #     print("FIND ATTRACTORS USING OPTIMIZED METHOD")
-    #
-    #     # create an empty heap to organize the local networks by weight
-    #     o_custom_heap = CustomHeap()
-    #
-    #     # calculate the initial weights for every local network anda safe in the node of the heap
-    #     for o_local_network in self.l_local_networks:
-    #         weight = 0
-    #         for o_directed_edge in self.l_directed_edges:
-    #             if o_directed_edge.input_local_network == o_local_network.index:
-    #                 # In the beginning all the kind or relations are "not computed" with index 2
-    #                 weight = weight + o_directed_edge.kind_signal
-    #         # create the node of the heap
-    #         o_node = Node(o_local_network.index, weight)
-    #         # add node to the heap with computed weight
-    #         o_custom_heap.add_node(o_node)
-    #
-    #     # generate the initial heap
-    #     initial_heap = o_custom_heap.get_indexes()
-    #     # print(initial_heap)
-    #
-    #     # find the node in the top  of the heap
-    #     lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
-    #     # find the local network information
-    #     o_local_network = self.get_network_by_index(lowest_weight_node.index)
-    #     # generate the local scenarios
-    #     l_local_scenes = None
-    #     if len(o_local_network.l_var_exterm) != 0:
-    #         l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
-    #
-    #     # calculate the attractors for the node in the top of the  heap
-    #     o_local_network = LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-    #     # update the network in the CBN
-    #     self.update_network_by_index(o_local_network)
-    #
-    #     # validate if the output variables by attractor send a fixed value and update kind signals
-    #     l_directed_edges = CBN.find_output_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-    #     # print("Local network:", l_var_intern.index)
-    #     for o_output_signal in l_directed_edges:
-    #         # print("Index variable output signal:", o_output_signal.index_variable_signal)
-    #         # print("Output variables:", o_output_signal.l_output_variables)
-    #         # print(str(o_output_signal.true_table))
-    #         l_signals_for_output = []
-    #         for o_local_scene in o_local_network.l_local_scenes:
-    #             # print("Scene: ", str(o_local_scene.l_values))
-    #             l_signals_in_local_scene = []
-    #             for o_attractor in o_local_scene.l_attractors:
-    #                 # print("ATTRACTOR")
-    #                 l_signals_in_attractor = []
-    #                 for o_state in o_attractor.l_states:
-    #                     # print("STATE")
-    #                     # print(l_var_intern.l_var_total)
-    #                     # print(l_var_intern.l_var_intern)
-    #                     # print(o_state.l_variable_values)
-    #                     # # select the values of the output variables
-    #                     true_table_index = ""
-    #                     for v_output_variable in o_output_signal.l_output_variables:
-    #                         # print("Variables list:", l_var_intern.l_var_total)
-    #                         # print("Output variables list:", o_output_signal.l_output_variables)
-    #                         # print("Output variable:", v_output_variable)
-    #                         pos = o_local_network.l_var_total.index(v_output_variable)
-    #                         value = o_state.l_variable_values[pos]
-    #                         true_table_index = true_table_index + str(value)
-    #                     # print(o_output_signal.l_output_variables)
-    #                     # print(true_table_index)
-    #                     output_value_state = o_output_signal.true_table[true_table_index]
-    #                     # print("Output value :", output_value_state)
-    #                     l_signals_in_attractor.append(output_value_state)
-    #                 if len(set(l_signals_in_attractor)) == 1:
-    #                     l_signals_in_local_scene.append(l_signals_in_attractor[0])
-    #                     # print("the attractor signal value is stable")
-    #
-    #                     # add the attractor to the dictionary of output value -> attractors
-    #                     if l_signals_in_attractor[0] == '0':
-    #                         o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
-    #                     elif l_signals_in_attractor[0] == '1':
-    #                         o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
-    #                 # else:
-    #                 #     print("the attractor signal is not stable")
-    #             if len(set(l_signals_in_local_scene)) == 1:
-    #                 l_signals_for_output.append(l_signals_in_local_scene[0])
-    #                 # print("the scene signal is restricted")
-    #             else:
-    #                 if len(set(l_signals_in_local_scene)) == 2:
-    #                     l_signals_for_output.extend(l_signals_in_local_scene)
-    #                     # print("the scene signal value is stable")
-    #                 # else:
-    #                 #     print("warning:", "the scene signal is not stable")
-    #         if len(set(l_signals_for_output)) == 1:
-    #             o_output_signal.kind_signal = 1
-    #             print("the output signal is restricted")
-    #         elif len(set(l_signals_for_output)) == 2:
-    #             o_output_signal.kind_signal = 3
-    #             print("the output signal is stable")
-    #         else:
-    #             o_output_signal.kind_signal = 4
-    #             print("error:", "the scene signal is not stable. This CBN dont have stable Attractor Fields")
-    #
-    #     # # # print all the kinds of the signals
-    #     # CustomText.print_simple_line()
-    #     # print("Resume")
-    #     # print("Network:", l_var_intern.index)
-    #     # for o_directed_edge in self.l_directed_edges:
-    #     #     print(o_directed_edge.index_variable, ":", o_directed_edge.kind_signal)
-    #
-    #     # Update the weights of the nodes
-    #     # Add the output network to the list of modified networks
-    #     l_modified_edges = CBN.find_input_edges_by_network_index(o_local_network.index, self.l_directed_edges)
-    #     for o_edge in l_modified_edges:
-    #         modified_network_index = o_edge.output_local_network
-    #         # print("Network", modified_network_index)
-    #         # print("Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
-    #         weight = 0
-    #         l_edges = CBN.find_input_edges_by_network_index(o_edge.output_local_network, self.l_directed_edges)
-    #         for o_updated_edge in l_edges:
-    #             weight = weight + o_updated_edge.kind_signal
-    #         # print("New weight:", weight)
-    #         o_custom_heap.update_node(o_edge.output_local_network, weight)
-    #
-    #     # # compare the initial heap with the update heap
-    #     # print("INITIAL HEAP")
-    #     # print(initial_heap)
-    #     # print("UPDATE HEAP")
-    #     # print(o_custom_heap.get_indexes())
-    #
-    #     # Verify if the heap has at least two elements
-    #     while o_custom_heap.get_size() > 0:
-    #         # find the node on the top of the heap
-    #         lowest_weight_node = CustomHeap.remove_node(o_custom_heap)
-    #         # Find Local Network
-    #         o_local_network = self.get_network_by_index(lowest_weight_node.index)
-    #
-    #         l_local_scenes = None
-    #         if len(o_local_network.l_var_exterm) != 0:
-    #             l_local_scenes = list(product(list('01'), repeat=len(o_local_network.l_var_exterm)))
-    #
-    #         # Find attractors with the minimum weight
-    #         LocalNetwork.find_local_attractors(o_local_network, l_local_scenes)
-    #         # print("Local Network:", lowest_weight_node.index, "Weight:", lowest_weight_node.weight)
-    #
-    #         # COPIED CODE !!!
-    #         # # Update kind signals
-    #         # validate if the output variables by attractor send a fixed value
-    #         l_directed_edges = CBN.find_output_edges_by_network_index(o_local_network.index,
-    #                                                                   self.l_directed_edges)
-    #         # print("Local network:", l_var_intern.index)
-    #         for o_output_signal in l_directed_edges:
-    #             # print("Index variable output signal:", o_output_signal.index_variable)
-    #             # print("Output variables:", o_output_signal.l_output_variables)
-    #             # print(str(o_output_signal.true_table))
-    #             l_signals_for_output = []
-    #             for o_local_scene in o_local_network.l_local_scenes:
-    #                 # print("Scene: ", str(o_local_scene.l_values))
-    #                 l_signals_in_local_scene = []
-    #                 for o_attractor in o_local_scene.l_attractors:
-    #                     # print("ATTRACTOR")
-    #                     l_signals_in_attractor = []
-    #                     for o_state in o_attractor.l_states:
-    #                         # print("STATE")
-    #                         # print(l_var_intern.l_var_total)
-    #                         # print(l_var_intern.l_var_intern)
-    #                         # print(o_state.l_variable_values)
-    #                         # select the values of the output variables
-    #                         true_table_index = ""
-    #                         for v_output_variable in o_output_signal.l_output_variables:
-    #                             # print("Variables list:", l_var_intern.l_var_total)
-    #                             # print("Output variables list:", o_output_signal.l_output_variables)
-    #                             # print("Output variable:", v_output_variable)
-    #                             pos = o_local_network.l_var_total.index(v_output_variable)
-    #                             value = o_state.l_variable_values[pos]
-    #                             true_table_index = true_table_index + str(value)
-    #                         # print(o_output_signal.l_output_variables)
-    #                         # print(true_table_index)
-    #                         output_value_state = o_output_signal.true_table[true_table_index]
-    #                         # print("Output value :", output_value_state)
-    #                         l_signals_in_attractor.append(output_value_state)
-    #                     if len(set(l_signals_in_attractor)) == 1:
-    #                         l_signals_in_local_scene.append(l_signals_in_attractor[0])
-    #                         # print("the attractor signal value is stable")
-    #
-    #                         # add the attractor to the dictionary of output value -> attractors
-    #                         if l_signals_in_attractor[0] == '0':
-    #                             o_output_signal.d_out_value_to_attractor[0].append(o_attractor)
-    #                         elif l_signals_in_attractor[0] == '1':
-    #                             o_output_signal.d_out_value_to_attractor[1].append(o_attractor)
-    #                     # else:
-    #                     #     print("the attractor signal is not stable")
-    #                 if len(set(l_signals_in_local_scene)) == 1:
-    #                     l_signals_for_output.append(l_signals_in_local_scene[0])
-    #                     # print("the scene signal is restricted")
-    #                 else:
-    #                     if len(set(l_signals_in_local_scene)) == 2:
-    #                         l_signals_for_output.extend(l_signals_in_local_scene)
-    #                         # print("the scene signal value is stable")
-    #                     # else:
-    #                     #     print("the scene signal is not stable")
-    #             if len(set(l_signals_for_output)) == 1:
-    #                 o_output_signal.kind_signal = 1
-    #                 # print("the output signal is restricted")
-    #             elif len(set(l_signals_for_output)) == 2:
-    #                 o_output_signal.kind_signal = 3
-    #                 # print("the output signal is stable")
-    #             else:
-    #                 o_output_signal.kind_signal = 4
-    #                 print("THE SCENE SIGNAL IS NOT STABLE. THIS CBN DONT HAVE STABLE ATTRACTOR FIELDS")
-    #
-    #         # # print all the kinds of the signals
-    #         # CustomText.print_duplex_line()
-    #         # print("RESUME")
-    #         # print("Network:", l_var_intern.index)
-    #         # for o_directed_edge in self.l_directed_edges:
-    #         #     print(o_directed_edge.index_variable_signal, ":", o_directed_edge.kind_signal)
-    #
-    #         # Update the weights of the nodes
-    #         # Add the output network to the list of modified networks
-    #         l_modified_edges = CBN.find_input_edges_by_network_index(o_local_network.index,
-    #                                                                  self.l_directed_edges)
-    #         for o_edge in l_modified_edges:
-    #             modified_network_index = o_edge.output_local_network
-    #             # print("Network", modified_network_index)
-    #             # print("Relation:", o_edge.input_local_network, "->", o_edge.output_local_network)
-    #             weight = 0
-    #             l_edges = CBN.find_input_edges_by_network_index(o_edge.output_local_network,
-    #                                                             self.l_directed_edges)
-    #             for o_updated_edge in l_edges:
-    #                 weight = weight + o_updated_edge.kind_signal
-    #             # print("New weight:", weight)
-    #             o_custom_heap.update_node(o_edge.output_local_network, weight)
-    #
-    #         # print("INITIAL HEAP")
-    #         # print(initial_heap)
-    #         # print("UPDATE HEAP")
-    #         # print(o_custom_heap.get_indexes())
-    #         # print("empty heap")
-    #         # print("The Local attractors are computed")
-    #     print("ALL THE ATTRACTORS ARE COMPUTED")
 
     def process_kind_signal(self, o_local_network):
         """
@@ -578,7 +340,7 @@ class CBN:
 
         CustomText.make_title('FIND COMPATIBLE ATTRACTOR PAIRS')
 
-        l_pairs = []
+        n_pairs = 0
         # for every local network finds compatible attractor pairs
         for o_local_network in self.l_local_networks:
 
@@ -621,6 +383,11 @@ class CBN:
                 # Join the two list in only one
                 o_output_signal.d_comp_pairs_attractors_by_value[0] = l_pairs_edge_0
                 o_output_signal.d_comp_pairs_attractors_by_value[1] = l_pairs_edge_1
+
+                n_pairs += len(o_output_signal.d_comp_pairs_attractors_by_value[0])
+                n_pairs += len(o_output_signal.d_comp_pairs_attractors_by_value[1])
+
+        print('Number of attractor pairs:', n_pairs)
         CustomText.make_sub_sub_title('END FIND ATTRACTOR PAIRS')
 
     def order_edges_by_compatibility(self):
@@ -754,7 +521,6 @@ class CBN:
 
         print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
-
 
     # SHOW FUNCTIONS
     @staticmethod

@@ -74,7 +74,7 @@ class PathCircleTemplate:
         # select the internal variables
         l_variables = []
         for o_local_network in l_local_networks:
-            if o_local_network.l_index == i_local_network:
+            if o_local_network.index == i_local_network:
                 # select the specific variables from variable list intern
                 for position in self.l_output_var_indexes:
                     l_variables.append(o_local_network.l_var_intern[position - 1])
@@ -99,7 +99,7 @@ class PathCircleTemplate:
 
         # find the correct cnf function for the variables
         n_local_variables = len(l_local_networks[0].l_var_intern)
-        i_template_variable = i_local_variable - ((o_local_network.l_index - 1) * n_local_variables) + n_local_variables
+        i_template_variable = i_local_variable - ((o_local_network.index - 1) * n_local_variables) + n_local_variables
         pre_l_clauses_node = self.d_variable_cnf_function[i_template_variable]
 
         print("Local Variable index:", i_local_variable)
@@ -113,7 +113,7 @@ class PathCircleTemplate:
             l_clause = []
             for template_value in pre_clause:
                 # evaluate if the topology is linear(4) and is the first local network and not in the list of dictionary
-                if (v_topology == 4 and o_local_network.l_index == 1
+                if (v_topology == 4 and o_local_network.index == 1
                         and abs(template_value) not in list(self.d_variable_cnf_function.keys())):
                     continue
                 else:
@@ -123,7 +123,7 @@ class PathCircleTemplate:
                         b_symbol = False
                     # replace the value with the variable index
                     local_value = abs(template_value) + (
-                            (o_local_network.l_index - 3) * n_local_variables) + n_local_variables
+                            (o_local_network.index - 3) * n_local_variables) + n_local_variables
                     # analyzed if the value is an external value,searching the value in the list of intern variables
                     if local_value not in o_local_network.l_var_intern:
                         # print(o_local_network.l_var_intern)
@@ -159,10 +159,10 @@ class PathCircleTemplate:
         # update the dynamic for every local network
         for o_local_network in l_local_networks:
             CustomText.print_simple_line()
-            print("Local Network:", o_local_network.l_index)
+            print("Local Network:", o_local_network.index)
 
             # find the directed edges by network index
-            l_input_signals_by_network = CBN.find_input_edges_by_network_index(index=o_local_network.l_index,
+            l_input_signals_by_network = CBN.find_input_edges_by_network_index(index=o_local_network.index,
                                                                                l_directed_edges=l_directed_edges)
 
             # # add the variable index of the directed edges
@@ -190,7 +190,7 @@ class PathCircleTemplate:
             # adding the local network to a list of local networks
             o_local_network.des_funct_variables = des_funct_variables.copy()
             l_local_networks_updated.append(o_local_network)
-            print("Local network created :", o_local_network.l_index)
+            print("Local network created :", o_local_network.index)
             CustomText.print_simple_line()
 
         # actualized the list of local networks
@@ -248,7 +248,7 @@ class PathCircleTemplate:
         # Process the coupling signals for every local network
         for o_local_network in l_local_networks:
             # find the signals for every local network
-            l_input_signals = CBN.find_input_edges_by_network_index(index=o_local_network.l_index,
+            l_input_signals = CBN.find_input_edges_by_network_index(index=o_local_network.index,
                                                                     l_directed_edges=l_directed_edges)
             # process the input signals of the local network
             o_local_network.process_input_signals(l_input_signals=l_input_signals)

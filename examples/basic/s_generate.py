@@ -2,9 +2,7 @@
 from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 
-# script to put a manual parameters for the example of 4 networks
-print("LINEAL CBN ALEATORY SCRIPT EXAMPLE")
-CustomText.print_duplex_line()
+CustomText.make_principal_title('SCRIPT TO TEST ALL THE FUNCTIONALITIES')
 
 # pass the parameters
 N_LOCAL_NETWORKS = 6
@@ -28,4 +26,6 @@ o_cbn.mount_stable_attractor_fields()
 # o_cbn.show_attractors_fields()
 
 # show kind of coupling signals
-o_cbn.show_coupled_signals_kind()
+# o_cbn.show_coupled_signals_kind()
+
+

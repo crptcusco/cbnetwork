@@ -20,7 +20,7 @@ o_cbn = o_path_circle_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
 o_cbn.show_description()
 
 # Find Local attractors
-o_cbn.find_local_attractors_heap()
+o_cbn.find_local_attractors_sequential()
 o_cbn.show_local_attractors()
 
 # Find attractor pairs
@@ -29,7 +29,7 @@ o_cbn.show_attractor_pairs()
 
 # Find stable attractor fields
 o_cbn.mount_stable_attractor_fields()
-o_cbn.show_stable_attractor_fields()
+# o_cbn.show_stable_attractor_fields()
 
 
 

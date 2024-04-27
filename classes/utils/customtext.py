@@ -13,11 +13,11 @@ class CustomText:
             print(message)
 
     @staticmethod
-    def print_stars(cls):
+    def print_stars():
         print("*************************************************")
 
     @staticmethod
-    def print_dollars(cls):
+    def print_dollars():
         print(50 * '$')
 
     @staticmethod
