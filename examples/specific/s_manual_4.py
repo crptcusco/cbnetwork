@@ -29,10 +29,10 @@ for i_local_net in d_network_variables.keys():
     l_local_networks.append(o_local_network)
 
 # generate the directed edges
-l_directed_edges.append(DirectedEdge(15, 1, 2, [4, 5], " 4 ∧ 5 "))
-l_directed_edges.append(DirectedEdge(16, 2, 3, [8, 9], " 8 ∨ 9 "))
-l_directed_edges.append(DirectedEdge(17, 3, 2, [6, 7], " 6 ∧ 7 "))
-l_directed_edges.append(DirectedEdge(18, 3, 4, [13, 14], " 13 ∨ 14 "))
+l_directed_edges.append(DirectedEdge(1,15, 1, 2, [4, 5], " 4 ∧ 5 "))
+l_directed_edges.append(DirectedEdge(2,16, 2, 3, [8, 9], " 8 ∨ 9 "))
+l_directed_edges.append(DirectedEdge(3,17, 3, 2, [6, 7], " 6 ∧ 7 "))
+l_directed_edges.append(DirectedEdge(4,18, 3, 4, [13, 14], " 13 ∨ 14 "))
 
 # variables functions in CNF format
 d_variable_cnf_function = {1: [[2, 3], [1, -15]],

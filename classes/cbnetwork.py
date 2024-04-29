@@ -564,8 +564,8 @@ class CBN:
         for o_local_network in self.l_local_networks:
             o_local_network.show()
         CustomText.make_sub_title(f"Directed edges: {l_local_networks_indexes}")
-        for o_directed_edge in self.l_directed_edges:
-            o_directed_edge.show()
+        # for o_directed_edge in self.l_directed_edges:
+        #     o_directed_edge.show()
 
     def show_global_scenes(self):
         CustomText.print_duplex_line()
