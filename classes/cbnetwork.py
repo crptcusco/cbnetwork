@@ -752,3 +752,25 @@ class CBN:
         CustomText.make_title('Global Dictionary of local attractors')
         for key, value in self.d_local_attractors.items():
             print(key, '->', value)
+
+    def show_stable_attractor_fields_detailed(self):
+        CustomText.print_duplex_line()
+        print("Show the list of attractor fields")
+        print("Number Stable Attractor Fields:", len(self.l_attractor_fields))
+        for attractor_field in self.l_attractor_fields:
+            CustomText.print_simple_line()
+            for i_attractor in attractor_field:
+                print(self.d_local_attractors[i_attractor])
+                # get and show the local attractor
+                o_attractor = self.get_local_attractor_by_index(i_attractor)
+                o_attractor.show()
+
+    def get_local_attractor_by_index(self, i_attractor):
+        for o_local_network in self.l_local_networks:
+            for o_scene in o_local_network.l_local_scenes:
+                for o_attractor in o_scene.l_attractors:
+                    if o_attractor.g_index == i_attractor:
+                        return o_attractor
+        print('ERROR: Attractor index not found')
+        return None
+

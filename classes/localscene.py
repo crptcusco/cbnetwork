@@ -20,7 +20,7 @@ class LocalAttractor:
 
     def show(self):
         print("Network Index:", self.network_index, ", Input Signal Index:", self.relation_index,
-              ", Scene:", self.local_scene, ", Attractor Index:", self.l_index, ", States:", end="")
+              ", Scene:", self.local_scene, ", Global Index:", self.g_index,  ", Local Index:", self.l_index, ", States:", end="")
         for o_state in self.l_states:
             print(end='[')
             for variable in o_state.l_variable_values:
