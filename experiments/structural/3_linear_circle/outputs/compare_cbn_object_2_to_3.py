@@ -67,30 +67,30 @@ for o_directed_edge in o_cbn.l_directed_edges:
     n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[1])
 print("Number Stable Attractor Pairs:", n_pairs)
 print("Number Stable Attractor Fields:", len(o_cbn.l_attractor_fields))
-# for o_attractor_field in o_cbn.l_attractor_fields:
-#     for t_pair_attractor in o_attractor_field:
-#         print('-'*80)
-#         print("Network Index:", t_pair_attractor[0].network_index,
-#               ", Input Signal Index:", t_pair_attractor[0].relation_index,
-#               ", Scene:", t_pair_attractor[0].local_scene,
-#               ", Local Index:", t_pair_attractor[0].index,
-#               ", States:", end="")
-#         for o_state in t_pair_attractor[0].l_states:
-#             print(end='[')
-#             for variable in o_state.l_variable_values:
-#                 print(variable, end=",")
-#             print(end=']')
-#         print()
-#
-#         print("Network Index:", t_pair_attractor[1].network_index,
-#               ", Input Signal Index:", t_pair_attractor[1].relation_index,
-#               ", Scene:", t_pair_attractor[0].local_scene,
-#               ", Local Index:", t_pair_attractor[1].index,
-#               ", States:", end="")
-#         for o_state in t_pair_attractor[1].l_states:
-#             print(end='[')
-#             for variable in o_state.l_variable_values:
-#                 print(variable, end=",")
-#             print(end=']')
-#         print()
+for o_attractor_field in o_cbn.l_attractor_fields:
+    for t_pair_attractor in o_attractor_field:
+        print('-'*80)
+        print("Network Index:", t_pair_attractor[0].network_index,
+              ", Input Signal Index:", t_pair_attractor[0].relation_index,
+              ", Scene:", t_pair_attractor[0].local_scene,
+              ", Local Index:", t_pair_attractor[0].index,
+              ", States:", end="")
+        for o_state in t_pair_attractor[0].l_states:
+            print(end='[')
+            for variable in o_state.l_variable_values:
+                print(variable, end=",")
+            print(end=']')
+        print()
+
+        print("Network Index:", t_pair_attractor[1].network_index,
+              ", Input Signal Index:", t_pair_attractor[1].relation_index,
+              ", Scene:", t_pair_attractor[0].local_scene,
+              ", Local Index:", t_pair_attractor[1].index,
+              ", States:", end="")
+        for o_state in t_pair_attractor[1].l_states:
+            print(end='[')
+            for variable in o_state.l_variable_values:
+                print(variable, end=",")
+            print(end=']')
+        print()
 print('?'*80)
