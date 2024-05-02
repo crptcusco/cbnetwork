@@ -61,13 +61,19 @@ class LocalNetwork:
     def find_local_attractors(o_local_network, l_local_scenes=None, count_attractor=1):
         CustomText.print_simple_line()
         print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
+
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
                                                                                   scene=None,
                                                                                   count_attractor=count_attractor)
             o_local_network.l_local_scenes.append(o_local_scene)
+            o_local_network.count_attractor += count_attractor
         else:
+            if count_attractor > 1:
+                count_attractor = count_attractor + 1
+
+            scene_count = 0
             v_scene_index = 1
             for scene in l_local_scenes:
                 o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
@@ -80,8 +86,9 @@ class LocalNetwork:
                 v_scene_index = v_scene_index + 1
                 # update the attractors index
                 count_attractor += len(o_local_scene.l_attractors)
+                scene_count += len(o_local_scene.l_attractors)
+                o_local_network.count_attractor = scene_count
 
-        o_local_network.count_attractor = count_attractor
         return o_local_network
 
     @staticmethod
@@ -343,6 +350,9 @@ class LocalNetwork:
             l_scene_attractors.append(o_local_attractor)
             # update the attractors index locally
             v_index += 1
+            # show attractor number
+            print("Attractor Number:", count_attractor)
+
             # update the attractors index globally
             count_attractor += 1
 
