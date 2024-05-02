@@ -5,7 +5,8 @@ from classes.localnetwork import LocalNetwork
 from classes.localscene import LocalScene
 
 # Abre el archivo pickle en modo lectura binaria ('rb')
-with open('2_0_data_slow/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_8_4.pkl', 'rb') as f:
+path_data = '2_0_data_slow/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_5_3.pkl'
+with open(path_data, 'rb') as f:
     # Carga los datos del archivo pickle
     o_cbn = pickle.load(f)
 
@@ -95,23 +96,14 @@ print("Number Stable Attractor Fields:", len(o_cbn.l_attractor_fields))
 #         print()
 print('?' * 80)
 
-# for key, atractor in aux_cbn.d_local_attractors.items():
-#     print(key, "->", atractor)
-
 n_cbn_attractors = 0
 for o_local_network in o_cbn.l_local_networks:
-    # CustomText.make_sub_title(f"Network {o_local_network.index} ")
     for o_scene in o_local_network.l_local_scenes:
-        # CustomText.make_sub_sub_title(f"Network: {o_local_network.index} " +
-        #                               f"- Scene: {o_scene.l_values} " +
-        #                               f"- N. of Attractors: {len(o_scene.l_attractors)}")
-        # print("Network:", o_local_network.index, "- Scene:", o_scene.l_values)
-        # print("Attractors number:", len(o_scene.l_attractors))
         for o_attractor in o_scene.l_attractors:
-            # CustomText.print_simple_line()
-            # for o_state in o_attractor.l_states:
-            #     print(o_state.l_variable_values)
             n_cbn_attractors += 1
 
 print("Number Local Attractors:", n_cbn_attractors)
 print("Number Local Attractors:", len(aux_cbn.d_local_attractors.items()))
+
+for key, atractor in aux_cbn.d_local_attractors.items():
+    print(key, "->", atractor)

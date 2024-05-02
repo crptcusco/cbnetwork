@@ -68,13 +68,12 @@ class LocalNetwork:
                                                                                   scene=None,
                                                                                   count_attractor=count_attractor)
             o_local_network.l_local_scenes.append(o_local_scene)
-            o_local_network.count_attractor += count_attractor
-        else:
-            if count_attractor > 1:
-                count_attractor = count_attractor + 1
 
-            scene_count = 0
+            o_local_network.count_attractor = len(o_local_scene.l_attractors)
+
+        else:
             v_scene_index = 1
+            network_attractor_count = 0
             for scene in l_local_scenes:
                 o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
                 s_scene = ''.join(scene)
@@ -82,12 +81,16 @@ class LocalNetwork:
                                                                                       scene=s_scene,
                                                                                       count_attractor=count_attractor)
                 o_local_network.l_local_scenes.append(o_local_scene)
+
                 # update the scenes index
-                v_scene_index = v_scene_index + 1
+                v_scene_index += 1
+
                 # update the attractors index
                 count_attractor += len(o_local_scene.l_attractors)
-                scene_count += len(o_local_scene.l_attractors)
-                o_local_network.count_attractor = scene_count
+                network_attractor_count += len(o_local_scene.l_attractors)
+
+            # Update the count attractor
+            o_local_network.count_attractor = network_attractor_count
 
         return o_local_network
 

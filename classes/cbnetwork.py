@@ -282,7 +282,7 @@ class CBN:
             # Update the index of the local_network
             self.i_attractor += o_local_network.count_attractor
 
-        print('Number of local attractors:', self.i_attractor)
+        print('Number of local attractors:', self.i_attractor - 1)
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
 
     def process_kind_signal(self, o_local_network):
