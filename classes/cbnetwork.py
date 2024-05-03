@@ -774,3 +774,9 @@ class CBN:
         print('ERROR: Attractor index not found')
         return None
 
+    def get_n_attractor_pairs(self):
+        n_pairs = 0
+        for o_directed_edge in self.l_directed_edges:
+            n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[0])
+            n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[1])
+        return n_pairs
