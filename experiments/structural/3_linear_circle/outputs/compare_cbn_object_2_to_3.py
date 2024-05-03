@@ -32,8 +32,8 @@ b_all_test = True
 # Generate and iterate over the list of file paths
 for i in range(1, 11):
     for j in range(3, 5):
-        path_data = f'2_0_data_slow/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_{i}_{j}.pkl'
-        # path_data = f'2_0_data_slow/exp5_aleatory_linear_circle_3_3_10/pkl_cbn/cbn_{i}_{j}.pkl'
+        # path_data = f'2_0_data_slow/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_{i}_{j}.pkl'
+        path_data = f'2_0_data_slow/exp5_aleatory_linear_circle_3_3_10/pkl_cbn/cbn_{i}_{j}.pkl'
         print(path_data)
 
         with open(path_data, 'rb') as f:
