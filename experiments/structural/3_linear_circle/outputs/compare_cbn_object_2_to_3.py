@@ -108,7 +108,7 @@ for i in range(1, 11):
             n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[0])
             n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[1])
 
-        aux_n_pairs = aux_cbn.get_n_attractor_pairs()
+        aux_n_pairs = len(aux_cbn.d_attractor_pair)
 
         if aux_n_pairs == n_pairs:
             b_attractor_pairs = True
@@ -119,11 +119,11 @@ for i in range(1, 11):
 
         # attractor fields
         b_attractor_fields = False
-        if len(aux_cbn.l_attractor_fields) == len(o_cbn.l_attractor_fields):
+        if len(aux_cbn.d_attractor_fields) == len(o_cbn.d_attractor_fields):
             b_attractor_fields = True
 
-        print("Number Stable Attractor Fields:", len(aux_cbn.l_attractor_fields))
-        print("Number Stable Attractor Fields:", len(o_cbn.l_attractor_fields))
+        print("Number Stable Attractor Fields:", len(aux_cbn.d_attractor_fields))
+        print("Number Stable Attractor Fields:", len(o_cbn.d_attractor_fields))
         print('Test Passed:', b_attractor_fields)
 
         b_all_test = b_all_test and b_attractors and b_attractor_pairs and b_attractor_fields

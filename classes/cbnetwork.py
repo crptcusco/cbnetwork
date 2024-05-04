@@ -24,10 +24,10 @@ class CBN:
         self.i_attractor = 1
 
         # calculated attributes
-        self.l_global_scenes = None
         self.d_local_attractors = None
         self.d_attractor_pair = None
-        self.l_attractor_fields = None
+        self.d_attractor_fields = None
+        self.l_global_scenes = None
 
         # graphs
         self.global_graph = None  # A networkx Graph object to make the visualizations
@@ -269,8 +269,6 @@ class CBN:
                 o_local_network = LocalNetwork.find_local_attractors(o_local_network=o_local_network,
                                                                      l_local_scenes=l_local_scenes,
                                                                      count_attractor=self.i_attractor)
-                # # update the network in the CBN
-                # self.update_network_by_index(o_local_network)
             else:
                 # calculate the attractors for local network without coupling signals
                 o_local_network = LocalNetwork.find_local_attractors(o_local_network=o_local_network,
@@ -340,10 +338,11 @@ class CBN:
 
         CustomText.make_title('FIND COMPATIBLE ATTRACTOR PAIRS')
 
+        # count the number of pairs
         n_pairs = 0
+
         # for every local network finds compatible attractor pairs
         for o_local_network in self.l_local_networks:
-
             # find the output edges from the local network
             l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
             # find the pairs for every signal
@@ -357,12 +356,6 @@ class CBN:
                 l_attractors_input_1 = []
                 for aux_attractor in o_output_signal.d_out_value_to_attractor[1]:
                     l_attractors_input_1.append(aux_attractor.g_index)
-
-                # l_attractors_input_0 = o_output_signal.d_out_value_to_attractor[0]
-                # print(o_output_signal.d_out_value_to_attractor[0])
-                #
-                # l_attractors_input_1 = o_output_signal.d_out_value_to_attractor[1]
-                # print(o_output_signal.d_out_value_to_attractor[1])
 
                 l_pairs_edge_0 = []
                 l_pairs_edge_1 = []
@@ -510,14 +503,18 @@ class CBN:
                                 o_directed_edge.d_comp_pairs_attractors_by_value[1]
             # join the base list with the new directed edge
             l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+            # print(l_base_pairs)
 
             # If the base of pairs don't have elements, break the for and ends the algorithm ends
             if len(l_base_pairs) == 0:
                 break
 
-        self.l_attractor_fields = []
+        # generate a dictionary of the attractor fields
+        self.d_attractor_fields = {}
+        attractor_field_count = 1
         for base_element in l_base_pairs:
-            self.l_attractor_fields.append(list(set(item for pair in base_element for item in pair)))
+            self.d_attractor_fields[attractor_field_count] = list(set(item for pair in base_element for item in pair))
+            attractor_field_count += 1
 
         print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
@@ -576,7 +573,7 @@ class CBN:
     def show_local_attractors(self):
         CustomText.make_title('Show local attractors')
         for o_local_network in self.l_local_networks:
-            CustomText.make_sub_title(f"Network {o_local_network.index} ")
+            CustomText.make_sub_title(f"Network {o_local_network.index}")
             for o_scene in o_local_network.l_local_scenes:
                 CustomText.make_sub_sub_title(f"Network: {o_local_network.index} " +
                                               f"- Scene: {o_scene.l_values} " +
@@ -585,6 +582,7 @@ class CBN:
                 # print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
                     CustomText.print_simple_line()
+                    print(f"Global index: {o_attractor.g_index} -> {self.d_local_attractors[o_attractor.g_index]}")
                     for o_state in o_attractor.l_states:
                         print(o_state.l_variable_values)
 
@@ -603,14 +601,14 @@ class CBN:
     def show_stable_attractor_fields(self):
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
-        print("Number Stable Attractor Fields:", len(self.l_attractor_fields))
-        for attractor_field in self.l_attractor_fields:
+        print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
+        for attractor_field in self.d_attractor_fields:
             CustomText.print_simple_line()
             print(attractor_field)
 
     def show_resume(self):
-        CustomText.print_duplex_line()
-        print('CBN Detailed Resume')
+        CustomText.make_title('CBN Detailed Resume')
+        CustomText.make_sub_sub_title('Principal characteristics')
         CustomText.print_simple_line()
         print('Number of local networks:', len(self.l_local_networks))
         print('Number of variables per local network:', self.get_n_local_variables())
@@ -618,8 +616,7 @@ class CBN:
         print('Number of input variables:', self.get_n_input_variables())
         print('Number of output variables:', self.get_n_output_variables())
 
-        CustomText.print_simple_line()
-        print("CBN Resume Indicators")
+        CustomText.make_sub_sub_title("Indicators")
         CustomText.print_simple_line()
         print("Number of local attractors:", self.get_n_local_attractors())
         print("Number of attractor pairs:", self.get_n_pair_attractors())
@@ -680,7 +677,7 @@ class CBN:
         return res
 
     def get_n_attractor_fields(self):
-        return len(self.l_attractor_fields)
+        return len(self.d_attractor_fields)
 
     def create_global_graph(self):
         # Create the global graph
@@ -748,23 +745,6 @@ class CBN:
 
         self.d_local_attractors = d_local_attractors
 
-    def show_attractors_dictionary(self):
-        CustomText.make_title('Global Dictionary of local attractors')
-        for key, value in self.d_local_attractors.items():
-            print(key, '->', value)
-
-    def show_stable_attractor_fields_detailed(self):
-        CustomText.print_duplex_line()
-        print("Show the list of attractor fields")
-        print("Number Stable Attractor Fields:", len(self.l_attractor_fields))
-        for attractor_field in self.l_attractor_fields:
-            CustomText.print_simple_line()
-            for i_attractor in attractor_field:
-                print(self.d_local_attractors[i_attractor])
-                # get and show the local attractor
-                o_attractor = self.get_local_attractor_by_index(i_attractor)
-                o_attractor.show()
-
     def get_local_attractor_by_index(self, i_attractor):
         for o_local_network in self.l_local_networks:
             for o_scene in o_local_network.l_local_scenes:
@@ -774,9 +754,25 @@ class CBN:
         print('ERROR: Attractor index not found')
         return None
 
-    def get_n_attractor_pairs(self):
-        n_pairs = 0
-        for o_directed_edge in self.l_directed_edges:
-            n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[0])
-            n_pairs += len(o_directed_edge.d_comp_pairs_attractors_by_value[1])
-        return n_pairs
+    def show_local_attractors_dictionary(self):
+        CustomText.make_title('Global Dictionary of local attractors')
+        for key, value in self.d_local_attractors.items():
+            print(key, '->', value)
+
+    def show_stable_attractor_fields_detailed(self):
+        CustomText.print_duplex_line()
+        print("Show the list of attractor fields")
+        print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
+        for attractor_field in self.d_attractor_fields:
+            CustomText.print_simple_line()
+            for i_attractor in attractor_field:
+                print(self.d_local_attractors[i_attractor])
+                # get and show the local attractor
+                o_attractor = self.get_local_attractor_by_index(i_attractor)
+                o_attractor.show()
+
+    def show_attractors_fields(self):
+        CustomText.make_sub_title('List of attractor fields')
+        for key, value in self.d_attractor_fields.items():
+            print(key, "->", value)
+        print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")

@@ -353,8 +353,9 @@ class LocalNetwork:
             l_scene_attractors.append(o_local_attractor)
             # update the attractors index locally
             v_index += 1
+
             # show attractor number
-            print("Attractor Number:", count_attractor)
+            # print("Attractor Number:", count_attractor)
 
             # update the attractors index globally
             count_attractor += 1

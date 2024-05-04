@@ -1,9 +1,8 @@
 # external imports
 import multiprocessing
 import time
-from functools import partial
-
 import pandas as pd
+from functools import partial
 
 # local imports
 from classes.pathcircletemplate import PathCircleTemplate
@@ -37,22 +36,18 @@ v_begin_exp = time.time()
 l_data_sample = []
 
 
-def process_sample(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK):
-    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
+def process_sample(i_sample, n_local_networks, topology, n_var_network):
+    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=n_var_network,
                                                                                         n_input_variables=2)
 
-    print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
+    print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", topology)
 
     o_cbn = PathCircleTemplate.generate_cbn_from_template(
-        v_topology=V_TOPOLOGY,
-        d_variable_cnf_function=d_variable_cnf_function,
-        l_var_exit=l_var_exit,
-        n_local_networks=n_local_networks,
-        n_var_network=N_VAR_NETWORK
-    )
+        v_topology=topology,
+        n_local_networks=n_local_networks)
 
     v_begin_find_attractors = time.time()
-    o_cbn.find_local_attractors_heap()
+    o_cbn.find_local_attractors_sequential()
     v_end_find_attractors = time.time()
     n_time_find_attractors = v_end_find_attractors - v_begin_find_attractors
 
@@ -69,8 +64,8 @@ def process_sample(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK):
     d_collect_indicators = {
         "i_sample": i_sample,
         "n_local_networks": n_local_networks,
-        "n_var_network": N_VAR_NETWORK,
-        "v_topology": V_TOPOLOGY,
+        "n_var_network": n_var_network,
+        "v_topology": topology,
         "n_output_variables": N_OUTPUT_VARIABLES,
         "n_clauses_function": N_CLAUSES_FUNCTION,
         "n_local_attractors": o_cbn.get_n_local_attractors(),
@@ -87,7 +82,7 @@ def process_sample(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK):
 # Parallelize the sample processing using multiprocessing
 with multiprocessing.Pool() as pool:
     partial_process_sample = partial(process_sample, V_TOPOLOGY=V_TOPOLOGY, N_VAR_NETWORK=N_VAR_NETWORK)
-    results = pool.starmap(partial_process_sample, [(i_sample, n_local_networks, V_TOPOLOGY, N_VAR_NETWORK)
+    results = pool.starmap(partial_process_sample, [(i_sample, n_local_networks, V_TOPOLOGY , N_VAR_NETWORK)
                                                     for n_local_networks in
                                                     range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1)
                                                     for i_sample in range(1, N_SAMPLES + 1)])

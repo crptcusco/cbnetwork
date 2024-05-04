@@ -5,27 +5,30 @@ from classes.utils.customtext import CustomText
 CustomText.make_principal_title('SCRIPT TO TEST ALL THE FUNCTIONALITIES')
 
 # pass the parameters
-N_LOCAL_NETWORKS = 6
+N_LOCAL_NETWORKS = 10
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 3
 
+# generate aleatory CBN by topology
 o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
                                               n_var_network=N_VAR_NETWORK,
                                               v_topology=V_TOPOLOGY,
                                               n_output_variables=N_OUTPUT_VARIABLES)
 
 o_cbn.find_local_attractors_sequential()
-# o_cbn.show_attractors()
-
 o_cbn.find_compatible_pairs()
-# o_cbn.show_attractor_pairs()
-
 o_cbn.mount_stable_attractor_fields()
-# o_cbn.show_attractors_fields()
 
-# show kind of coupling signals
+
+# Testing methods
+# o_cbn.show_local_attractors()
+# o_cbn.show_local_attractors_dictionary()
+# o_cbn.show_attractor_pairs()
+# o_cbn.show_attractors_fields()
+# o_cbn.show_stable_attractor_fields_detailed()
 # o_cbn.show_coupled_signals_kind()
+# o_cbn.show_resume()
 
 

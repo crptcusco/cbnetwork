@@ -28,10 +28,10 @@ o_cbn.mount_stable_attractor_fields()
 o_gn = gn.generate_global_network(o_cbn)
 
 # transform the local attractor fields to global stable states
-l_global_stable_state = gn.transform_attractor_fields_to_global_states(o_cbn.l_attractor_fields)
+l_global_stable_state = gn.transform_attractor_fields_to_global_states(o_cbn.d_attractor_fields)
 
 l_global_stable_states = []
-for o_attractor_field in o_cbn.l_attractor_fields:
+for o_attractor_field in o_cbn.d_attractor_fields:
     stable_state_index_attractors = []
     for t_pair in o_attractor_field:
         stable_state_index_attractors.append(t_pair[0].l_index)
