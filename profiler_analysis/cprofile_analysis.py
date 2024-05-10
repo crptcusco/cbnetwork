@@ -22,9 +22,9 @@ V_TOPOLOGY = 4
 #                                                           n_local_networks=N_LOCAL_NETWORKS)
 
 
-# path_cbn = '3_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/cbn_9_3.pkl'
-# path_cbn = '../experiments/structural/3_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_5_3.pkl'
-path_cbn = '../experiments/structural/3_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_10_3.pkl'
+# path_cbn = '5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/cbn_9_3.pkl'
+# path_cbn = '../experiments/structural/5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_5_3.pkl'
+path_cbn = '../experiments/structural/5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_10_3.pkl'
 
 with open(path_cbn, 'rb') as file:
     o_cbn = pickle.load(file)

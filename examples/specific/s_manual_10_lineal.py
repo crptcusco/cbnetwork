@@ -21,7 +21,7 @@ n_total_var = n_local_nets * n_var_net
 # generate the 5 variables per network in sequence
 d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in range(1, n_local_nets + 1)}
 
-# generate the edges of the 1_linear CBN
+# generate the edges of the 1_linear_aleatory CBN
 l_edges = [(i, i+1) for i in range(1, 10)]
 
 # generate the networks
