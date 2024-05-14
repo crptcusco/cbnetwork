@@ -5,7 +5,7 @@ Any questions about it please write to the e-mail: crptcusco@gmail.com
 
 SO Ubuntu 22.04
 
-
+pip install -r requirements.txt
 
 
 
