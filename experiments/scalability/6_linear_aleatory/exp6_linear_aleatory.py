@@ -16,7 +16,7 @@ using aleatory generated template for the local network
 # experiment parameters
 N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 9
+N_LOCAL_NETWORKS_MAX = 10
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -114,14 +114,28 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  
         pf_res = pd.DataFrame(l_data_sample)
         pf_res.reset_index(drop=True, inplace=True)
 
-        # if the file exist, open the 'a' mode (append), else create a new file
-        mode = 'a' if os.path.exists(file_path) else 'w'
-        # Add the header only if is a new file
-        header = not os.path.exists(file_path)
-        #  save the data in csv file
-        pf_res.to_csv(file_path, mode=mode, header=header, index=False)
+        # # if the file exist, open the 'a' mode (append), else create a new file
+        # mode = 'a' if os.path.exists(file_path) else 'w'
+        # # Add the header only if is a new file
+        # header = not os.path.exists(file_path)
+        # #  save the data in csv file
+        # pf_res.to_csv(file_path, mode=mode, header=header, index=False)
 
-        print("Experiment data saved in:", file_path)
+        # if the file exists, open it in 'a' mode (append), else create a new file
+        mode = 'a' if os.path.exists(file_path) else 'w'
+        # Add the header only if it's a new file
+        header = False if mode == 'a' else True
+        # # save the data to the CSV file
+        # pf_res.to_csv(file_path, mode=mode, header=header, index=False)
+        #
+        # print("Experiment data saved in:", file_path)
+        # save the data to the CSV file only if there is data in pf_res
+        if not pf_res.empty:
+            pf_res.to_csv(file_path, mode=mode, header=header, index=False)
+            print("Experiment data saved in:", file_path)
+        else:
+            print("No data to save in:", file_path)
+
 
         # Open a file in binary write mode (wb)
         pickle_path = (DIRECTORY_PKL + '/cbn_' + str(i_sample) + '_'
