@@ -5,7 +5,7 @@ import pandas as pd
 from functools import partial
 
 # local imports
-from classes.pathcircletemplate import PathCircleTemplate
+from classes.topologytemplate import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """
@@ -37,8 +37,8 @@ l_data_sample = []
 
 
 def process_sample(i_sample, n_local_networks, topology, n_var_network):
-    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_aleatory_template(n_var_network=n_var_network,
-                                                                                        n_input_variables=2)
+    d_variable_cnf_function, l_var_exit = PathCircleTemplate.generate_path_circle_template(n_var_network=n_var_network,
+                                                                                           n_input_variables=2)
 
     print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", topology)
 

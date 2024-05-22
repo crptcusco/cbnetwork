@@ -5,7 +5,7 @@ import pandas as pd
 import pickle
 
 # local imports
-from classes.pathcircletemplate import PathCircleTemplate
+from classes.topologytemplate import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """
@@ -63,7 +63,7 @@ if os.path.exists(file_path):
 for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
     for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
         # generate the aleatory local network template
-        o_path_circle_template = PathCircleTemplate.generate_aleatory_template(
+        o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
             n_var_network=N_VAR_NETWORK, n_input_variables=N_INPUT_VARIABLES)
 
         l_data_sample = []

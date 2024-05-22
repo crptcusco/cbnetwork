@@ -1,5 +1,5 @@
 # local imports
-from classes.pathcircletemplate import PathCircleTemplate
+from classes.topologytemplate import PathCircleTemplate
 
 # libraries imports
 import cProfile

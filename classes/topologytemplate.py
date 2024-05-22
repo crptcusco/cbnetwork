@@ -24,7 +24,7 @@ class PathCircleTemplate:
         print(self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network, n_input_variables=2, n_output_variables=2):
+    def generate_path_circle_template(n_var_network, n_input_variables=2, n_output_variables=2):
         """
         Generates aleatory template for a local network
         :param n_output_variables:
@@ -263,3 +263,105 @@ class PathCircleTemplate:
                             l_directed_edges=l_directed_edges)
 
         return o_special_cbn
+
+
+
+
+
+class AleatoryTemplate:
+    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes):
+        self.n_var_network = n_var_network
+        self.d_variable_cnf_function = d_variable_cnf_function
+        self.l_output_var_indexes = l_output_var_indexes
+
+    def show(self):
+        print("Template for Path and Circle CBNs")
+        print("-" * 80)
+        print("Local dynamic:")
+        for key, value in self.d_variable_cnf_function.items():
+            print(key, ":", value)
+        print("Output variables for the coupling signal:")
+        print(self.l_output_var_indexes)
+
+    @staticmethod
+    def generate_cnf_clauses(l_var_indexes):
+        """
+        generate an aleatory CNF formulation for one variable
+        :param l_var_indexes:
+        :return:
+        """
+
+        cnf = []
+        num_variables = len(l_var_indexes)
+
+        # Generar un número aleatorio de cláusulas
+        num_clauses = random.randint(1, num_variables)
+
+        for _ in range(num_clauses):
+            # Generar un número aleatorio de literales en cada cláusula (máximo 3)
+            num_literals = random.randint(1, min(3, num_variables))
+
+            clause = []
+            for _ in range(num_literals):
+                var = random.choice(l_var_indexes)
+                # Decidir aleatoriamente si el literal es negado o no
+                if random.choice([True, False]):
+                    var = -var
+                clause.append(var)
+
+            # Asegurarse de que no haya literales duplicados en la misma cláusula
+            clause = list(set(clause))
+            cnf.append(clause)
+
+        return cnf
+
+    @staticmethod
+    def generate_aleatory_template(n_var_network, n_input_variables=2, n_output_variables=2):
+        """
+        Generates an aleatory template for a local network
+        :param n_output_variables:
+        :param n_input_variables:
+        :param n_var_network:
+        :return: Dictionary of cnf function for variable and list of exit variables
+        """
+
+        # basic properties
+        l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
+        l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
+        l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
+
+        # calculate properties
+        l_var_total_indexes = l_internal_var_indexes + l_input_coupling_signal_indexes
+
+        # generate the aleatory dynamic
+        d_variable_cnf_function = {}
+
+        # select the internal variables that are going to have external variables
+        internal_vars_for_external = random.sample(l_internal_var_indexes, n_input_variables)
+
+        # generate cnf function for every internal variable
+        for i_variable in l_internal_var_indexes:
+            # evaluate if the variable is in internal_vars_for_external
+            if i_variable in internal_vars_for_external:
+                external_flag = False
+                while not external_flag:
+                    d_variable_cnf_function[i_variable] = AleatoryTemplate.generate_cnf_clauses(l_var_total_indexes)
+                    if any(element in d_variable_cnf_function[i_variable][0] for element in
+                           l_input_coupling_signal_indexes):
+                        external_flag = True
+            else:
+                # generate cnf function without external variables
+                d_variable_cnf_function[i_variable] = [random.sample(l_internal_var_indexes, 3)]
+
+            # apply negation randomly
+            d_variable_cnf_function[i_variable][0] = [
+                -element if random.choice([True, False]) else element for element
+                in d_variable_cnf_function[i_variable][0]]
+
+        # generate cnf function for every internal variables
+        for i_variable in l_internal_var_indexes:
+            print(i_variable)
+
+        # # Generate the object of PathCircleTemplate
+        # o_aleatory_template = AleatoryTemplate(n_var_network, d_variable_cnf_function, l_output_var_indexes)
+        # return o_aleatory_template
