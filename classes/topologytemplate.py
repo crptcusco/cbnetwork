@@ -265,9 +265,6 @@ class PathCircleTemplate:
         return o_special_cbn
 
 
-
-
-
 class AleatoryTemplate:
     def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes):
         self.n_var_network = n_var_network
@@ -351,17 +348,195 @@ class AleatoryTemplate:
                         external_flag = True
             else:
                 # generate cnf function without external variables
-                d_variable_cnf_function[i_variable] = [random.sample(l_internal_var_indexes, 3)]
-
-            # apply negation randomly
-            d_variable_cnf_function[i_variable][0] = [
-                -element if random.choice([True, False]) else element for element
-                in d_variable_cnf_function[i_variable][0]]
+                d_variable_cnf_function[i_variable] = AleatoryTemplate.generate_cnf_clauses(l_internal_var_indexes)
 
         # generate cnf function for every internal variables
         for i_variable in l_internal_var_indexes:
             print(i_variable)
 
-        # # Generate the object of PathCircleTemplate
-        # o_aleatory_template = AleatoryTemplate(n_var_network, d_variable_cnf_function, l_output_var_indexes)
-        # return o_aleatory_template
+        # Generate the object of PathCircleTemplate
+        o_aleatory_template = AleatoryTemplate(n_var_network, d_variable_cnf_function, l_output_var_indexes)
+        return o_aleatory_template
+
+    def get_output_variables_from_template(self, i_local_network, l_local_networks):
+        # select the internal variables
+        l_variables = []
+        for o_local_network in l_local_networks:
+            if o_local_network.index == i_local_network:
+                # select the specific variables from variable list intern
+                for position in self.l_output_var_indexes:
+                    l_variables.append(o_local_network.l_var_intern[position - 1])
+
+        return l_variables
+
+    def update_clause_from_template(self, l_local_networks, o_local_network, i_local_variable, l_directed_edges, v_topology):
+        """
+        Actualiza la cláusula a partir del template.
+
+        :param l_local_networks: Lista de redes locales.
+        :param o_local_network: Red local actual.
+        :param i_local_variable: Variable local a actualizar.
+        :param l_directed_edges: Lista de aristas dirigidas.
+        :param v_topology: CBN Topology.
+        :return: Lista de cláusulas del nodo.
+        """
+        l_indexes_directed_edges = [o_directed_edge.index_variable for o_directed_edge in l_directed_edges]
+        n_local_variables = len(l_local_networks[0].l_var_intern)
+
+        # Determinar el índice de la variable en el template basado en el índice de la variable local
+        i_template_variable = i_local_variable - ((o_local_network.index - 1) * n_local_variables) + n_local_variables
+        pre_l_clauses_node = self.d_variable_cnf_function.get(i_template_variable, [])
+
+        print("Índice de variable local:", i_local_variable)
+        print("Índice de variable en el template:", i_template_variable)
+        print("Función CNF:", pre_l_clauses_node)
+
+        l_clauses_node = []
+        for pre_clause in pre_l_clauses_node:
+            l_clause = []
+            for template_value in pre_clause:
+                b_symbol = template_value > 0
+                local_value = abs(template_value)
+
+                print(o_local_network.l_var_intern)
+                print(o_local_network.l_var_exterm)
+                print(o_local_network.l_var_total)
+
+                # Convertir el valor del template a un valor local
+                if local_value in self.d_variable_cnf_function:
+                    local_value = abs(template_value) + ((o_local_network.index - 1) * n_local_variables)
+                elif local_value not in o_local_network.l_var_intern:
+                    if not o_local_network.l_var_exterm:
+                        raise IndexError("La lista l_var_exterm está vacía.")
+                    local_value = o_local_network.l_var_exterm[0]
+
+                if not b_symbol:
+                    local_value = -local_value
+                l_clause.append(local_value)
+
+            l_clauses_node.append(l_clause)
+
+        print(i_local_variable, ":", l_clauses_node)
+        return l_clauses_node
+
+    def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
+        """
+        GENERATE THE DYNAMICS OF EACH LOCAL NETWORK
+        :param v_topology:
+        :param l_local_networks:
+        :param l_directed_edges:
+        :return: l_local_networks updated
+        """
+        number_max_of_clauses = 2
+        number_max_of_literals = 3
+
+        # generate an auxiliary list to modify the variables
+        l_local_networks_updated = []
+
+        # update the dynamic for every local network
+        for o_local_network in l_local_networks:
+            CustomText.print_simple_line()
+            print("Local Network:", o_local_network.index)
+
+            # find the directed edges by network index
+            l_input_signals_by_network = CBN.find_input_edges_by_network_index(index=o_local_network.index,
+                                                                               l_directed_edges=l_directed_edges)
+
+            # add the variable index of the directed edges
+            for o_signal in l_input_signals_by_network:
+                o_local_network.l_var_exterm.append(o_signal.index_variable)
+            o_local_network.l_var_total = o_local_network.l_var_intern + o_local_network.l_var_exterm
+
+            # generate the function description of the variables
+            des_funct_variables = []
+            # generate clauses for every local network adapting the template
+            for i_local_variable in o_local_network.l_var_intern:
+                CustomText.print_simple_line()
+                # adapting the clause template to the specific variable
+                l_clauses_node = self.update_clause_from_template(l_local_networks=l_local_networks,
+                                                                  o_local_network=o_local_network,
+                                                                  i_local_variable=i_local_variable,
+                                                                  l_directed_edges=l_directed_edges,
+                                                                  v_topology=v_topology)
+                # generate an internal variable from satispy
+                o_variable_model = InternalVariable(index=i_local_variable,
+                                                    cnf_function=l_clauses_node)
+                # adding the description in functions of every variable
+                des_funct_variables.append(o_variable_model)
+
+            # adding the local network to a list of local networks
+            o_local_network.des_funct_variables = des_funct_variables.copy()
+            l_local_networks_updated.append(o_local_network)
+            print("Local network created :", o_local_network.index)
+            CustomText.print_simple_line()
+
+        # actualized the list of local networks
+        return l_local_networks_updated
+
+    def generate_cbn_from_template(self, v_topology, n_local_networks):
+        """
+        Generate a special CBN
+
+        Args:
+            v_topology: The topology of the CBN cam be 'linear' or 'ring'
+            n_local_networks: The number of local networks
+        Returns:
+            A CBN generated from a template
+        """
+
+        # generate the local networks with the indexes and variables (without relations or dynamics)
+        l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks=n_local_networks,
+                                                                         n_var_network=self.n_var_network)
+
+        # generate the directed edges between the local networks
+        l_directed_edges = []
+
+        # generate the CBN topology
+        l_relations = CBN.generate_global_topology(n_nodes=n_local_networks,
+                                                   v_topology=v_topology)
+
+        # Get the last index of the variables for the indexes of the directed edges
+        i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
+
+        # generate the directed edges given the last variable generated and the selected output variables
+        i_directed_edge = 1
+        for relation in l_relations:
+            output_local_network = relation[0]
+            input_local_network = relation[1]
+
+            # get the output variables from template
+            l_output_variables = self.get_output_variables_from_template(output_local_network,
+                                                                         l_local_networks)
+
+            # generate the coupling function
+            coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
+            # generate the Directed-Edge object
+            o_directed_edge = DirectedEdge(index=i_directed_edge,
+                                           index_variable_signal=i_last_variable,
+                                           input_local_network=input_local_network,
+                                           output_local_network=output_local_network,
+                                           l_output_variables=l_output_variables,
+                                           coupling_function=coupling_function)
+            i_last_variable += 1
+            i_directed_edge += 1
+            # add the directed-edge object to the list
+            l_directed_edges.append(o_directed_edge)
+
+        # Process the coupling signals for every local network
+        for o_local_network in l_local_networks:
+            # find the signals for every local network
+            l_input_signals = CBN.find_input_edges_by_network_index(index=o_local_network.index,
+                                                                    l_directed_edges=l_directed_edges)
+            # process the input signals of the local network
+            o_local_network.process_input_signals(l_input_signals=l_input_signals)
+
+        # generate dynamic of the local networks with template
+        l_local_networks = self.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
+                                                                     l_directed_edges=l_directed_edges,
+                                                                     v_topology=v_topology)
+
+        # generate the special coupled boolean network
+        o_special_cbn = CBN(l_local_networks=l_local_networks,
+                            l_directed_edges=l_directed_edges)
+
+        return o_special_cbn
