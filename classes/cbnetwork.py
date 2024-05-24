@@ -532,6 +532,7 @@ class CBN:
             6: "gnc_graph",
             7: "linear_graph"
         }
+        CustomText.make_sub_title("List of allowed topologies")
         for key, value in allowed_topologies.items():
             print(key, "-", value)
 

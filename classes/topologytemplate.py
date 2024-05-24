@@ -268,36 +268,62 @@ class PathCircleTemplate:
 import random
 
 
-def generate_random_cnf(num_variables):
-    # Generar un número aleatorio de cláusulas
-    num_clauses = random.randint(1, num_variables)
+def generate_random_cnf(variables):
+    # Generate a random number of clauses based on the number of variables
+    num_clauses = random.randint(1, 2)
 
     cnf = []
 
     for _ in range(num_clauses):
-        # Generar un número aleatorio de literales en cada cláusula
-        num_literals = random.randint(1, num_variables)
+        # Generate a random number of literals in each clause, with a maximum of 3
+        num_literals = min(random.randint(2, 3), len(variables))
 
         clause = []
         for _ in range(num_literals):
-            var = random.randint(1, num_variables)
-            # Decidir aleatoriamente si el literal es negado o no
+            # Randomly select a variable from the list
+            var = random.choice(variables)
+            # Randomly decide whether the literal is negated or not
             if random.choice([True, False]):
                 var = -var
             clause.append(var)
 
-        # Asegurarse de que no haya literales duplicados en la misma cláusula
-        clause = list(set(clause))
-        cnf.append(clause)
+        # Remove redundant literals within the clause
+        clause = simplify_clause(clause)
+
+        # Make sure the clause is not empty
+        if clause:
+            cnf.append(clause)
+
+    # Ensure at least one non-empty clause
+    if not cnf:
+        # If no non-empty clauses, add a random non-empty clause
+        var = random.choice(variables)
+        if random.choice([True, False]):
+            var = -var
+        cnf.append([var])
 
     return cnf
 
 
-class AleatoryTemplate:
-    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes):
+def simplify_clause(clause):
+    # Remove duplicate literals
+    clause = list(set(clause))
+
+    # Check for complementary literals (e.g., x and -x) and remove both
+    simplified_clause = []
+    for literal in clause:
+        if -literal not in clause:
+            simplified_clause.append(literal)
+
+    return simplified_clause
+
+
+class TopologyTemplate:
+    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology):
         self.n_var_network = n_var_network
         self.d_variable_cnf_function = d_variable_cnf_function
         self.l_output_var_indexes = l_output_var_indexes
+        self.v_topology = v_topology
 
     def show(self):
         print("Template for Aleatory CBNs")
@@ -305,13 +331,13 @@ class AleatoryTemplate:
         print("Local dynamic:")
         for key, value in self.d_variable_cnf_function.items():
             print(key, ":", value)
-        print("Output variables for the coupling signal:")
-        print(self.l_output_var_indexes)
+        print("Output variables for coupling signal:", self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network, n_input_variables=2, n_output_variables=2):
+    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=1):
         """
         Generates aleatory template for a local network
+        :param v_topology:
         :param n_output_variables:
         :param n_input_variables:
         :param n_var_network:
@@ -331,10 +357,13 @@ class AleatoryTemplate:
 
         # generate cnf function for every internal variable using generate_random_cnf
         for i_variable in l_internal_var_indexes:
-            d_variable_cnf_function[i_variable] = generate_random_cnf(len(l_var_total_indexes))
+            d_variable_cnf_function[i_variable] = generate_random_cnf(l_var_total_indexes)
 
         # Generate the object of AleatoryTemplate
-        o_aleatory_template = AleatoryTemplate(n_var_network, d_variable_cnf_function, l_output_var_indexes)
+        o_aleatory_template = TopologyTemplate(n_var_network=n_var_network,
+                                               d_variable_cnf_function=d_variable_cnf_function,
+                                               l_output_var_indexes=l_output_var_indexes,
+                                               v_topology=v_topology)
         return o_aleatory_template
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
@@ -502,6 +531,11 @@ class AleatoryTemplate:
             i_directed_edge += 1
             # add the directed-edge object to the list
             l_directed_edges.append(o_directed_edge)
+            # o_directed_edge.show()
+
+        # for o_local_network in l_local_networks:
+        #     o_local_network.show()
+        # print(l_relations)
 
         # Process the coupling signals for every local network
         for o_local_network in l_local_networks:
@@ -510,14 +544,19 @@ class AleatoryTemplate:
                                                                     l_directed_edges=l_directed_edges)
             # process the input signals of the local network
             o_local_network.process_input_signals(l_input_signals=l_input_signals)
+            # o_local_network.show()
+            # print([element.index_variable for element in l_input_signals])
 
         # generate dynamic of the local networks with template
         l_local_networks = self.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
                                                                      l_directed_edges=l_directed_edges,
                                                                      v_topology=v_topology)
 
-        # generate the special coupled boolean network
-        o_special_cbn = CBN(l_local_networks=l_local_networks,
-                            l_directed_edges=l_directed_edges)
+        for o_local_network in l_local_networks:
+            o_local_network.show()
 
-        return o_special_cbn
+        # # generate the special coupled boolean network
+        # o_special_cbn = CBN(l_local_networks=l_local_networks,
+        #                     l_directed_edges=l_directed_edges)
+        #
+        # return o_special_cbn
