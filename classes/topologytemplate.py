@@ -265,42 +265,48 @@ class PathCircleTemplate:
         return o_special_cbn
 
 
-import random
-
-
-def generate_random_cnf(variables):
-    # Generate a random number of clauses based on the number of variables
-    num_clauses = random.randint(1, 2)
-
+def generate_random_cnf(variables, input_coupling_signal_index, n_input_variables):
+    num_clauses = random.randint(2, 3)
     cnf = []
 
-    for _ in range(num_clauses):
-        # Generate a random number of literals in each clause, with a maximum of 3
-        num_literals = min(random.randint(2, 3), len(variables))
+    # If input_coupling_signal_index is provided, distribute it across the clauses
+    clause_indexes = []
+    if input_coupling_signal_index is not None:
+        clause_indexes = random.sample(range(num_clauses), min(n_input_variables, num_clauses))
 
+    for i in range(num_clauses):
         clause = []
-        for _ in range(num_literals):
-            # Randomly select a variable from the list
-            var = random.choice(variables)
-            # Randomly decide whether the literal is negated or not
+
+        # Ensure the input_coupling_signal_index appears in exactly n_input_variables clauses
+        if i in clause_indexes:
+            var = input_coupling_signal_index
             if random.choice([True, False]):
                 var = -var
             clause.append(var)
 
-        # Remove redundant literals within the clause
+        # Generate additional literals in each clause, with a maximum of 3 total literals
+        while len(clause) < 3:
+            var = random.choice(variables)
+            if var != input_coupling_signal_index and -var != input_coupling_signal_index:
+                if random.choice([True, False]):
+                    var = -var
+                clause.append(var)
+
+        # Remove redundant literals within the clause and ensure no empty clauses
         clause = simplify_clause(clause)
 
-        # Make sure the clause is not empty
+        # Ensure the clause is not empty and has at least one literal
         if clause:
             cnf.append(clause)
 
     # Ensure at least one non-empty clause
     if not cnf:
-        # If no non-empty clauses, add a random non-empty clause
         var = random.choice(variables)
         if random.choice([True, False]):
             var = -var
         cnf.append([var])
+
+    cnf = [clause for clause in cnf if clause]
 
     return cnf
 
@@ -314,6 +320,11 @@ def simplify_clause(clause):
     for literal in clause:
         if -literal not in clause:
             simplified_clause.append(literal)
+
+    # Ensure no empty clause
+    if not simplified_clause:
+        # If the simplified clause is empty, ensure it has at least one literal from the original
+        simplified_clause = [random.choice(clause)]
 
     return simplified_clause
 
@@ -356,8 +367,21 @@ class TopologyTemplate:
         d_variable_cnf_function = {}
 
         # generate cnf function for every internal variable using generate_random_cnf
+        # Track the variables that will include the input_coupling_signal_index
+        variables_with_coupling_index = random.sample(l_internal_var_indexes, n_input_variables)
+
+        # Generate CNF function for every internal variable using generate_random_cnf
         for i_variable in l_internal_var_indexes:
-            d_variable_cnf_function[i_variable] = generate_random_cnf(l_var_total_indexes)
+            if i_variable in variables_with_coupling_index:
+                input_coupling_signal_index = random.choice(l_input_coupling_signal_indexes)
+            else:
+                input_coupling_signal_index = None
+
+            d_variable_cnf_function[i_variable] = generate_random_cnf(
+                l_internal_var_indexes,
+                input_coupling_signal_index,
+                n_input_variables
+            )
 
         # Generate the object of AleatoryTemplate
         o_aleatory_template = TopologyTemplate(n_var_network=n_var_network,
@@ -409,29 +433,34 @@ class TopologyTemplate:
             l_clause = []
             for template_value in pre_clause:
                 # evaluate if the topology is aleatory(6) and not in the list of dictionary
-                if (v_topology == 6 and abs(template_value) not in list(self.d_variable_cnf_function.keys())):
+                # if v_topology == 6 and abs(template_value) not in list(self.d_variable_cnf_function.keys()):
+                #     continue
+                # else:
+
+                # save the symbol (+ or -) of the value True for "+" and False for "-"
+                b_symbol = True
+                if template_value < 0:
+                    b_symbol = False
+                # replace the value with the variable index
+                local_value = abs(template_value) + (
+                        (o_local_network.index - 3) * n_local_variables) + n_local_variables
+                # analyzed if the value is an external value, searching the value in the list of intern variables
+                if local_value not in o_local_network.l_var_intern:
+                    # put all the external variables in a clause
+                    l_clauses_node.append(o_local_network.l_var_exterm)
                     continue
-                else:
-                    # save the symbol (+ or -) of the value True for "+" and False for "-"
-                    b_symbol = True
-                    if template_value < 0:
-                        b_symbol = False
-                    # replace the value with the variable index
-                    local_value = abs(template_value) + (
-                            (o_local_network.index - 3) * n_local_variables) + n_local_variables
-                    # analyzed if the value is an external value, searching the value in the list of intern variables
-                    if local_value not in o_local_network.l_var_intern:
-                        local_value = o_local_network.l_var_exterm[0]
-                    # add the symbol to the value
-                    if not b_symbol:
-                        local_value = -local_value
-                    # add the value to the local clause
-                    l_clause.append(local_value)
+                # add the symbol to the value
+                if not b_symbol:
+                    local_value = -local_value
+                # add the value to the local clause
+                l_clause.append(local_value)
 
             # add the clause to the list of clauses
             l_clauses_node.append(l_clause)
 
         print(i_local_variable, ":", l_clauses_node)
+
+        l_clauses_node = [clause for clause in l_clauses_node if clause]
         return l_clauses_node
 
     def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
@@ -466,7 +495,7 @@ class TopologyTemplate:
                 l_clauses_node = self.update_clause_from_template(l_local_networks=l_local_networks,
                                                                   o_local_network=o_local_network,
                                                                   i_local_variable=i_local_variable,
-                                                                  l_directed_edges=l_directed_edges,
+                                                                  l_directed_edges=l_input_signals_by_network,
                                                                   v_topology=v_topology)
                 # generate an internal variable from satispy
                 o_variable_model = InternalVariable(index=i_local_variable,
