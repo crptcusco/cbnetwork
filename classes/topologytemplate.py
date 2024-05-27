@@ -292,24 +292,20 @@ def generate_random_cnf(variables, input_coupling_signal_index, n_input_variable
                     var = -var
                 clause.append(var)
 
-        # Remove redundant literals within the clause and ensure no empty clauses
+        # Remove redundant literals within the clause
         clause = simplify_clause(clause)
 
         # Ensure the clause is not empty and has at least one literal
         if clause:
             cnf.append(clause)
 
-    # Ensure at least one non-empty clause
-    if not cnf:
-        var = random.choice(variables)
-        if random.choice([True, False]):
-            var = -var
-        cnf.append([var])
-
+    # Remove empty clauses
     cnf = [clause for clause in cnf if clause]
 
-    return cnf
+    # Remove duplicate clauses
+    cnf = remove_duplicates(cnf)
 
+    return cnf
 
 def simplify_clause(clause):
     # Remove duplicate literals
@@ -321,12 +317,13 @@ def simplify_clause(clause):
         if -literal not in clause:
             simplified_clause.append(literal)
 
-    # Ensure no empty clause
-    if not simplified_clause:
-        # If the simplified clause is empty, ensure it has at least one literal from the original
-        simplified_clause = [random.choice(clause)]
-
     return simplified_clause
+
+def remove_duplicates(cnf):
+    # Convert each clause to a tuple and create a set to remove duplicates
+    unique_clauses = set(tuple(sorted(clause)) for clause in cnf)
+    # Convert the unique tuples back to lists
+    return [list(clause) for clause in unique_clauses]
 
 
 class TopologyTemplate:
@@ -447,8 +444,8 @@ class TopologyTemplate:
                 # analyzed if the value is an external value, searching the value in the list of intern variables
                 if local_value not in o_local_network.l_var_intern:
                     # put all the external variables in a clause
-                    l_clauses_node.append(o_local_network.l_var_exterm)
-                    continue
+                    l_clause = l_clause + o_local_network.l_var_exterm
+                    # continue
                 # add the symbol to the value
                 if not b_symbol:
                     local_value = -local_value
@@ -584,8 +581,8 @@ class TopologyTemplate:
         for o_local_network in l_local_networks:
             o_local_network.show()
 
-        # # generate the special coupled boolean network
-        # o_special_cbn = CBN(l_local_networks=l_local_networks,
-        #                     l_directed_edges=l_directed_edges)
-        #
-        # return o_special_cbn
+        # generate the special coupled boolean network
+        o_special_cbn = CBN(l_local_networks=l_local_networks,
+                            l_directed_edges=l_directed_edges)
+
+        return o_special_cbn

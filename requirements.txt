@@ -55,14 +55,14 @@ jupyterlab_server==2.25.4
 jupyterlab_widgets==3.0.10
 kiwisolver==1.4.5
 MarkupSafe==2.1.5
-matplotlib==3.8.4
+matplotlib~=3.7.2
 matplotlib-inline==0.1.6
 mistune==3.0.2
 nbclient==0.10.0
 nbconvert==7.16.3
 nbformat==5.10.4
 nest-asyncio==1.6.0
-networkx==3.2.1
+networkx~=2.8.8
 notebook==7.1.2
 notebook_shim==0.2.4
 numpy==1.26.4
@@ -70,7 +70,7 @@ overrides==7.7.0
 packaging==24.0
 pandocfilters==1.5.1
 paramiko==3.4.0
-parsl==2024.4.1
+parsl~=2023.1.23
 parso==0.8.3
 pexpect==4.9.0
 pillow==10.3.0
@@ -121,4 +121,5 @@ webencodings==0.5.1
 websocket-client==1.7.0
 widgetsnbextension==4.0.10
 
-pandas~=2.2.2
+pandas~=2.0.3
+CNFgen~=0.9.3.post1
