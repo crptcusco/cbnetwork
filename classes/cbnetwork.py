@@ -583,7 +583,7 @@ class CBN:
                 # print("Attractors number:", len(o_scene.l_attractors))
                 for o_attractor in o_scene.l_attractors:
                     CustomText.print_simple_line()
-                    print(f"Global index: {o_attractor.g_index} -> {self.d_local_attractors[o_attractor.g_index]}")
+                    # print(f"Global index: {o_attractor.g_index} -> {self.d_local_attractors[o_attractor.g_index]}")
                     for o_state in o_attractor.l_states:
                         print(o_state.l_variable_values)
 
@@ -603,9 +603,10 @@ class CBN:
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
         print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
-        for attractor_field in self.d_attractor_fields:
+        for key, o_attractor_field in self.d_attractor_fields.items():
             CustomText.print_simple_line()
-            print(attractor_field)
+            print(key)
+            print(o_attractor_field)
 
     def show_resume(self):
         CustomText.make_title('CBN Detailed Resume')

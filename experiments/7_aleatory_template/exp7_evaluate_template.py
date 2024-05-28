@@ -16,3 +16,11 @@ CBN.show_allowed_topologies()
 o_aleatory_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
                                                                 n_local_networks=N_LOCAL_NETWORKS)
 
+o_aleatory_cbn.find_local_attractors_sequential()
+o_aleatory_cbn.find_compatible_pairs()
+o_aleatory_cbn.mount_stable_attractor_fields()
+
+# o_aleatory_cbn.show_local_attractors()
+# o_aleatory_cbn.show_attractor_pairs()
+o_aleatory_cbn.show_stable_attractor_fields()
+

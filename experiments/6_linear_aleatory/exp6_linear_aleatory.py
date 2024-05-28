@@ -16,7 +16,7 @@ using aleatory generated template for the local network
 # experiment parameters
 N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 10
+N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -60,12 +60,13 @@ if os.path.exists(file_path):
     print("Existing file deleted:", file_path)
 
 # Begin the process
-for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
-    for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
-        # generate the aleatory local network template
-        o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
-            n_var_network=N_VAR_NETWORK, n_input_variables=N_INPUT_VARIABLES)
+for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000
 
+    # generate the aleatory local network template
+    o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
+        n_var_network=N_VAR_NETWORK, n_input_variables=N_INPUT_VARIABLES)
+
+    for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 3-9
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
