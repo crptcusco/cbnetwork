@@ -265,28 +265,22 @@ class PathCircleTemplate:
         return o_special_cbn
 
 
-def generate_random_cnf(variables, input_coupling_signal_index, n_input_variables):
+def generate_random_cnf(l_internal_variables, input_coupling_signal_index):
     num_clauses = random.randint(2, 3)
     cnf = []
 
-    # If input_coupling_signal_index is provided, distribute it across the clauses
-    clause_indexes = []
+    # generate the clause for external signals
     if input_coupling_signal_index is not None:
-        clause_indexes = random.sample(range(num_clauses), min(n_input_variables, num_clauses))
+        var = input_coupling_signal_index
+        if random.choice([True, False]):
+            var = -var
+        cnf.append([var])
 
     for i in range(num_clauses):
         clause = []
-
-        # Ensure the input_coupling_signal_index appears in exactly n_input_variables clauses
-        if i in clause_indexes:
-            var = input_coupling_signal_index
-            if random.choice([True, False]):
-                var = -var
-            clause.append(var)
-
         # Generate additional literals in each clause, with a maximum of 3 total literals
         while len(clause) < 3:
-            var = random.choice(variables)
+            var = random.choice(l_internal_variables)
             if var != input_coupling_signal_index and -var != input_coupling_signal_index:
                 if random.choice([True, False]):
                     var = -var
@@ -307,6 +301,7 @@ def generate_random_cnf(variables, input_coupling_signal_index, n_input_variable
 
     return cnf
 
+
 def simplify_clause(clause):
     # Remove duplicate literals
     clause = list(set(clause))
@@ -318,6 +313,7 @@ def simplify_clause(clause):
             simplified_clause.append(literal)
 
     return simplified_clause
+
 
 def remove_duplicates(cnf):
     # Convert each clause to a tuple and create a set to remove duplicates
@@ -342,7 +338,7 @@ class TopologyTemplate:
         print("Output variables for coupling signal:", self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=1):
+    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6):
         """
         Generates aleatory template for a local network
         :param v_topology:
@@ -376,8 +372,7 @@ class TopologyTemplate:
 
             d_variable_cnf_function[i_variable] = generate_random_cnf(
                 l_internal_var_indexes,
-                input_coupling_signal_index,
-                n_input_variables
+                input_coupling_signal_index
             )
 
         # Generate the object of AleatoryTemplate
@@ -429,11 +424,6 @@ class TopologyTemplate:
             # update the number of the variable
             l_clause = []
             for template_value in pre_clause:
-                # evaluate if the topology is aleatory(6) and not in the list of dictionary
-                # if v_topology == 6 and abs(template_value) not in list(self.d_variable_cnf_function.keys()):
-                #     continue
-                # else:
-
                 # save the symbol (+ or -) of the value True for "+" and False for "-"
                 b_symbol = True
                 if template_value < 0:
@@ -444,8 +434,8 @@ class TopologyTemplate:
                 # analyzed if the value is an external value, searching the value in the list of intern variables
                 if local_value not in o_local_network.l_var_intern:
                     # put all the external variables in a clause
-                    l_clause = l_clause + o_local_network.l_var_exterm
-                    # continue
+                    l_clause = o_local_network.l_var_exterm
+                    continue
                 # add the symbol to the value
                 if not b_symbol:
                     local_value = -local_value
