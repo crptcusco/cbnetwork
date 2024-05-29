@@ -1,3 +1,5 @@
+import pickle
+
 from classes.cbnetwork import CBN
 from classes.topologytemplate import TopologyTemplate
 
@@ -20,7 +22,18 @@ o_aleatory_cbn.find_local_attractors_sequential()
 o_aleatory_cbn.find_compatible_pairs()
 o_aleatory_cbn.mount_stable_attractor_fields()
 
+# generate an pickle object
+# Open a file in binary write mode (wb)
+pickle_path = "o_cbn.pkl"
+with open(pickle_path, 'wb') as file:
+    # Use pickle.dump to save the object to the file
+    pickle.dump(o_aleatory_cbn, file)
+
+# Close the file
+file.close()
+print("Pickle object saved in:", pickle_path)
+
 # o_aleatory_cbn.show_local_attractors()
 # o_aleatory_cbn.show_attractor_pairs()
-o_aleatory_cbn.show_stable_attractor_fields()
+# o_aleatory_cbn.show_stable_attractor_fields()
 

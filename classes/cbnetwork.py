@@ -778,3 +778,7 @@ class CBN:
         for key, value in self.d_attractor_fields.items():
             print(key, "->", value)
         print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
+
+    def count_fields_by_global_scenes(self):
+        pass
+
