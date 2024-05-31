@@ -58,15 +58,14 @@ class LocalNetwork:
                 self.des_funct_variables[i] = o_internal_variable_to_update
 
     @staticmethod
-    def find_local_attractors(o_local_network, l_local_scenes=None, count_attractor=1):
+    def find_local_attractors(o_local_network, l_local_scenes=None):
         CustomText.print_simple_line()
         print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
 
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
             o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
-                                                                                  scene=None,
-                                                                                  count_attractor=count_attractor)
+                                                                                  scene=None)
             o_local_network.l_local_scenes.append(o_local_scene)
 
             o_local_network.count_attractor = len(o_local_scene.l_attractors)
@@ -78,15 +77,13 @@ class LocalNetwork:
                 o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
                 s_scene = ''.join(scene)
                 o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
-                                                                                      scene=s_scene,
-                                                                                      count_attractor=count_attractor)
+                                                                                      scene=s_scene)
                 o_local_network.l_local_scenes.append(o_local_scene)
 
                 # update the scenes index
                 v_scene_index += 1
 
                 # update the attractors index
-                count_attractor += len(o_local_scene.l_attractors)
                 network_attractor_count += len(o_local_scene.l_attractors)
 
             # Update the count attractor
@@ -220,7 +217,7 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
-    def find_local_scene_attractors(o_local_network, scene=None, count_attractor=1):
+    def find_local_scene_attractors(o_local_network, scene=None):
         def count_state_repeat(v_estate, path_candidate):
             # input type [[],[],...[]]
             number_of_times = 0
@@ -239,10 +236,10 @@ class LocalNetwork:
         l_attractors_clauses = []
 
         # create boolean expression initial with 3 transitions
-        v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network,
-                                                                        v_num_transitions,
-                                                                        l_attractors_clauses,
-                                                                        scene)
+        v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network=o_local_network,
+                                                                        n_transitions=v_num_transitions,
+                                                                        l_attractors_clauses=l_attractors_clauses,
+                                                                        scene=scene)
         m_response_sat = []
         # Solve with SAT the boolean formulation
         o_solver = Minisat()
@@ -308,8 +305,10 @@ class LocalNetwork:
 
             # print l_attractors_clauses
             # REPEAT CODE
-            v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network, v_num_transitions,
-                                                                            l_attractors_clauses, scene)
+            v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network=o_local_network,
+                                                                            n_transitions=v_num_transitions,
+                                                                            l_attractors_clauses=l_attractors_clauses,
+                                                                            scene=scene)
             m_response_sat = []
             o_solver = Minisat()
             o_solution = o_solver.solve(v_boolean_formulation)
@@ -348,17 +347,16 @@ class LocalNetwork:
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(count_attractor, v_index, l_local_states, o_local_network.index,
-                                               o_local_network.l_var_exterm, scene)
+            o_local_attractor = LocalAttractor(g_index=None,
+                                               l_index=v_index,
+                                               l_states=l_local_states,
+                                               network_index=o_local_network.index,
+                                               relation_index=o_local_network.l_var_exterm,
+                                               local_scene=scene)
+
             l_scene_attractors.append(o_local_attractor)
             # update the attractors index locally
             v_index += 1
-
-            # show attractor number
-            # print("Attractor Number:", count_attractor)
-
-            # update the attractors index globally
-            count_attractor += 1
 
         print("end find attractors")
         return l_scene_attractors

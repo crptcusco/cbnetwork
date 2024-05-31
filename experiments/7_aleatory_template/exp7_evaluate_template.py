@@ -22,7 +22,7 @@ o_aleatory_cbn.find_local_attractors_sequential()
 o_aleatory_cbn.find_compatible_pairs()
 o_aleatory_cbn.mount_stable_attractor_fields()
 
-# generate an pickle object
+# generate a pickle object
 # Open a file in binary write mode (wb)
 pickle_path = "o_cbn.pkl"
 with open(pickle_path, 'wb') as file:
@@ -33,7 +33,10 @@ with open(pickle_path, 'wb') as file:
 file.close()
 print("Pickle object saved in:", pickle_path)
 
-# o_aleatory_cbn.show_local_attractors()
+o_aleatory_cbn.show_local_attractors()
+
+print(o_aleatory_cbn.d_local_attractors)
+
 # o_aleatory_cbn.show_attractor_pairs()
 # o_aleatory_cbn.show_stable_attractor_fields()
 
