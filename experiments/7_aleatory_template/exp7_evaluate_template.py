@@ -35,8 +35,12 @@ print("Pickle object saved in:", pickle_path)
 
 o_aleatory_cbn.show_local_attractors()
 
-print(o_aleatory_cbn.d_local_attractors)
+# print(o_aleatory_cbn.d_local_attractors)
 
 # o_aleatory_cbn.show_attractor_pairs()
 # o_aleatory_cbn.show_stable_attractor_fields()
+
+o_aleatory_cbn.generate_global_scenes()
+o_aleatory_cbn.show_global_scenes()
+o_aleatory_cbn.count_fields_by_global_scenes()
 

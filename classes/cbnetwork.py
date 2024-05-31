@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt  # library to make draws
 import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
+import pickle   # save and open and CBN object
 
 
 class CBN:
@@ -557,10 +558,9 @@ class CBN:
         #     o_directed_edge.show()
 
     def show_global_scenes(self):
-        CustomText.print_duplex_line()
-        print("LIST OF GLOBAL SCENES")
-        for o_global_scene in self.l_global_scenes:
-            o_global_scene.show()
+        CustomText.make_sub_title('LIST OF GLOBAL SCENES')
+        for global_scene in self.l_global_scenes:
+            print(global_scene)
 
     def show_local_attractors(self):
         CustomText.make_title('Show local attractors')
@@ -769,6 +769,43 @@ class CBN:
             print(key, "->", value)
         print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
 
+    def generate_global_scenes(self):
+        CustomText.make_title('Generated Global Scenes')
+        l_edges_indexes = []
+        for o_directed_edge in self.l_directed_edges:
+            l_edges_indexes.append(o_directed_edge.index_variable)
+        self.l_global_scenes = list(product([0, 1], repeat=len(l_edges_indexes)))
+
     def count_fields_by_global_scenes(self):
-        pass
+        CustomText.make_sub_title('Counting the stable attractor fields by global scene')
+        # Dictionary to store combinations and their counts
+        d_global_scenes_count = {}
+
+        for key, o_attractor_field in self.d_attractor_fields.items():
+            # print(key, " : ", o_attractor_field)
+            # Dictionary to store variable values
+            d_variable_value = {}
+
+            # Search the scenario of the attractor fields
+            for i_attractor in o_attractor_field:
+                o_attractor = self.get_local_attractor_by_index(i_attractor)
+                for aux_pos, aux_variable in enumerate(o_attractor.relation_index):
+                    d_variable_value[aux_variable] = o_attractor.local_scene[aux_pos]
+
+            # Sort the dictionary by key
+            sorted_dict = {k: d_variable_value[k] for k in sorted(d_variable_value)}
+            # print(sorted_dict)
+
+            # Create the key by concatenating the sorted values
+            combination_key = ''.join(str(sorted_dict[k]) for k in sorted(sorted_dict))
+
+            # Update the count of the combination in the dictionary
+            if combination_key in d_global_scenes_count:
+                d_global_scenes_count[combination_key] += 1
+            else:
+                d_global_scenes_count[combination_key] = 1
+
+        # Print the dictionary of combinations and their counts
+        print(d_global_scenes_count)
+
 
