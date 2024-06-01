@@ -20,7 +20,7 @@ N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
-V_TOPOLOGY = 4
+V_TOPOLOGY = 3
 N_CLAUSES_FUNCTION = 2
 
 # verbose parameters
@@ -34,7 +34,7 @@ print("="*80)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp6_linear_aleatory"
+EXPERIMENT_NAME = "exp6_circular_aleatory"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'
