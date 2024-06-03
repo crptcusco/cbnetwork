@@ -33,6 +33,23 @@ class CBN:
         self.generate_local_nets_colors()  # Generate the colors for every local network
         self.detailed_graph = None  # Under Construction
 
+    @staticmethod
+    def show_allowed_topologies():
+        # allowed topologies
+        allowed_topologies = {
+            1: "complete_graph",
+            2: "binomial_tree",
+            3: "cycle_graph",
+            4: "path_graph",
+            5: "gn_graph",
+            6: "gnc_graph",
+            7: "linear_graph",
+            8: "aleatory_two_edges_graph"
+        }
+        CustomText.make_sub_title("List of allowed topologies")
+        for key, value in allowed_topologies.items():
+            print(key, "-", value)
+
     # FUNCTIONS
     @staticmethod
     def generate_global_topology(n_nodes, v_topology=1):
@@ -61,6 +78,10 @@ class CBN:
             o_graph.add_nodes_from(range(1, n_nodes + 1))
             for i in range(1, n_nodes):
                 o_graph.add_edge(i, i + 1)
+        elif v_topology == 8:
+            # Generate the random directed graph
+            num_edges = random.randint(n_nodes - 1, 2 * n_nodes)
+            o_graph = CBN.generate_two_connected_digraph(n_nodes, num_edges)
         else:
             o_graph = nx.complete_graph(n_nodes, nx.DiGraph())
 
@@ -68,6 +89,30 @@ class CBN:
         mapping = {node: node + 1 for node in o_graph.nodes()}
         o_graph = nx.relabel_nodes(o_graph, mapping)
         return list(o_graph.edges)
+
+    @staticmethod
+    def generate_two_connected_digraph(num_nodes, num_edges):
+        # Create an empty directed graph
+        G = nx.DiGraph()
+
+        # Add nodes to the graph
+        G.add_nodes_from(range(num_nodes))
+
+        # Ensure the graph is connected by creating a spanning tree
+        for i in range(1, num_nodes):
+            u = random.randint(0, i - 1)
+            G.add_edge(u, i)
+
+        # Add additional edges randomly while ensuring no more than two incoming edges per node
+        while G.number_of_edges() < num_edges:
+            u = random.randint(0, num_nodes - 1)
+            v = random.randint(0, num_nodes - 1)
+
+            # Ensure u != v to avoid self-loops and the incoming edge limit is not exceeded
+            if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
+                G.add_edge(u, v)
+
+        return G
 
     @staticmethod
     def generate_local_networks_indexes_variables(n_local_networks, n_var_network):
@@ -512,21 +557,6 @@ class CBN:
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
     # SHOW FUNCTIONS
-    @staticmethod
-    def show_allowed_topologies():
-        # allowed topologies
-        allowed_topologies = {
-            1: "complete_graph",
-            2: "binomial_tree",
-            3: "cycle_graph",
-            4: "path_graph",
-            5: "gn_graph",
-            6: "gnc_graph",
-            7: "linear_graph"
-        }
-        CustomText.make_sub_title("List of allowed topologies")
-        for key, value in allowed_topologies.items():
-            print(key, "-", value)
 
     def show_directed_edges(self):
         CustomText.print_duplex_line()
