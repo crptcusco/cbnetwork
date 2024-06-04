@@ -322,7 +322,7 @@ def remove_duplicates(cnf):
     return [list(clause) for clause in unique_clauses]
 
 
-class TopologyTemplate:
+class AleatoryTemplate:
     def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology):
         self.n_var_network = n_var_network
         self.d_variable_cnf_function = d_variable_cnf_function
@@ -376,7 +376,7 @@ class TopologyTemplate:
             )
 
         # Generate the object of AleatoryTemplate
-        o_aleatory_template = TopologyTemplate(n_var_network=n_var_network,
+        o_aleatory_template = AleatoryTemplate(n_var_network=n_var_network,
                                                d_variable_cnf_function=d_variable_cnf_function,
                                                l_output_var_indexes=l_output_var_indexes,
                                                v_topology=v_topology)

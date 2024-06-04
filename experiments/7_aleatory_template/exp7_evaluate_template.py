@@ -1,7 +1,7 @@
 import pickle
 
 from classes.cbnetwork import CBN
-from classes.topologytemplate import TopologyTemplate
+from classes.templatelocalnetwork import AleatoryTemplate
 
 # Constants for the test
 N_VAR_NETWORK = 5
@@ -9,7 +9,7 @@ N_LOCAL_NETWORKS = 6
 V_TOPOLOGY = 8
 
 # generate the aleatory local network template object
-o_topology_template = TopologyTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK, v_topology=6)
+o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK, v_topology=6)
 o_topology_template.show()
 
 CBN.show_allowed_topologies()

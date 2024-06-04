@@ -5,7 +5,7 @@ import pandas as pd
 import pickle
 
 # local imports
-from classes.topologytemplate import PathCircleTemplate
+from classes.templatelocalnetwork import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """

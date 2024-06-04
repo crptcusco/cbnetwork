@@ -7,9 +7,6 @@ from classes.utils.customtext import CustomText
 # external imports
 import itertools  # libraries to iterate
 import random  # generate random numbers
-import networkx as nx  # generate networks
-import matplotlib.pyplot as plt  # library to make draws
-import matplotlib.colors as mco  # library who have the list of colors
 from random import randint  # generate random numbers integers
 from itertools import product  # generate combinations of numbers
 import pickle   # save and open and CBN object
@@ -28,91 +25,7 @@ class CBN:
         self.l_global_scenes = None
 
         # graphs
-        self.global_graph = None  # A networkx Graph object to make the visualizations
-        self.d_network_color = {}  # Dictionary with the colors
-        self.generate_local_nets_colors()  # Generate the colors for every local network
-        self.detailed_graph = None  # Under Construction
-
-    @staticmethod
-    def show_allowed_topologies():
-        # allowed topologies
-        allowed_topologies = {
-            1: "complete_graph",
-            2: "binomial_tree",
-            3: "cycle_graph",
-            4: "path_graph",
-            5: "gn_graph",
-            6: "gnc_graph",
-            7: "linear_graph",
-            8: "aleatory_two_edges_graph"
-        }
-        CustomText.make_sub_title("List of allowed topologies")
-        for key, value in allowed_topologies.items():
-            print(key, "-", value)
-
-    # FUNCTIONS
-    @staticmethod
-    def generate_global_topology(n_nodes, v_topology=1):
-        # classical topologies
-        # complete_graph
-        if v_topology == 1:
-            o_graph = nx.complete_graph(n_nodes, nx.DiGraph())
-        # binomial_tree
-        elif v_topology == 2:
-            o_graph = nx.binomial_tree(n_nodes, nx.DiGraph())
-        # cycle_graph
-        elif v_topology == 3:
-            o_graph = nx.cycle_graph(n_nodes, nx.DiGraph())
-        # path_graph
-        elif v_topology == 4:
-            o_graph = nx.path_graph(n_nodes, nx.DiGraph())
-        # aleatory topologies
-        # gn_graph
-        elif v_topology == 5:
-            o_graph = nx.gn_graph(n_nodes)
-        elif v_topology == 6:
-            o_graph = nx.gnc_graph(n_nodes)
-        # linear_graph
-        elif v_topology == 7:
-            o_graph = nx.DiGraph()
-            o_graph.add_nodes_from(range(1, n_nodes + 1))
-            for i in range(1, n_nodes):
-                o_graph.add_edge(i, i + 1)
-        elif v_topology == 8:
-            # Generate the random directed graph
-            num_edges = random.randint(n_nodes - 1, 2 * n_nodes)
-            o_graph = CBN.generate_two_connected_digraph(n_nodes, num_edges)
-        else:
-            o_graph = nx.complete_graph(n_nodes, nx.DiGraph())
-
-        # Renaming the label of the nodes for beginning in 1
-        mapping = {node: node + 1 for node in o_graph.nodes()}
-        o_graph = nx.relabel_nodes(o_graph, mapping)
-        return list(o_graph.edges)
-
-    @staticmethod
-    def generate_two_connected_digraph(num_nodes, num_edges):
-        # Create an empty directed graph
-        G = nx.DiGraph()
-
-        # Add nodes to the graph
-        G.add_nodes_from(range(num_nodes))
-
-        # Ensure the graph is connected by creating a spanning tree
-        for i in range(1, num_nodes):
-            u = random.randint(0, i - 1)
-            G.add_edge(u, i)
-
-        # Add additional edges randomly while ensuring no more than two incoming edges per node
-        while G.number_of_edges() < num_edges:
-            u = random.randint(0, num_nodes - 1)
-            v = random.randint(0, num_nodes - 1)
-
-            # Ensure u != v to avoid self-loops and the incoming edge limit is not exceeded
-            if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
-                G.add_edge(u, v)
-
-        return G
+        self.o_global_topology = None
 
     @staticmethod
     def generate_local_networks_indexes_variables(n_local_networks, n_var_network):
@@ -700,43 +613,6 @@ class CBN:
 
     def get_n_attractor_fields(self):
         return len(self.d_attractor_fields)
-
-    def create_global_graph(self):
-        # Create the global graph
-        self.global_graph = nx.DiGraph()
-
-        # Add edges from DirectedEdge objects
-        for directed_edge in self.l_directed_edges:
-            input_node = directed_edge.input_local_network
-            output_node = directed_edge.output_local_network
-            self.global_graph.add_edge(output_node, input_node)
-
-    def generate_local_nets_colors(self):
-        # generate a list of colors for the local networks
-        self.create_global_graph()
-        l_colors = list(mco.CSS4_COLORS.keys())
-        random.shuffle(l_colors)
-        for i, color in enumerate(l_colors):
-            self.d_network_color[i] = color
-
-    def plot_global_graph(self):
-        if self.global_graph is None:
-            self.create_global_graph()
-
-        # Plot the global graph
-        plt.figure(figsize=(8, 6))
-
-        # Retrieve node colors from d_network_color dictionary
-        node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.global_graph.nodes()]
-
-        nx.draw(self.global_graph, with_labels=True, node_color=node_colors, node_size=1500, edge_color='gray',
-                arrowsize=20)
-        plt.title('Global Graph')
-        plt.show()
-
-    def plot_global_detailed_graph(self):
-        # Future Work
-        pass
 
     def get_n_local_variables(self):
         return len(self.l_local_networks[0].l_var_intern)
