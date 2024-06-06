@@ -1,5 +1,5 @@
 # local imports
-from classes.templatelocalnetwork import PathCircleTemplate
+from classes.localtemplates import PathCircleTemplate
 
 # Experiment parameters
 N_LOCAL_NETWORKS = 6

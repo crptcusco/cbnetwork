@@ -5,16 +5,16 @@ import pandas as pd
 import pickle
 
 # local imports
-from classes.templatelocalnetwork import PathCircleTemplate
+from classes.localtemplates import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """
-Experiment 6 - Test the path and 3_ring_aleatory structures 
+Experiment 1 - Test the path and 3_ring_aleatory structures 
 using aleatory generated template for the local network 
 """
 
 # experiment parameters
-N_SAMPLES = 100
+N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
@@ -34,7 +34,7 @@ print("="*80)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp6_linear_aleatory"
+EXPERIMENT_NAME = "exp1_linear_aleatory"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'

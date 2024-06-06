@@ -5,7 +5,7 @@ import pandas as pd
 from functools import partial
 
 # local imports
-from classes.templatelocalnetwork import PathCircleTemplate
+from classes.localtemplates import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """

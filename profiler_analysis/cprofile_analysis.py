@@ -1,5 +1,5 @@
 # local imports
-from classes.templatelocalnetwork import PathCircleTemplate
+from classes.localtemplates import PathCircleTemplate
 
 # libraries imports
 import cProfile

@@ -1,7 +1,7 @@
 import pickle
 
 from classes.cbnetwork import CBN
-from classes.templatelocalnetwork import AleatoryTemplate
+from classes.localtemplates import AleatoryTemplate
 
 # Constants for the test
 N_VAR_NETWORK = 5

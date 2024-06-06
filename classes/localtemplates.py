@@ -4,6 +4,7 @@ import random
 # local imports
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
+from classes.globaltopology import GlobalTopology
 from classes.internalvariable import InternalVariable
 from classes.utils.customtext import CustomText
 
@@ -214,9 +215,11 @@ class PathCircleTemplate:
         # generate the directed edges between the local networks
         l_directed_edges = []
 
-        # generate the CBN topology
-        l_relations = CBN.generate_global_topology(n_nodes=n_local_networks,
-                                                   v_topology=v_topology)
+        # generate the Global Topology Object
+        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks)
+        o_global_topology.generate_networkx_graph()
+
+        l_relations = o_global_topology.get_edges()
 
         # Get the last index of the variables for the indexes of the directed edges
         i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
@@ -517,9 +520,11 @@ class AleatoryTemplate:
         # generate the directed edges between the local networks
         l_directed_edges = []
 
-        # generate the CBN topology
-        l_relations = CBN.generate_global_topology(n_nodes=n_local_networks,
-                                                   v_topology=v_topology)
+        # generate the Global Topology Object
+        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks)
+        o_global_topology.generate_networkx_graph()
+
+        l_relations = o_global_topology.get_edges()
 
         # Get the last index of the variables for the indexes of the directed edges
         i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
@@ -547,11 +552,6 @@ class AleatoryTemplate:
             i_directed_edge += 1
             # add the directed-edge object to the list
             l_directed_edges.append(o_directed_edge)
-            # o_directed_edge.show()
-
-        # for o_local_network in l_local_networks:
-        #     o_local_network.show()
-        # print(l_relations)
 
         # Process the coupling signals for every local network
         for o_local_network in l_local_networks:
@@ -560,8 +560,6 @@ class AleatoryTemplate:
                                                                     l_directed_edges=l_directed_edges)
             # process the input signals of the local network
             o_local_network.process_input_signals(l_input_signals=l_input_signals)
-            # o_local_network.show()
-            # print([element.index_variable for element in l_input_signals])
 
         # generate dynamic of the local networks with template
         l_local_networks = self.generate_local_dynamic_with_template(l_local_networks=l_local_networks,

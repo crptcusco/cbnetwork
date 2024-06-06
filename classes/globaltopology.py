@@ -28,7 +28,7 @@ class GlobalTopology:
         self.n_nodes = n_nodes
         self.v_topology = v_topology
         self.n_max_edges = n_max_edges
-        self.o_graph = o_graph # A networkx Graph object to make the visualizations
+        self.o_graph = o_graph  # A networkx Graph object to make the visualizations
 
         self.d_network_color = {}  # Dictionary with the colors
         self.generate_local_nets_colors()  # Generate the colors for every local network
@@ -147,3 +147,7 @@ class GlobalTopology:
         plt.title("CBN Topology")
         plt.axis("off")
         plt.show()
+
+    def get_edges(self):
+        return list(self.o_graph.edges())
+
