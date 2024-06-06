@@ -56,10 +56,6 @@ class GlobalTopology:
     def generate_networkx_graph(self):
         """
         Generate the global topology based on the selected topology type.
-
-        :param n_nodes: Number of nodes in the graph.
-        :param n_max_edges: Max Number of edges in the graph.
-        :param v_topology: Type of topology to generate.
         :return: List of edges in the generated graph.
         """
         topology_generators = {
@@ -95,8 +91,6 @@ class GlobalTopology:
     def generate_linear_digraph(self):
         """
         Generate a linear directed graph.
-
-        :param n_nodes: Number of nodes in the graph.
         :return: Directed graph.
         """
         o_graph = nx.DiGraph()
@@ -108,13 +102,11 @@ class GlobalTopology:
     def generate_aleatory_digraph(self):
         """
         Generate a random directed graph with a maximum of two incoming edges per node.
-
-        :param n_nodes: Number of nodes in the graph.
-        :param n_max_edges: Desired number of edges in the graph.
         :return: Directed graph.
         """
 
-        # n_max_edges = random.randint(n_nodes - 1, 2 * n_nodes)
+        if self.n_max_edges is None:
+            self.n_max_edges = random.randint(self.n_nodes - 1, 2 * self.n_nodes)
         G = nx.DiGraph()
         G.add_nodes_from(range(self.n_nodes))
 
@@ -150,4 +142,3 @@ class GlobalTopology:
 
     def get_edges(self):
         return list(self.o_graph.edges())
-

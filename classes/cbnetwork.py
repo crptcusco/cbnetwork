@@ -1,4 +1,5 @@
 # internal imports
+from classes.globaltopology import GlobalTopology
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
@@ -157,7 +158,9 @@ class CBN:
         l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, n_var_network)
 
         # generate the CBN topology
-        l_relations = CBN.generate_global_topology(n_local_networks, v_topology)
+        o_global_topology = GlobalTopology(n_nodes=n_local_networks,v_topology=v_topology)
+        o_global_topology.generate_networkx_graph()
+        l_relations = o_global_topology.get_edges()
 
         # search the last variable from the local network variables
         i_last_variable = l_local_networks[-1].l_var_intern[-1]
@@ -181,6 +184,8 @@ class CBN:
 
         # create the cbn object
         o_cbn = CBN(l_local_networks, l_directed_edges)
+        # add the Global Topology Object
+        o_cbn.o_global_topology = o_global_topology
         return o_cbn
 
     def process_output_signals(self):
@@ -229,6 +234,9 @@ class CBN:
                 for o_attractor in o_local_scene.l_attractors:
                     o_attractor.g_index = i_attractor
                     i_attractor += 1
+
+        # Generate the attractor dictionary
+        self.generate_attractor_dictionary()
 
         print('Number of local attractors:', i_attractor)
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
@@ -437,8 +445,8 @@ class CBN:
 
         CustomText.make_title('FIND ATTRACTOR FIELDS')
 
-        # Create a Dictionary only with the important information
-        self.generate_attractor_dictionary()
+        # # Create a Dictionary only with the important information
+        # self.generate_attractor_dictionary()
 
         # Order the edges by compatibility
         self.order_edges_by_compatibility()

@@ -6,7 +6,7 @@ N_LOCAL_NETWORKS = 6
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
-V_TOPOLOGY = 3
+V_TOPOLOGY = 4
 
 # Generate the template for the experiment
 o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
