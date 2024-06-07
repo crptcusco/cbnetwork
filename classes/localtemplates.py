@@ -105,7 +105,7 @@ class PathCircleTemplate:
 
         print("Local Variable index:", i_local_variable)
         print("Template Variable index:", i_template_variable)
-        print("CNF Function:", pre_l_clauses_node)
+        print("Template Function:", pre_l_clauses_node)
 
         # for every pre-clause update the variables of the cnf function
         l_clauses_node = []
@@ -140,7 +140,9 @@ class PathCircleTemplate:
             # add the clause to the list of clauses
             l_clauses_node.append(l_clause)
 
-        print(i_local_variable, ":", l_clauses_node)
+        print("Local Variable Index:", i_local_variable)
+        print("CNF Function:", l_clauses_node)
+
         return l_clauses_node
 
     def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
@@ -326,11 +328,12 @@ def remove_duplicates(cnf):
 
 
 class AleatoryTemplate:
-    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology):
+    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology, n_edges):
         self.n_var_network = n_var_network
         self.d_variable_cnf_function = d_variable_cnf_function
         self.l_output_var_indexes = l_output_var_indexes
         self.v_topology = v_topology
+        self.n_edges = n_edges
 
     def show(self):
         print("Template for Aleatory CBNs")
@@ -341,9 +344,11 @@ class AleatoryTemplate:
         print("Output variables for coupling signal:", self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6):
+    def generate_aleatory_template(n_var_network=5, n_input_variables=2,
+                                   n_output_variables=2, v_topology=6, n_edges=None):
         """
         Generates aleatory template for a local network
+        :param n_edges:
         :param v_topology:
         :param n_output_variables:
         :param n_input_variables:
@@ -382,7 +387,8 @@ class AleatoryTemplate:
         o_aleatory_template = AleatoryTemplate(n_var_network=n_var_network,
                                                d_variable_cnf_function=d_variable_cnf_function,
                                                l_output_var_indexes=l_output_var_indexes,
-                                               v_topology=v_topology)
+                                               v_topology=v_topology,
+                                               n_edges=n_edges)
         return o_aleatory_template
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
@@ -419,7 +425,7 @@ class AleatoryTemplate:
 
         print("Local Variable index:", i_local_variable)
         print("Template Variable index:", i_template_variable)
-        print("CNF Function:", pre_l_clauses_node)
+        print("Template Function:", pre_l_clauses_node)
 
         # for every pre-clause update the variables of the cnf function
         l_clauses_node = []
@@ -448,7 +454,8 @@ class AleatoryTemplate:
             # add the clause to the list of clauses
             l_clauses_node.append(l_clause)
 
-        print(i_local_variable, ":", l_clauses_node)
+        print("Local Variable Index:", i_local_variable)
+        print("CNF Function:", l_clauses_node)
 
         l_clauses_node = [clause for clause in l_clauses_node if clause]
         return l_clauses_node
@@ -502,7 +509,7 @@ class AleatoryTemplate:
         # actualized the list of local networks
         return l_local_networks_updated
 
-    def generate_cbn_from_template(self, v_topology, n_local_networks):
+    def generate_cbn_from_template(self, v_topology, n_local_networks,n_edges):
         """
         Generate a special CBN
 
@@ -521,7 +528,7 @@ class AleatoryTemplate:
         l_directed_edges = []
 
         # generate the Global Topology Object
-        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks)
+        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks, n_edges=n_edges)
         o_global_topology.generate_networkx_graph()
 
         l_relations = o_global_topology.get_edges()
