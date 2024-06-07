@@ -16,8 +16,8 @@ v_topology = 4
 CBN.show_allowed_topologies()
 
 # create a Coupled Boolean Network with the parameters
-o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=n_var_network, v_topology=v_topology,
-                                              n_output_variables=n_output_variables)
+o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=n_var_network,
+                                              v_topology=v_topology, n_output_variables=n_output_variables)
 
 # Adding a network to make restricted the signals
 # generate a network

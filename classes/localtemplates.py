@@ -573,4 +573,7 @@ class AleatoryTemplate:
         o_special_cbn = CBN(l_local_networks=l_local_networks,
                             l_directed_edges=l_directed_edges)
 
+        # add the Global Topology Object
+        o_special_cbn.o_global_topology = o_global_topology
+
         return o_special_cbn

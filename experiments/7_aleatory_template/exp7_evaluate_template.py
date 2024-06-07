@@ -1,6 +1,7 @@
 import pickle
 
 from classes.cbnetwork import CBN
+from classes.globaltopology import GlobalTopology
 from classes.localtemplates import AleatoryTemplate
 
 # Constants for the test
@@ -12,7 +13,7 @@ V_TOPOLOGY = 8
 o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK, v_topology=6)
 o_topology_template.show()
 
-CBN.show_allowed_topologies()
+GlobalTopology.show_allowed_topologies()
 
 # generate a linear CBN from the template
 o_aleatory_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
