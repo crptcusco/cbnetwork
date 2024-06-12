@@ -137,17 +137,19 @@ class CBN:
     def generate_local_networks_variables_dynamic(l_local_networks, l_directed_edges,
                                                   n_input_variables=2, n_output_variables=2):
         """
-                Generates the dynamics for each local network by creating internal variables and their clauses.
+        Generates the dynamics for each local network by creating internal variables and their clauses.
 
-                Args:
-                    l_local_networks (list): List of LocalNetwork objects.
-                    l_directed_edges (list): List of DirectedEdge objects.
-                    n_input_variables (int, optional): Number of input variables. Defaults to 2.
-                    n_output_variables (int, optional): Number of input variables. Defaults to 2.
+        Args:
+            l_local_networks (list): List of LocalNetwork objects.
+            l_directed_edges (list): List of DirectedEdge objects.
+            n_input_variables (int, optional): Number of input variables. Defaults to 2.
+            n_output_variables (int, optional): Number of input variables. Defaults to 2.
 
-                Returns:
-                    list: List of updated LocalNetwork objects with dynamic variables.
-                """
+        Returns:
+            list: List of updated LocalNetwork objects with dynamic variables.
+        """
+
+        # the max number of clauses and literals is fixed in 2 and 3 respectively
         NUMBER_MAX_OF_CLAUSES = 2
         NUMBER_MAX_OF_LITERALS = 3
 
@@ -182,16 +184,18 @@ class CBN:
         """
         Generates an instance of a CBN.
 
-        :param n_local_networks: Number of local networks to generate.
-        :param n_var_network: Number of variables per network.
-        :param v_topology: Type of topology for the CBN.
-        :param n_output_variables: Number of output variables.
-        :param n_input_variables: Number of input variables.
-        :param n_edges: Number of edges in the CBN.
-        :param local_template: Template for local networks.
+        Args:
+            n_local_networks (int): Number of local networks to generate.
+            n_var_network (int): Number of variables per network.
+            v_topology (int): Type of topology for the CBN.
+            n_output_variables (int): Number of output variables.
+            n_input_variables (int): Number of input variables.
+            n_edges (int): Number of edges in the CBN.
+            local_template (AleatoryTemplate): Template for local networks.
 
-        :return: The generated CBN object.
-         """
+        Returns:
+            CBN: The generated CBN object.
+        """
 
         CustomText.make_title('CBN GENERATION')
 
@@ -257,8 +261,10 @@ class CBN:
 
     def find_local_attractors_sequential(self):
         """
-        Finds local attractors sequentially
-        return: update the list of local attractor in the object
+        Finds local attractors sequentially.
+
+        Returns:
+            str: Update the list of local attractor in the object.
         """
         CustomText.make_title('FIND LOCAL ATTRACTORS')
 
