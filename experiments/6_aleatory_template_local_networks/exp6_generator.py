@@ -9,7 +9,7 @@ from classes.localtemplates import AleatoryTemplate
 from classes.utils.customtext import CustomText
 
 """
-Experiment 6 - Test the aleatory CBNs with different number of coupling signals 
+Experiment 6 - Test the aleatory CBNs with different number of local networks
 """
 
 # experiment parameters
@@ -22,7 +22,7 @@ N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 2
 N_CLAUSES_FUNCTION = 2
 # N_LITERALS_FUNCTION = 3
-N_EDGES = 2
+n_edges = 3
 
 # verbose parameters
 SHOW_MESSAGES = True
@@ -35,7 +35,7 @@ print("="*80)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp6_aleatory_template"
+EXPERIMENT_NAME = "exp6_data"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'
@@ -67,13 +67,14 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
                                                                       v_topology=V_TOPOLOGY)
 
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
+        n_edges = n_local_networks
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
         # generate a linear CBN from the template
         o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
                                                                n_local_networks=n_local_networks,
-                                                               n_edges=n_local_networks)
+                                                               n_edges=n_edges)
 
         # find attractors
         v_begin_find_attractors = time.time()
