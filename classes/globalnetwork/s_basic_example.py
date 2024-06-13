@@ -11,11 +11,9 @@ N_OUTPUT_VARIABLES = 2
 V_TOPOLOGY = 3
 
 # Generate a Random CBN object
-o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS,
-                                              n_var_network=N_VAR_NETWORK,
-                                              n_input_variables=N_INPUT_VARIABLES,
-                                              n_output_variables=N_OUTPUT_VARIABLES,
-                                              v_topology=V_TOPOLOGY)
+o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS, n_var_network=N_VAR_NETWORK,
+                                              v_topology=V_TOPOLOGY, n_output_variables=N_OUTPUT_VARIABLES,
+                                              n_input_variables=N_INPUT_VARIABLES)
 o_cbn.show_description()
 
 # Find the global stable states

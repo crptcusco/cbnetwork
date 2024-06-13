@@ -105,7 +105,7 @@ class PathCircleTemplate:
 
         print("Local Variable index:", i_local_variable)
         print("Template Variable index:", i_template_variable)
-        print("CNF Function:", pre_l_clauses_node)
+        print("Template Function:", pre_l_clauses_node)
 
         # for every pre-clause update the variables of the cnf function
         l_clauses_node = []
@@ -140,7 +140,9 @@ class PathCircleTemplate:
             # add the clause to the list of clauses
             l_clauses_node.append(l_clause)
 
-        print(i_local_variable, ":", l_clauses_node)
+        print("Local Variable Index:", i_local_variable)
+        print("CNF Function:", l_clauses_node)
+
         return l_clauses_node
 
     def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
@@ -268,8 +270,8 @@ class PathCircleTemplate:
         return o_special_cbn
 
 
-def generate_random_cnf(l_internal_variables, input_coupling_signal_index):
-    num_clauses = random.randint(2, 3)
+def generate_cnf(l_internal_variables, input_coupling_signal_index, max_clauses=2, max_literals=3):
+    num_clauses = random.randint(max_clauses, max_literals)
     cnf = []
 
     # generate the clause for external signals
@@ -326,11 +328,12 @@ def remove_duplicates(cnf):
 
 
 class AleatoryTemplate:
-    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology):
+    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology, n_edges):
         self.n_var_network = n_var_network
         self.d_variable_cnf_function = d_variable_cnf_function
         self.l_output_var_indexes = l_output_var_indexes
         self.v_topology = v_topology
+        self.n_edges = n_edges
 
     def show(self):
         print("Template for Aleatory CBNs")
@@ -341,9 +344,11 @@ class AleatoryTemplate:
         print("Output variables for coupling signal:", self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6):
+    def generate_aleatory_template(n_var_network=5, n_input_variables=2,
+                                   n_output_variables=2, v_topology=6, n_edges=None):
         """
         Generates aleatory template for a local network
+        :param n_edges:
         :param v_topology:
         :param n_output_variables:
         :param n_input_variables:
@@ -351,13 +356,14 @@ class AleatoryTemplate:
         :return: Dictionary of cnf function for variable and list of exit variables
         """
 
+        # Fixed Properties
+        n_max_of_clauses = 2
+        n_max_of_literals = 3
+
         # basic properties
         l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
         l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
         l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
-
-        # calculate properties
-        l_var_total_indexes = l_internal_var_indexes + l_input_coupling_signal_indexes
 
         # generate the aleatory dynamic
         d_variable_cnf_function = {}
@@ -373,16 +379,17 @@ class AleatoryTemplate:
             else:
                 input_coupling_signal_index = None
 
-            d_variable_cnf_function[i_variable] = generate_random_cnf(
-                l_internal_var_indexes,
-                input_coupling_signal_index
-            )
+            d_variable_cnf_function[i_variable] = generate_cnf(l_internal_variables=l_internal_var_indexes,
+                                                               input_coupling_signal_index=input_coupling_signal_index,
+                                                               max_clauses=n_max_of_clauses,
+                                                               max_literals=n_max_of_literals)
 
         # Generate the object of AleatoryTemplate
         o_aleatory_template = AleatoryTemplate(n_var_network=n_var_network,
                                                d_variable_cnf_function=d_variable_cnf_function,
                                                l_output_var_indexes=l_output_var_indexes,
-                                               v_topology=v_topology)
+                                               v_topology=v_topology,
+                                               n_edges=n_edges)
         return o_aleatory_template
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
@@ -396,12 +403,10 @@ class AleatoryTemplate:
 
         return l_variables
 
-    def update_clause_from_template(self, l_local_networks, o_local_network, i_local_variable, l_directed_edges,
-                                    v_topology):
+    def update_clause_from_template(self, l_local_networks, o_local_network, i_local_variable, l_directed_edges):
         """
         update clause from template
         :param l_directed_edges:
-        :param v_topology:
         :param l_local_networks:
         :param o_local_network:
         :param i_local_variable:
@@ -419,7 +424,7 @@ class AleatoryTemplate:
 
         print("Local Variable index:", i_local_variable)
         print("Template Variable index:", i_template_variable)
-        print("CNF Function:", pre_l_clauses_node)
+        print("Template Function:", pre_l_clauses_node)
 
         # for every pre-clause update the variables of the cnf function
         l_clauses_node = []
@@ -448,22 +453,22 @@ class AleatoryTemplate:
             # add the clause to the list of clauses
             l_clauses_node.append(l_clause)
 
-        print(i_local_variable, ":", l_clauses_node)
-
+        # Drop empty clauses
         l_clauses_node = [clause for clause in l_clauses_node if clause]
+
+        print("Local Variable Index:", i_local_variable)
+        print("CNF Function:", l_clauses_node)
+
         return l_clauses_node
 
     def generate_local_dynamic_with_template(self, l_local_networks, l_directed_edges, v_topology):
         """
-        GENERATE THE DYNAMICS OF EACH LOCAL NETWORK
+        GENERATE THE DYNAMICS OF EACH LOCAL NETWORK WITH LOCAL NETWORK TEMPLATE
         :param v_topology:
         :param l_local_networks:
         :param l_directed_edges:
         :return: l_local_networks updated
         """
-        number_max_of_clauses = 2
-        number_max_of_literals = 3
-
         # generate an auxiliary list to modify the variables
         l_local_networks_updated = []
 
@@ -485,11 +490,9 @@ class AleatoryTemplate:
                 l_clauses_node = self.update_clause_from_template(l_local_networks=l_local_networks,
                                                                   o_local_network=o_local_network,
                                                                   i_local_variable=i_local_variable,
-                                                                  l_directed_edges=l_input_signals_by_network,
-                                                                  v_topology=v_topology)
+                                                                  l_directed_edges=l_input_signals_by_network)
                 # generate an internal variable from satispy
-                o_variable_model = InternalVariable(index=i_local_variable,
-                                                    cnf_function=l_clauses_node)
+                o_variable_model = InternalVariable(index=i_local_variable, cnf_function=l_clauses_node)
                 # adding the description in functions of every variable
                 des_funct_variables.append(o_variable_model)
 
@@ -502,13 +505,14 @@ class AleatoryTemplate:
         # actualized the list of local networks
         return l_local_networks_updated
 
-    def generate_cbn_from_template(self, v_topology, n_local_networks):
+    def generate_cbn_from_template(self, v_topology, n_local_networks, n_edges):
         """
         Generate a special CBN
 
         Args:
             v_topology: The topology of the CBN cam be 'aleatory'
             n_local_networks: The number of local networks
+            n_edges: the number of edges between local networks
         Returns:
             A CBN generated from a template
         """
@@ -521,7 +525,7 @@ class AleatoryTemplate:
         l_directed_edges = []
 
         # generate the Global Topology Object
-        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks)
+        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks, n_edges=n_edges)
         o_global_topology.generate_networkx_graph()
 
         l_relations = o_global_topology.get_edges()
@@ -566,11 +570,11 @@ class AleatoryTemplate:
                                                                      l_directed_edges=l_directed_edges,
                                                                      v_topology=v_topology)
 
-        for o_local_network in l_local_networks:
-            o_local_network.show()
-
         # generate the special coupled boolean network
         o_special_cbn = CBN(l_local_networks=l_local_networks,
                             l_directed_edges=l_directed_edges)
+
+        # add the Global Topology Object
+        o_special_cbn.o_global_topology = o_global_topology
 
         return o_special_cbn

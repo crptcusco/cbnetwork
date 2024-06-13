@@ -40,4 +40,10 @@ class CustomText:
         print(50 * '-')
         print(sub_sub_title)
 
+    @staticmethod
+    def send_warning(message):
+        print('WARNING:', message)
+
+
+
 

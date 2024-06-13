@@ -9,16 +9,14 @@ from classes.utils.customtext import CustomText
 class GlobalTopology:
     allowed_topologies = {
         1: "complete_graph",
-        2: "binomial_tree",
+        2: "aleatory_digraph",
         3: "cycle_graph",
         4: "path_graph",
         5: "gn_graph",
-        6: "gnc_graph",
-        7: "linear_graph",
-        8: "aleatory_digraph"
+        6: "gnc_graph"
     }
 
-    def __init__(self, n_nodes, v_topology=1, n_max_edges=None, o_graph=None, seed=None):
+    def __init__(self, n_nodes, v_topology=1, n_edges=None, o_graph=None, seed=None):
         """
         Initialize the CBNTopology class.
 
@@ -27,7 +25,7 @@ class GlobalTopology:
 
         self.n_nodes = n_nodes
         self.v_topology = v_topology
-        self.n_max_edges = n_max_edges
+        self.n_edges = n_edges  # the number of edges that have the graph
         self.o_graph = o_graph  # A networkx Graph object to make the visualizations
 
         self.d_network_color = {}  # Dictionary with the colors
@@ -56,34 +54,27 @@ class GlobalTopology:
     def generate_networkx_graph(self):
         """
         Generate the global topology based on the selected topology type.
-
-        :param n_nodes: Number of nodes in the graph.
-        :param n_max_edges: Max Number of edges in the graph.
-        :param v_topology: Type of topology to generate.
         :return: List of edges in the generated graph.
         """
         topology_generators = {
             1: nx.complete_graph,
-            2: nx.binomial_tree,
+            2: self.generate_aleatory_digraph,
             3: nx.cycle_graph,
             4: nx.path_graph,
             5: nx.gn_graph,
-            6: nx.gnc_graph,
-            7: GlobalTopology.generate_linear_digraph,
-            8: GlobalTopology.generate_aleatory_digraph
+            6: nx.gnc_graph
         }
 
         if self.v_topology not in topology_generators:
             raise ValueError(f"Invalid topology type: {self.v_topology}")
-
-        if self.v_topology in [1, 2, 3, 4]:
+        if self.v_topology in [3, 4]:
             o_graph = topology_generators[self.v_topology](self.n_nodes, nx.DiGraph())
+        elif self.v_topology == 2:
+            o_graph = topology_generators[self.v_topology]()
         elif self.v_topology in [5, 6]:
             o_graph = topology_generators[self.v_topology](self.n_nodes)
-        elif self.v_topology == 7:
-            o_graph = self.generate_linear_digraph()
         else:
-            o_graph = self.generate_aleatory_digraph()
+            o_graph = topology_generators[1](self.n_nodes, nx.DiGraph())
 
         # Renaming the label of the nodes for beginning in 1
         mapping = {node: node + 1 for node in o_graph.nodes()}
@@ -92,29 +83,21 @@ class GlobalTopology:
         self.generate_local_nets_colors()
         self.o_graph = o_graph
 
-    def generate_linear_digraph(self):
-        """
-        Generate a linear directed graph.
-
-        :param n_nodes: Number of nodes in the graph.
-        :return: Directed graph.
-        """
-        o_graph = nx.DiGraph()
-        o_graph.add_nodes_from(range(1, self.n_nodes + 1))
-        for i in range(1, self.n_nodes):
-            o_graph.add_edge(i, i + 1)
-        return o_graph
-
     def generate_aleatory_digraph(self):
         """
         Generate a random directed graph with a maximum of two incoming edges per node.
-
-        :param n_nodes: Number of nodes in the graph.
-        :param n_max_edges: Desired number of edges in the graph.
         :return: Directed graph.
         """
 
-        # n_max_edges = random.randint(n_nodes - 1, 2 * n_nodes)
+        # validate if the number of edges is None
+        if self.n_edges is None:
+            self.n_edges = random.randint(self.n_nodes - 1, 2 * self.n_nodes)
+
+        # validate if the number of edges is more that the double of the number of nodes
+        if self.n_edges > self.n_nodes * 2:
+            self.n_edges = self.n_nodes * 2
+            CustomText.send_warning('Changing the number of edges by excess')
+
         G = nx.DiGraph()
         G.add_nodes_from(range(self.n_nodes))
 
@@ -124,7 +107,7 @@ class GlobalTopology:
             G.add_edge(u, i)
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
-        while G.number_of_edges() < self.n_max_edges:
+        while G.number_of_edges() < self.n_edges:
             u = random.randint(0, self.n_nodes - 1)
             v = random.randint(0, self.n_nodes - 1)
 
@@ -135,7 +118,9 @@ class GlobalTopology:
 
     def plot_topology(self):
         # Posiciones de los nodos para un gráfico visual más limpio
-        pos = nx.circular_layout(self.o_graph)
+        pos = nx.random_layout(self.o_graph)
+        if self.v_topology != 1:
+            pos = nx.circular_layout(self.o_graph)
 
         # Dibujar nodos y aristas
         # Se agregan colores a los nodos utilizando el diccionario d_network_color
@@ -150,4 +135,3 @@ class GlobalTopology:
 
     def get_edges(self):
         return list(self.o_graph.edges())
-
