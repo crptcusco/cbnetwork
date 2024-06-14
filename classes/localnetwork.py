@@ -149,8 +149,8 @@ class LocalNetwork:
                 if not o_variable_model.cnf_function:
                     print("ENTER ATYPICAL CASE!!!")
                     boolean_function = boolean_function & (
-                            o_local_network.dic_var_cnf[str(o_variable_model.l_index) + "_" + str(transition)] | -
-                    o_local_network.dic_var_cnf[str(o_variable_model.l_index) + "_" + str(transition)])
+                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
+                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
                 cont_clause_global = cont_clause_global + 1
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence
