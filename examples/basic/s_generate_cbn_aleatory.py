@@ -29,4 +29,12 @@ o_cbn.mount_stable_attractor_fields()
 # o_cbn.show_coupled_signals_kind()
 # o_cbn.show_resume()
 
+# show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
 
+# Show the number of attractor fields by global scene
+o_cbn.generate_global_scenes()
+o_cbn.show_global_scenes()
+
+# Count the attractor fields by global scene
+o_cbn.count_fields_by_global_scenes()

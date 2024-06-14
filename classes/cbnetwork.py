@@ -1,4 +1,5 @@
 # internal imports
+from classes.globalscene import GlobalScene
 from classes.globaltopology import GlobalTopology
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
@@ -566,8 +567,8 @@ class CBN:
 
     def show_global_scenes(self):
         CustomText.make_sub_title('LIST OF GLOBAL SCENES')
-        for global_scene in self.l_global_scenes:
-            print(global_scene)
+        for o_global_scene in self.l_global_scenes:
+            o_global_scene.show()
 
     def show_local_attractors(self):
         CustomText.make_title('Show local attractors')
@@ -744,7 +745,14 @@ class CBN:
         l_edges_indexes = []
         for o_directed_edge in self.l_directed_edges:
             l_edges_indexes.append(o_directed_edge.index_variable)
-        self.l_global_scenes = list(product([0, 1], repeat=len(l_edges_indexes)))
+
+        binary_combinations = list(product([0, 1], repeat=len(l_edges_indexes)))
+        self.l_global_scenes = []
+
+        for combination in binary_combinations:
+            o_global_scene = GlobalScene(l_edges_indexes, list(combination))
+            self.l_global_scenes.append(o_global_scene)
+        CustomText.make_sub_title('Global Scenes generated')
 
     def plot_topology(self):
         self.o_global_topology.plot_topology()
