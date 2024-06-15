@@ -21,13 +21,13 @@ o_cbn.mount_stable_attractor_fields()
 
 
 # Testing methods
-# o_cbn.show_local_attractors()
-# o_cbn.show_local_attractors_dictionary()
-# o_cbn.show_attractor_pairs()
-# o_cbn.show_attractors_fields()
-# o_cbn.show_stable_attractor_fields_detailed()
-# o_cbn.show_coupled_signals_kind()
-# o_cbn.show_resume()
+o_cbn.show_local_attractors()
+o_cbn.show_local_attractors_dictionary()
+o_cbn.show_attractor_pairs()
+o_cbn.show_attractors_fields()
+o_cbn.show_stable_attractor_fields_detailed()
+o_cbn.show_coupled_signals_kind()
+o_cbn.show_resume()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
