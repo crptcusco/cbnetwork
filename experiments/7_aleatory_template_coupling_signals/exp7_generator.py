@@ -65,7 +65,7 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
     o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
                                                                       v_topology=V_TOPOLOGY)
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
-        for n_edges in range(n_local_networks, n_local_networks*2):
+        for n_edges in range(n_local_networks, n_local_networks*2+1):
             l_data_sample = []
             print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
