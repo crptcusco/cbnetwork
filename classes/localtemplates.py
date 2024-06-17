@@ -505,7 +505,7 @@ class AleatoryTemplate:
         # actualized the list of local networks
         return l_local_networks_updated
 
-    def generate_cbn_from_template(self, v_topology, n_local_networks, n_edges):
+    def generate_cbn_from_template(self, v_topology, n_local_networks, n_edges, o_base_graph=None):
         """
         Generate a special CBN
 
@@ -513,8 +513,10 @@ class AleatoryTemplate:
             v_topology: The topology of the CBN cam be 'aleatory'
             n_local_networks: The number of local networks
             n_edges: the number of edges between local networks
+            o_base_graph: a graph who is base for the new graph
         Returns:
             A CBN generated from a template
+
         """
 
         # generate the local networks with the indexes and variables (without relations or dynamics)
@@ -525,7 +527,8 @@ class AleatoryTemplate:
         l_directed_edges = []
 
         # generate the Global Topology Object
-        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks, n_edges=n_edges)
+        o_global_topology = GlobalTopology(v_topology=v_topology, n_nodes=n_local_networks, n_edges=n_edges,
+                                           o_graph=o_base_graph)
         o_global_topology.generate_networkx_graph()
 
         l_relations = o_global_topology.get_edges()
