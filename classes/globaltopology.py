@@ -56,32 +56,38 @@ class GlobalTopology:
         Generate the global topology based on the selected topology type.
         :return: List of edges in the generated graph.
         """
-        topology_generators = {
-            1: nx.complete_graph,
-            2: self.generate_aleatory_digraph,
-            3: nx.cycle_graph,
-            4: nx.path_graph,
-            5: nx.gn_graph,
-            6: nx.gnc_graph
-        }
 
-        if self.v_topology not in topology_generators:
-            raise ValueError(f"Invalid topology type: {self.v_topology}")
-        if self.v_topology in [3, 4]:
-            o_graph = topology_generators[self.v_topology](self.n_nodes, nx.DiGraph())
-        elif self.v_topology == 2:
-            o_graph = topology_generators[self.v_topology]()
-        elif self.v_topology in [5, 6]:
-            o_graph = topology_generators[self.v_topology](self.n_nodes)
+        if self.o_graph is not None:
+            print("entrouuuu")
+            self.add_aleatory_edge()
+
         else:
-            o_graph = topology_generators[1](self.n_nodes, nx.DiGraph())
+            topology_generators = {
+                1: nx.complete_graph,
+                2: self.generate_aleatory_digraph,
+                3: nx.cycle_graph,
+                4: nx.path_graph,
+                5: nx.gn_graph,
+                6: nx.gnc_graph
+            }
 
-        # Renaming the label of the nodes for beginning in 1
-        mapping = {node: node + 1 for node in o_graph.nodes()}
-        o_graph = nx.relabel_nodes(o_graph, mapping)
+            if self.v_topology not in topology_generators:
+                raise ValueError(f"Invalid topology type: {self.v_topology}")
+            if self.v_topology in [3, 4]:
+                o_graph = topology_generators[self.v_topology](self.n_nodes, nx.DiGraph())
+            elif self.v_topology == 2:
+                o_graph = topology_generators[self.v_topology]()
+            elif self.v_topology in [5, 6]:
+                o_graph = topology_generators[self.v_topology](self.n_nodes)
+            else:
+                o_graph = topology_generators[1](self.n_nodes, nx.DiGraph())
 
-        self.generate_local_nets_colors()
-        self.o_graph = o_graph
+            # Renaming the label of the nodes for beginning in 1
+            mapping = {node: node + 1 for node in o_graph.nodes()}
+            o_graph = nx.relabel_nodes(o_graph, mapping)
+
+            self.generate_local_nets_colors()
+            self.o_graph = o_graph
 
     def generate_aleatory_digraph(self):
         """
@@ -108,13 +114,27 @@ class GlobalTopology:
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while G.number_of_edges() < self.n_edges:
-            u = random.randint(0, self.n_nodes - 1)
-            v = random.randint(0, self.n_nodes - 1)
+            u = random.randint(1, self.n_nodes)
+            v = random.randint(1, self.n_nodes)
 
             if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
                 G.add_edge(u, v)
 
         return G
+
+    def add_aleatory_edge(self):
+        # Assuming that the graph is aleatory
+        print(self.o_graph.edges)
+
+        # Add additional edges randomly while ensuring no more than two incoming edges per node
+        while self.o_graph.number_of_edges() < self.n_edges:
+            u = random.randint(0, self.n_nodes - 1)
+            v = random.randint(0, self.n_nodes - 1)
+
+            if u != v and self.o_graph.in_degree(v) < 2 and not self.o_graph.has_edge(u, v):
+                self.o_graph.add_edge(u, v)
+
+        print(self.o_graph.edges)
 
     def plot_topology(self):
         # Posiciones de los nodos para un gráfico visual más limpio
