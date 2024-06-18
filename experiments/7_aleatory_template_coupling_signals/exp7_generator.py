@@ -13,7 +13,7 @@ Experiment 7 - Test the aleatory CBNs with different number coupling signals
 """
 
 # experiment parameters
-N_SAMPLES = 10
+N_SAMPLES = 5
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 6
 N_VAR_NETWORK = 5
@@ -144,6 +144,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
             # Close the file
             file.close()
             print("Pickle object saved in:", pickle_path)
+
+            # Update Old_graph
+            old_o_graph = o_cbn.o_global_topology.o_graph
 
             CustomText.print_duplex_line()
     CustomText.print_stars()

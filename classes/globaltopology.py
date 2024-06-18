@@ -114,8 +114,8 @@ class GlobalTopology:
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while G.number_of_edges() < self.n_edges:
-            u = random.randint(1, self.n_nodes)
-            v = random.randint(1, self.n_nodes)
+            u = random.randint(0, self.n_nodes)
+            v = random.randint(0, self.n_nodes)
 
             if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
                 G.add_edge(u, v)
@@ -128,8 +128,8 @@ class GlobalTopology:
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while self.o_graph.number_of_edges() < self.n_edges:
-            u = random.randint(0, self.n_nodes - 1)
-            v = random.randint(0, self.n_nodes - 1)
+            u = random.randint(1, self.n_nodes+1)
+            v = random.randint(1, self.n_nodes+1)
 
             if u != v and self.o_graph.in_degree(v) < 2 and not self.o_graph.has_edge(u, v):
                 self.o_graph.add_edge(u, v)
