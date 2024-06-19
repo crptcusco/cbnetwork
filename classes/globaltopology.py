@@ -94,28 +94,29 @@ class GlobalTopology:
         Generate a random directed graph with a maximum of two incoming edges per node.
         :return: Directed graph.
         """
+        n_nodes = self.n_nodes  # Assuming this should be used instead of self.n_nodes
 
-        # validate if the number of edges is None
+        # Validate if the number of edges is None
         if self.n_edges is None:
-            self.n_edges = random.randint(self.n_nodes - 1, 2 * self.n_nodes)
+            self.n_edges = random.randint(n_nodes - 1, 2 * n_nodes)
 
-        # validate if the number of edges is more that the double of the number of nodes
-        if self.n_edges > self.n_nodes * 2:
-            self.n_edges = self.n_nodes * 2
+        # Validate if the number of edges is more than double the number of nodes
+        if self.n_edges > n_nodes * 2:
+            self.n_edges = n_nodes * 2
             CustomText.send_warning('Changing the number of edges by excess')
 
         G = nx.DiGraph()
-        G.add_nodes_from(range(self.n_nodes))
+        G.add_nodes_from(range(n_nodes))
 
         # Ensure the graph is connected by creating a spanning tree
-        for i in range(1, self.n_nodes):
+        for i in range(1, n_nodes):
             u = random.randint(0, i - 1)
             G.add_edge(u, i)
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while G.number_of_edges() < self.n_edges:
-            u = random.randint(0, self.n_nodes)
-            v = random.randint(0, self.n_nodes)
+            u = random.randint(0, n_nodes - 1)
+            v = random.randint(0, n_nodes - 1)
 
             if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
                 G.add_edge(u, v)
@@ -123,31 +124,40 @@ class GlobalTopology:
         return G
 
     def add_aleatory_edge(self):
-        # Assuming that the graph is aleatory
-        print(self.o_graph.edges)
+        """
+        Add additional edges randomly while ensuring no more than two incoming edges per node.
+        """
+        # Print the current edges in the graph
+        print("Current edges:", list(self.o_graph.edges))
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while self.o_graph.number_of_edges() < self.n_edges:
-            u = random.randint(1, self.n_nodes+1)
-            v = random.randint(1, self.n_nodes+1)
+            u = random.randint(1, self.n_nodes)
+            v = random.randint(1, self.n_nodes)
 
             if u != v and self.o_graph.in_degree(v) < 2 and not self.o_graph.has_edge(u, v):
                 self.o_graph.add_edge(u, v)
 
-        print(self.o_graph.edges)
+        # Print the updated edges in the graph
+        print("Updated edges:", list(self.o_graph.edges))
 
     def plot_topology(self):
-        # Posiciones de los nodos para un gráfico visual más limpio
-        pos = nx.random_layout(self.o_graph)
-        if self.v_topology != 1:
+        # Positions of nodes for a cleaner visual graph
+        if self.v_topology == 1:
+            pos = nx.random_layout(self.o_graph)
+        else:
             pos = nx.circular_layout(self.o_graph)
 
-        # Dibujar nodos y aristas
-        # Se agregan colores a los nodos utilizando el diccionario d_network_color
+        # Draw nodes and edges
+        # Add colors to the nodes using the dictionary d_network_color
         node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.o_graph.nodes()]
-        nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors)
-        nx.draw_networkx_labels(self.o_graph, pos)
+        nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors, node_size=500)
+        nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black')
         nx.draw_networkx_edges(self.o_graph, pos, arrows=True)
+
+        # Optional: draw edge labels
+        # edge_labels = nx.get_edge_attributes(self.o_graph, 'weight')
+        # nx.draw_networkx_edge_labels(self.o_graph, pos, edge_labels=edge_labels)
 
         plt.title("CBN Topology")
         plt.axis("off")
