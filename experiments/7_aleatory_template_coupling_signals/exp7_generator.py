@@ -8,7 +8,7 @@ from classes.localtemplates import AleatoryTemplate
 from classes.utils.customtext import CustomText
 
 # Experiment parameters
-N_SAMPLES = 100
+N_SAMPLES = 5
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 6
 N_VAR_NETWORK = 5
