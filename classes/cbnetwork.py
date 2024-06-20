@@ -754,8 +754,8 @@ class CBN:
             self.l_global_scenes.append(o_global_scene)
         CustomText.make_sub_title('Global Scenes generated')
 
-    def plot_topology(self):
-        self.o_global_topology.plot_topology()
+    def plot_topology(self, ax=None):
+        self.o_global_topology.plot_topology(ax=ax)
 
     def count_fields_by_global_scenes(self):
         CustomText.make_sub_title('Counting the stable attractor fields by global scene')

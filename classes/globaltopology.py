@@ -141,7 +141,10 @@ class GlobalTopology:
         # Print the updated edges in the graph
         print("Updated edges:", list(self.o_graph.edges))
 
-    def plot_topology(self):
+    def plot_topology(self, ax=None):
+        if ax is None:
+            ax = plt.gca()
+
         # Positions of nodes for a cleaner visual graph
         if self.v_topology == 1:
             pos = nx.random_layout(self.o_graph)
@@ -149,19 +152,13 @@ class GlobalTopology:
             pos = nx.circular_layout(self.o_graph)
 
         # Draw nodes and edges
-        # Add colors to the nodes using the dictionary d_network_color
         node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.o_graph.nodes()]
-        nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors, node_size=500)
-        nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black')
-        nx.draw_networkx_edges(self.o_graph, pos, arrows=True)
+        nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors, node_size=500, ax=ax)
+        nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black', ax=ax)
+        nx.draw_networkx_edges(self.o_graph, pos, arrows=True, ax=ax)
 
-        # Optional: draw edge labels
-        # edge_labels = nx.get_edge_attributes(self.o_graph, 'weight')
-        # nx.draw_networkx_edge_labels(self.o_graph, pos, edge_labels=edge_labels)
-
-        plt.title("CBN Topology")
-        plt.axis("off")
-        plt.show()
+        ax.set_title("CBN Topology")
+        ax.axis("off")
 
     def get_edges(self):
         return list(self.o_graph.edges())
