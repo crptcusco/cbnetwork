@@ -49,4 +49,6 @@ pip install parsl satispy  # Assuming you have internet access on the cluster
 cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
 
 echo Starting Test Script
+export PYTHONPATH=/scratch/deephash/carlos.tovar/cbnetwork/:$PYTHONPATH
+echo PYTHONPATH
 python s_example_valor_pi.py
