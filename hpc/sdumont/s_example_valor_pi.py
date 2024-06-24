@@ -40,7 +40,7 @@ def estimate_pi(num_samples, n_tasks):
 
 
 # Total number of samples
-total_samples = 100000000
+total_samples = 1000
 
 # Number of parallel tasks
 num_tasks = 6
