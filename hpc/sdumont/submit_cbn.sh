@@ -49,6 +49,6 @@ pip install parsl satispy  # Assuming you have internet access on the cluster
 cd /scratch/deephash/carlos.tovar/cbnetwork/hpc/sdumont
 
 echo Starting Test Script
-python3 s_exp_aleatory_4_lineal.py
+python3 s_generate_cbn.py
 #python3 s_square.py
 #python3 s_example_valor_pi.py
