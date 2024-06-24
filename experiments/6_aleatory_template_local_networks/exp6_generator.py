@@ -1,8 +1,12 @@
 # external imports
 import os
+import sys
 import time
 import pandas as pd
 import pickle
+
+# Agregar el directorio principal del proyecto al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # local imports
 from classes.localtemplates import AleatoryTemplate
@@ -29,7 +33,7 @@ SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
-print("="*80)
+print("=" * 80)
 
 # Capture the time for all the experiment
 v_begin_exp = time.time()
@@ -147,5 +151,5 @@ v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
 
-print("="*80)
+print("=" * 80)
 print("END EXPERIMENT")
