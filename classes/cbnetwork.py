@@ -726,10 +726,11 @@ class CBN:
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
         print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
-        for attractor_field in self.d_attractor_fields:
+        for key, value in self.d_attractor_fields.items():
             CustomText.print_simple_line()
-            for i_attractor in attractor_field:
-                print(self.d_local_attractors[i_attractor])
+            print(key, '->', value)
+            for i_attractor in value:
+                print(i_attractor, '->', self.d_local_attractors[i_attractor])
                 # get and show the local attractor
                 o_attractor = self.get_local_attractor_by_index(i_attractor)
                 o_attractor.show()

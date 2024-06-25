@@ -4,6 +4,7 @@ import time
 import pandas as pd
 import pickle
 
+from classes.cbnetwork import CBN
 # local imports
 from classes.localtemplates import PathCircleTemplate
 from classes.utils.customtext import CustomText
@@ -61,7 +62,7 @@ if os.path.exists(file_path):
 
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
-    for N_VAR_NETWORK in [i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)]:  # 3-9
+    for N_VAR_NETWORK in [i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)]:
 
         # generate the aleatory local network template
         o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
@@ -70,8 +71,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
-        o_cbn = o_path_circle_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                  n_local_networks=N_LOCAL_NETWORKS)
+        # generate aleatory CBN by topology
+        o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS, n_var_network=N_VAR_NETWORK,
+                                                      v_topology=V_TOPOLOGY, n_output_variables=N_OUTPUT_VARIABLES)
 
         # find attractors
         v_begin_find_attractors = time.time()
