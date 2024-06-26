@@ -4,23 +4,24 @@ import time
 import pandas as pd
 import pickle
 
+from classes.cbnetwork import CBN
 # local imports
 from classes.localtemplates import PathCircleTemplate
 from classes.utils.customtext import CustomText
 
 """
-Experiment 3 - Test the CBN with Linear Topology using aleatory generated template for the local network
+Experiment 4 - Test the CBN with Linear Topology using aleatory generated template for the local network
 growing the number of variables os local networks.  
 """
 
 # experiment parameters
-N_SAMPLES = 100
-N_LOCAL_NETWORKS = 9
+N_SAMPLES = 2
+N_LOCAL_NETWORKS = 5
 N_VARIABLE_NET_MIN = 5
 N_VARIABLE_NET_MAX = 30
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
-V_TOPOLOGY = 4
+V_TOPOLOGY = 3
 N_CLAUSES_FUNCTION = 2
 
 # verbose parameters
@@ -34,7 +35,7 @@ print("="*80)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp3_variables_linear"
+EXPERIMENT_NAME = "exp4_variables_circular"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'
@@ -70,8 +71,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
-        o_cbn = o_path_circle_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                  n_local_networks=N_LOCAL_NETWORKS)
+        # generate aleatory CBN by topology
+        o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS, n_var_network=N_VAR_NETWORK,
+                                                      v_topology=V_TOPOLOGY, n_output_variables=N_OUTPUT_VARIABLES)
 
         # find attractors
         v_begin_find_attractors = time.time()
