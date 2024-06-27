@@ -64,10 +64,6 @@ if os.path.exists(file_path):
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
     for N_VAR_NETWORK in [i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)]:  # 3-9
 
-        # generate the aleatory local network template
-        o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
-            n_var_network=N_LOCAL_NETWORKS, n_input_variables=N_INPUT_VARIABLES)
-
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
