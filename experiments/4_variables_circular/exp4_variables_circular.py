@@ -4,9 +4,8 @@ import time
 import pandas as pd
 import pickle
 
-from classes.cbnetwork import CBN
 # local imports
-from classes.localtemplates import PathCircleTemplate
+from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 
 """
