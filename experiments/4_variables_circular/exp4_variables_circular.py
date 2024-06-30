@@ -14,7 +14,7 @@ growing the number of variables os local networks.
 """
 
 # experiment parameters
-N_SAMPLES = 2
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS = 5
 N_VARIABLE_NET_MIN = 5
 N_VARIABLE_NET_MAX = 30
