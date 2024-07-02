@@ -4,9 +4,8 @@ import time
 import pandas as pd
 import pickle
 
-from classes.cbnetwork import CBN
 # local imports
-from classes.localtemplates import PathCircleTemplate
+from classes.cbnetwork import CBN
 from classes.utils.customtext import CustomText
 
 """
@@ -15,7 +14,7 @@ growing the number of variables os local networks.
 """
 
 # experiment parameters
-N_SAMPLES = 2
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS = 5
 N_VARIABLE_NET_MIN = 5
 N_VARIABLE_NET_MAX = 30
@@ -63,10 +62,6 @@ if os.path.exists(file_path):
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
     for N_VAR_NETWORK in [i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)]:
-
-        # generate the aleatory local network template
-        o_path_circle_template = PathCircleTemplate.generate_path_circle_template(
-            n_var_network=N_LOCAL_NETWORKS, n_input_variables=N_INPUT_VARIABLES)
 
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
@@ -130,7 +125,8 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
 
         # Open a file in binary write mode (wb)
         pickle_path = (DIRECTORY_PKL + '/cbn_' + str(i_sample) + '_'
-                       + str(V_TOPOLOGY) + '_' + str(N_LOCAL_NETWORKS) + ".pkl")
+                       + str(V_TOPOLOGY) + '_' + str(N_LOCAL_NETWORKS)
+                       + '_' + str(N_VAR_NETWORK) + ".pkl")
         with open(pickle_path, 'wb') as file:
             # Use pickle.dump to save the object to the file
             pickle.dump(o_cbn, file)
