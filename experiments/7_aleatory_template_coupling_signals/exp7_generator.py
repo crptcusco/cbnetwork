@@ -8,9 +8,9 @@ from classes.localtemplates import AleatoryTemplate
 from classes.utils.customtext import CustomText
 
 # Experiment parameters
-N_SAMPLES = 1000
+N_SAMPLES = 100
 N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 6
+N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -58,9 +58,10 @@ for i_sample in range(1, N_SAMPLES + 1):
                                                                       v_topology=V_TOPOLOGY)
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
         old_o_graph = None
-        for n_edges in range(n_local_networks, (n_local_networks * 2) + 1):
+        for n_edges in range(n_local_networks, n_local_networks + (n_local_networks // 2) + 1):
             l_data_sample = []
-            print(f"Experiment {i_sample} of {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY} EDGES: {n_edges}")
+            print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
+            print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VAR_NETWORK}")
 
             # If it is the first number of edges, generate a linear CBN from the template
             if old_o_graph is None:
