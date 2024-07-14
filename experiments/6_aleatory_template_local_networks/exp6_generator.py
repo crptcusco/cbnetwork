@@ -17,7 +17,7 @@ Experiment 6 - Test the aleatory CBNs with different number of local networks
 """
 
 # experiment parameters
-N_SAMPLES = 100
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
