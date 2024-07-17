@@ -6,20 +6,31 @@ import matplotlib.colors as mco  # library who have the list of colors
 from classes.utils.customtext import CustomText
 
 
+class AleatoryFixed:
+    def __init__(self, n_nodes, n_edges=None, base_graph=None):
+        self.n_nodes = n_nodes
+        if n_edges is None:
+            self.n_edges = n_nodes
+        # Generate the edges PENDING WORK!!!
+        self.l_edges = []
+
+    def get_edges(self):
+        return self.l_edges
+
+
 class GlobalTopology:
     allowed_topologies = {
-        1: "complete_graph",
-        2: "aleatory_digraph",
-        3: "cycle_graph",
-        4: "path_graph",
-        5: "gn_graph",
-        6: "gnc_graph"
+        1: "complete",
+        2: "aleatory_fixed_2_input_edges",
+        3: "cycle",
+        4: "path",
+        5: "aleatory_gn",
+        6: "aleatory_gnc"
     }
 
     def __init__(self, n_nodes, v_topology=1, n_edges=None, o_graph=None, seed=None):
         """
         Initialize the CBNTopology class.
-
         :param seed: Optional; Seed for random number generator.
         """
 
@@ -40,7 +51,7 @@ class GlobalTopology:
         """
         Display the allowed topologies.
         """
-        CustomText.make_sub_title("List of allowed topologies")
+        CustomText.make_sub_title("List of allowed topologies of Directed Graphs")
         for key, value in cls.allowed_topologies.items():
             print(key, "-", value)
 
@@ -162,3 +173,59 @@ class GlobalTopology:
 
     def get_edges(self):
         return list(self.o_graph.edges())
+
+    @classmethod
+    def generate_edges(cls, v_topology, n_nodes, n_edges=None, base_graph=None, seed=None):
+        l_edges = []
+
+        # Validate if the v_topology is in l_allowed topologies
+        if v_topology not in cls.allowed_topologies.keys():
+            print('ERROR: Not permitted option')
+        if n_nodes <= 1:
+            print('ERROR: Number of node less or equal to 1')
+            return None
+
+        # # generate the list of nodes
+        # l_nodes = list(range(1, n_nodes+1))
+
+        # Generate switch to the graph topology
+        # complete
+        if v_topology == 1:
+            # generate the object
+            # Create a complete graph with n_nodes
+            G = nx.complete_graph(n_nodes, nx.DiGraph())
+            # Adjust the indices to start from 1
+            G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
+            l_edges = list(G.edges())
+            return l_edges
+
+        # aleatory fixed
+        elif v_topology == 2:
+            # generate the object
+            o_aleatory_fixed = AleatoryFixed(n_nodes, n_edges, base_graph)
+            l_edges = o_aleatory_fixed.get_edges()
+            return l_edges
+
+        # cycle
+        elif v_topology == 3:
+            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+            return l_edges
+
+        # path
+        elif v_topology == 2:
+            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+            return l_edges
+
+        # aleatory_gn
+        elif v_topology == 2:
+            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+            return l_edges
+
+        # aleatory_gnc
+        elif v_topology == 2:
+            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+            return l_edges
+
+    @classmethod
+    def grafo_completo_get_edges(cls, n_nodes):
+        pass

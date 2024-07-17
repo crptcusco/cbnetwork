@@ -44,6 +44,7 @@ class LocalNetworkTemplate:
 N_VARIABLES = 5
 N_INPUT_VARIABLES = 2
 N_OUTPUT_VARIABLES = 2
+V_TOPOLOGY = 2
 
 # o_local_network_template = LocalNetworkTemplate
 o_local_template = LocalNetworkTemplate.generate_template(n_variables=N_VARIABLES,
@@ -51,7 +52,11 @@ o_local_template = LocalNetworkTemplate.generate_template(n_variables=N_VARIABLE
                                                           n_output_variables=N_OUTPUT_VARIABLES)
 o_local_template.show()
 
-# seleccionar la topologia
+# select the topology
+GlobalTopology.show_allowed_topologies()
+# generate the global edges
+l_global_edges = GlobalTopology.generate_edges(v_topology=V_TOPOLOGY, n_nodes=10, n_edges=10, o_graph=None, seed=None)
+
 
 
 
