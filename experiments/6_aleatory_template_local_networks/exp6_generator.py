@@ -69,16 +69,24 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
     # generate the aleatory local network template object
     o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
                                                                       v_topology=V_TOPOLOGY)
-
+    old_o_graph = None
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
         n_edges = n_local_networks
         l_data_sample = []
-        print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
+        print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
+        print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VAR_NETWORK}")
 
-        # generate a linear CBN from the template
-        o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                               n_local_networks=n_local_networks,
-                                                               n_edges=n_edges)
+        # If it is the first number of edges, generate a linear CBN from the template
+        if old_o_graph is None:
+            o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
+                                                                   n_local_networks=n_local_networks,
+                                                                   n_edges=n_edges)
+        # Update the number of directed edges
+        else:
+            o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
+                                                                   n_local_networks=n_local_networks,
+                                                                   n_edges=n_edges,
+                                                                   o_base_graph=old_o_graph)
 
         # find attractors
         v_begin_find_attractors = time.time()
