@@ -11,8 +11,46 @@ class AleatoryFixed:
         self.n_nodes = n_nodes
         if n_edges is None:
             self.n_edges = n_nodes
-        # Generate the edges PENDING WORK!!!
+        else:
+            self.n_edges = n_edges
         self.l_edges = []
+        self.generate_edges()
+
+        # Generate the edges PENDING WORK!!!
+
+    def generate_edges(self):
+        """
+        Generate a random directed graph with a maximum of two incoming edges per node.
+        :return: Directed graph.
+        """
+        n_nodes = self.n_nodes  # Assuming this should be used instead of self.n_nodes
+
+        # Validate if the number of edges is None
+        if self.n_edges is None:
+            self.n_edges = random.randint(self.n_nodes - 1, 2 * self.n_nodes)
+
+        # Validate if the number of edges is more than double the number of nodes
+        if self.n_edges > self.n_nodes * 2:
+            self.n_edges = self.n_nodes * 2
+            CustomText.send_warning('Changing the number of edges by excess')
+
+        G = nx.DiGraph()
+        G.add_nodes_from(range(self.n_nodes))
+
+        # Ensure the graph is connected by creating a spanning tree
+        for i in range(1, n_nodes):
+            u = random.randint(0, i - 1)
+            G.add_edge(u, i)
+
+        # Add additional edges randomly while ensuring no more than two incoming edges per node
+        while G.number_of_edges() < self.n_edges:
+            u = random.randint(0, n_nodes - 1)
+            v = random.randint(0, n_nodes - 1)
+
+            if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
+                G.add_edge(u, v)
+
+        return G.edges
 
     def get_edges(self):
         return self.l_edges

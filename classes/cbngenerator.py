@@ -55,7 +55,9 @@ o_local_template.show()
 # select the topology
 GlobalTopology.show_allowed_topologies()
 # generate the global edges
-l_global_edges = GlobalTopology.generate_edges(v_topology=V_TOPOLOGY, n_nodes=10, n_edges=10, o_graph=None, seed=None)
+l_global_edges = GlobalTopology.generate_edges(v_topology=V_TOPOLOGY, n_nodes=10, n_edges=10,
+                                               base_graph=None, seed=None)
+print(l_global_edges)
 
 
 
