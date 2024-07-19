@@ -789,3 +789,15 @@ class CBN:
 
         # Print the dictionary of combinations and their counts
         print(d_global_scenes_count)
+
+    @classmethod
+    def cbn_generator(cls, v_topology, n_local_variables, local_template=False, base_graph=None):
+        # GENERATE THE LOCAL DYNAMIC
+        o_local_template = LocalNetworkTemplate.generate_template(n_variables=N_VARIABLES,
+                                                                  n_input_variables=N_INPUT_VARIABLES,
+                                                                  n_output_variables=N_OUTPUT_VARIABLES)
+
+        # GENERATE THE GLOBAL TOPOLOGY
+        l_global_edges = GlobalTopology.generate_edges(v_topology=V_TOPOLOGY, n_nodes=10, n_edges=10,
+                                                       base_graph=None, seed=None)
+

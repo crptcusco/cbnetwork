@@ -8,49 +8,52 @@ from classes.utils.customtext import CustomText
 
 class AleatoryFixed:
     def __init__(self, n_nodes, n_edges=None, base_graph=None):
+
+        # Validate if the nodes
         self.n_nodes = n_nodes
+
+        # generate the nodes labels
+        self.l_nodes = list(range(1, n_nodes+1))
+
+        # Validate if the number of edges is None
         if n_edges is None:
             self.n_edges = n_nodes
         else:
-            self.n_edges = n_edges
+            # Validate if the number of edges is more than double the number of nodes
+            if n_edges > self.n_nodes * 2:
+                self.n_edges = self.n_nodes * 2
+                CustomText.send_warning('Changing the number of edges by excess')
+            else:
+                self.n_edges = n_edges
+
         self.l_edges = []
         self.generate_edges()
-
-        # Generate the edges PENDING WORK!!!
 
     def generate_edges(self):
         """
         Generate a random directed graph with a maximum of two incoming edges per node.
         :return: Directed graph.
         """
-        n_nodes = self.n_nodes  # Assuming this should be used instead of self.n_nodes
-
-        # Validate if the number of edges is None
-        if self.n_edges is None:
-            self.n_edges = random.randint(self.n_nodes - 1, 2 * self.n_nodes)
-
-        # Validate if the number of edges is more than double the number of nodes
-        if self.n_edges > self.n_nodes * 2:
-            self.n_edges = self.n_nodes * 2
-            CustomText.send_warning('Changing the number of edges by excess')
-
         G = nx.DiGraph()
-        G.add_nodes_from(range(self.n_nodes))
+        G.add_nodes_from(self.l_nodes)
 
         # Ensure the graph is connected by creating a spanning tree
-        for i in range(1, n_nodes):
+        for i in range(1, self.n_nodes):
             u = random.randint(0, i - 1)
             G.add_edge(u, i)
 
         # Add additional edges randomly while ensuring no more than two incoming edges per node
         while G.number_of_edges() < self.n_edges:
-            u = random.randint(0, n_nodes - 1)
-            v = random.randint(0, n_nodes - 1)
+            u, v = random.sample(range(self.n_nodes), 2)
 
-            if u != v and G.in_degree(v) < 2 and not G.has_edge(u, v):
+            if G.in_degree(v) < 2 and not G.has_edge(u, v):
                 G.add_edge(u, v)
 
-        return G.edges
+        # Renaming the label of the nodes for beginning in 1
+        mapping = {node: node + 1 for node in G.nodes()}
+        G = nx.relabel_nodes(G, mapping)
+
+        self.l_edges = G.edges
 
     def get_edges(self):
         return self.l_edges
@@ -246,24 +249,41 @@ class GlobalTopology:
 
         # cycle
         elif v_topology == 3:
-            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+            # generate the object
+            # Create a complete graph with n_nodes
+            G = nx.cycle_graph(n_nodes, nx.DiGraph())
+            # Adjust the indices to start from 1
+            G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
+            l_edges = list(G.edges())
             return l_edges
 
         # path
-        elif v_topology == 2:
-            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+        elif v_topology == 4:
+            # generate the object
+            # Create a complete graph with n_nodes
+            G = nx.path_graph(n_nodes, nx.DiGraph())
+            # Adjust the indices to start from 1
+            G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
+            l_edges = list(G.edges())
             return l_edges
 
         # aleatory_gn
-        elif v_topology == 2:
-            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+        elif v_topology == 5:
+            # generate the object
+            # Create a complete graph with n_nodes
+            G = nx.aleatory_gn(n_nodes, nx.DiGraph())
+            # Adjust the indices to start from 1
+            G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
+            l_edges = list(G.edges())
             return l_edges
 
         # aleatory_gnc
-        elif v_topology == 2:
-            l_edges = [] = cls.grafo_completo_get_edges(n_nodes)
+        elif v_topology == 6:
+            # generate the object
+            # Create a complete graph with n_nodes
+            G = nx.aleatory_gnc(n_nodes, nx.DiGraph())
+            # Adjust the indices to start from 1
+            G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
+            l_edges = list(G.edges())
             return l_edges
 
-    @classmethod
-    def grafo_completo_get_edges(cls, n_nodes):
-        pass

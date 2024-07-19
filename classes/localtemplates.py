@@ -581,3 +581,36 @@ class AleatoryTemplate:
         o_special_cbn.o_global_topology = o_global_topology
 
         return o_special_cbn
+
+
+class LocalNetworkTemplate:
+    def __init__(self, l_variables, l_input_variables, l_output_variables,):
+        self.l_variables = l_variables
+        self.l_input_variables = l_input_variables
+        self.l_output_variables = l_output_variables
+
+    def show(self):
+        CustomText.make_title('Local Template description')
+        print("Variables List:", self.l_variables)
+        print('Input Variables List:', self.l_input_variables)
+        print('Output Variables List:', self.l_output_variables)
+
+    @staticmethod
+    def generate_template(n_variables, n_input_variables, n_output_variables):
+        # generate the list of variables
+        l_variables = list(range(1, n_variables + 1))
+        # generate the list of input variables
+        l_input_variables = random.sample(l_variables, n_input_variables)
+        # generate the list of output variables
+        l_output_variables = random.sample(l_variables, n_output_variables)
+
+        o_local_network_template = LocalNetworkTemplate(l_variables, l_input_variables, l_output_variables)
+        return o_local_network_template
+
+
+# parameters
+N_VARIABLES = 5
+N_INPUT_VARIABLES = 2
+N_OUTPUT_VARIABLES = 2
+V_TOPOLOGY = 2
+
