@@ -270,64 +270,65 @@ class PathCircleTemplate:
         return o_special_cbn
 
 
-def generate_cnf(l_internal_variables, input_coupling_signal_index, max_clauses=2, max_literals=3):
-    num_clauses = random.randint(max_clauses, max_literals)
-    cnf = []
+class CNFList:
+    @staticmethod
+    def generate_cnf(l_internal_variables, input_coupling_signal_index, max_clauses=2, max_literals=3):
+        num_clauses = random.randint(1, max_clauses)  # Ensure at least one clause is generated
+        l_cnf = []
 
-    # generate the clause for external signals
-    if input_coupling_signal_index is not None:
-        var = input_coupling_signal_index
-        if random.choice([True, False]):
-            var = -var
-        cnf.append([var])
+        # Generate the clause for external signals
+        if input_coupling_signal_index is not None:
+            var = input_coupling_signal_index
+            if random.choice([True, False]):
+                var = -var
+            l_cnf.append([var])
 
-    for i in range(num_clauses):
-        clause = []
-        # Generate additional literals in each clause, with a maximum of 3 total literals
-        while len(clause) < 3:
-            var = random.choice(l_internal_variables)
-            if var != input_coupling_signal_index and -var != input_coupling_signal_index:
-                if random.choice([True, False]):
-                    var = -var
-                clause.append(var)
+        for _ in range(num_clauses):
+            clause = []
+            while len(clause) < max_literals:
+                var = random.choice(l_internal_variables)
+                if var != input_coupling_signal_index and -var != input_coupling_signal_index:
+                    if random.choice([True, False]):
+                        var = -var
+                    clause.append(var)
 
-        # Remove redundant literals within the clause
-        clause = simplify_clause(clause)
+            # Remove redundant literals within the clause
+            clause = CNFList.simplify_clause(clause)
 
-        # Ensure the clause is not empty and has at least one literal
-        if clause:
-            cnf.append(clause)
+            # Ensure the clause is not empty and has at least one literal
+            if clause:
+                l_cnf.append(clause)
 
-    # Remove empty clauses
-    cnf = [clause for clause in cnf if clause]
+        # Remove empty clauses
+        l_cnf = [clause for clause in l_cnf if clause]
 
-    # Remove duplicate clauses
-    cnf = remove_duplicates(cnf)
+        # Remove duplicate clauses
+        l_cnf = CNFList.remove_duplicates(l_cnf)
 
-    return cnf
+        return l_cnf
+
+    @staticmethod
+    def simplify_clause(clause):
+        # Remove duplicate literals
+        clause = list(set(clause))
+
+        # Check for complementary literals (e.g., x and -x) and remove both
+        simplified_clause = []
+        for literal in clause:
+            if -literal not in clause:
+                simplified_clause.append(literal)
+
+        return simplified_clause
+
+    @staticmethod
+    def remove_duplicates(l_cnf):
+        # Convert each clause to a tuple and create a set to remove duplicates
+        unique_clauses = set(tuple(sorted(clause)) for clause in l_cnf)
+        # Convert the unique tuples back to lists
+        return [list(clause) for clause in unique_clauses]
 
 
-def simplify_clause(clause):
-    # Remove duplicate literals
-    clause = list(set(clause))
-
-    # Check for complementary literals (e.g., x and -x) and remove both
-    simplified_clause = []
-    for literal in clause:
-        if -literal not in clause:
-            simplified_clause.append(literal)
-
-    return simplified_clause
-
-
-def remove_duplicates(cnf):
-    # Convert each clause to a tuple and create a set to remove duplicates
-    unique_clauses = set(tuple(sorted(clause)) for clause in cnf)
-    # Convert the unique tuples back to lists
-    return [list(clause) for clause in unique_clauses]
-
-
-class AleatoryTemplate:
+class LocalNetworkTemplate:
     def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology, n_edges):
         self.n_var_network = n_var_network
         self.d_variable_cnf_function = d_variable_cnf_function
@@ -344,21 +345,20 @@ class AleatoryTemplate:
         print("Output variables for coupling signal:", self.l_output_var_indexes)
 
     @staticmethod
-    def generate_aleatory_template(n_var_network=5, n_input_variables=2,
-                                   n_output_variables=2, v_topology=6, n_edges=None):
-        """
-        Generates aleatory template for a local network
-        :param n_edges:
-        :param v_topology:
-        :param n_output_variables:
-        :param n_input_variables:
-        :param n_var_network:
-        :return: Dictionary of cnf function for variable and list of exit variables
-        """
+    def generate_template(n_variables, n_input_variables, n_output_variables):
+        # generate the list of variables
+        l_variables = list(range(1, n_variables + 1))
+        # generate the list of input variables
+        l_input_variables = random.sample(l_variables, n_input_variables)
+        # generate the list of output variables
+        l_output_variables = random.sample(l_variables, n_output_variables)
 
-        # Fixed Properties
-        n_max_of_clauses = 2
-        n_max_of_literals = 3
+        o_local_network_template = LocalNetworkTemplate(l_variables, l_input_variables, l_output_variables)
+        return o_local_network_template
+
+    @staticmethod
+    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6,
+                                   n_edges=None, n_max_of_clauses=2, n_max_of_literals=3):
 
         # basic properties
         l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
@@ -379,17 +379,17 @@ class AleatoryTemplate:
             else:
                 input_coupling_signal_index = None
 
-            d_variable_cnf_function[i_variable] = generate_cnf(l_internal_variables=l_internal_var_indexes,
-                                                               input_coupling_signal_index=input_coupling_signal_index,
-                                                               max_clauses=n_max_of_clauses,
-                                                               max_literals=n_max_of_literals)
+            d_variable_cnf_function[i_variable] = CNFList.generate_cnf(l_internal_variables=l_internal_var_indexes,
+                                                                       input_coupling_signal_index=input_coupling_signal_index,
+                                                                       max_clauses=n_max_of_clauses,
+                                                                       max_literals=n_max_of_literals)
 
         # Generate the object of AleatoryTemplate
-        o_aleatory_template = AleatoryTemplate(n_var_network=n_var_network,
-                                               d_variable_cnf_function=d_variable_cnf_function,
-                                               l_output_var_indexes=l_output_var_indexes,
-                                               v_topology=v_topology,
-                                               n_edges=n_edges)
+        o_aleatory_template = LocalNetworkTemplate(n_var_network=n_var_network,
+                                                   d_variable_cnf_function=d_variable_cnf_function,
+                                                   l_output_var_indexes=l_output_var_indexes,
+                                                   v_topology=v_topology,
+                                                   n_edges=n_edges)
         return o_aleatory_template
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
@@ -583,34 +583,14 @@ class AleatoryTemplate:
         return o_special_cbn
 
 
-class LocalNetworkTemplate:
-    def __init__(self, l_variables, l_input_variables, l_output_variables,):
-        self.l_variables = l_variables
-        self.l_input_variables = l_input_variables
-        self.l_output_variables = l_output_variables
-
-    def show(self):
-        CustomText.make_title('Local Template description')
-        print("Variables List:", self.l_variables)
-        print('Input Variables List:', self.l_input_variables)
-        print('Output Variables List:', self.l_output_variables)
-
-    @staticmethod
-    def generate_template(n_variables, n_input_variables, n_output_variables):
-        # generate the list of variables
-        l_variables = list(range(1, n_variables + 1))
-        # generate the list of input variables
-        l_input_variables = random.sample(l_variables, n_input_variables)
-        # generate the list of output variables
-        l_output_variables = random.sample(l_variables, n_output_variables)
-
-        o_local_network_template = LocalNetworkTemplate(l_variables, l_input_variables, l_output_variables)
-        return o_local_network_template
-
-
 # parameters
 N_VARIABLES = 5
 N_INPUT_VARIABLES = 2
 N_OUTPUT_VARIABLES = 2
 V_TOPOLOGY = 2
 
+# Example usage:
+l_internal_variables = [1, 2, 3, 4, 5]
+input_coupling_signal_index = 6
+cnf = CNFList.generate_cnf(l_internal_variables, input_coupling_signal_index)
+print(cnf)
