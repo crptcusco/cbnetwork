@@ -272,13 +272,13 @@ class PathCircleTemplate:
 
 class CNFList:
     @staticmethod
-    def generate_cnf(l_internal_variables, input_coupling_signal_index, max_clauses=2, max_literals=3):
+    def generate_cnf(l_inter_vars, input_coup_sig_index, max_clauses=2, max_literals=3):
         num_clauses = random.randint(1, max_clauses)  # Ensure at least one clause is generated
         l_cnf = []
 
         # Generate the clause for external signals
-        if input_coupling_signal_index is not None:
-            var = input_coupling_signal_index
+        if input_coup_sig_index is not None:
+            var = input_coup_sig_index
             if random.choice([True, False]):
                 var = -var
             l_cnf.append([var])
@@ -286,8 +286,8 @@ class CNFList:
         for _ in range(num_clauses):
             clause = []
             while len(clause) < max_literals:
-                var = random.choice(l_internal_variables)
-                if var != input_coupling_signal_index and -var != input_coupling_signal_index:
+                var = random.choice(l_inter_vars)
+                if var != input_coup_sig_index and -var != input_coup_sig_index:
                     if random.choice([True, False]):
                         var = -var
                     clause.append(var)
@@ -329,15 +329,62 @@ class CNFList:
 
 
 class LocalNetworkTemplate:
-    def __init__(self, n_var_network, d_variable_cnf_function, l_output_var_indexes, v_topology, n_edges):
+    def __init__(self, v_topology, n_var_network, l_edges):
         self.n_var_network = n_var_network
-        self.d_variable_cnf_function = d_variable_cnf_function
-        self.l_output_var_indexes = l_output_var_indexes
         self.v_topology = v_topology
-        self.n_edges = n_edges
+        self.n_edges = len(l_edges)
+
+        self.l_output_var_indexes = []
+        self.d_variable_cnf_function = []
+
+        if v_topology == 2:
+            # generate Aleatory template
+            self.generate_aleatory_template()
+
+        if v_topology == 3:
+            # generate circle template
+
+        if v_topology == 4:
+            # generate linear template
+
+    def generate_aleatory_template(self, n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6,
+                                   n_edges=None, n_max_of_clauses=2, n_max_of_literals=3):
+
+        # basic properties
+        l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
+        l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
+        l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
+
+        # generate the aleatory dynamic
+        d_variable_cnf_function = {}
+
+        # generate cnf function for every internal variable using generate_random_cnf
+        # Track the variables that will include the input_coupling_signal_index
+        l_input_variables = random.sample(l_internal_var_indexes, n_input_variables)
+
+        # Generate CNF function for every internal variable using generate_random_cnf
+        for i_variable in l_internal_var_indexes:
+            input_coup_sig_index = None
+            if i_variable in l_input_variables:
+                input_coup_sig_index = random.choice(l_input_coupling_signal_indexes)
+
+            d_variable_cnf_function[i_variable] = CNFList.generate_cnf(l_inter_vars=l_internal_var_indexes,
+                                                                       input_coup_sig_index=input_coup_sig_index,
+                                                                       max_clauses=n_max_of_clauses,
+                                                                       max_literals=n_max_of_literals)
+
+        # Generate the object of AleatoryTemplate
+        o_aleatory_template = LocalNetworkTemplate(n_var_network=n_var_network,
+                                                   d_variable_cnf_function=d_variable_cnf_function,
+                                                   l_output_var_indexes=l_output_var_indexes,
+                                                   v_topology=v_topology,
+                                                   n_edges=n_edges)
+        return o_aleatory_template
+
+
 
     def show(self):
-        print("Template for Aleatory CBNs")
+        print("Local Network Template CBNs")
         print("-" * 80)
         print("Local dynamic:")
         for key, value in self.d_variable_cnf_function.items():
@@ -356,41 +403,7 @@ class LocalNetworkTemplate:
         o_local_network_template = LocalNetworkTemplate(l_variables, l_input_variables, l_output_variables)
         return o_local_network_template
 
-    @staticmethod
-    def generate_aleatory_template(n_var_network=5, n_input_variables=2, n_output_variables=2, v_topology=6,
-                                   n_edges=None, n_max_of_clauses=2, n_max_of_literals=3):
 
-        # basic properties
-        l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
-        l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
-        l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
-
-        # generate the aleatory dynamic
-        d_variable_cnf_function = {}
-
-        # generate cnf function for every internal variable using generate_random_cnf
-        # Track the variables that will include the input_coupling_signal_index
-        variables_with_coupling_index = random.sample(l_internal_var_indexes, n_input_variables)
-
-        # Generate CNF function for every internal variable using generate_random_cnf
-        for i_variable in l_internal_var_indexes:
-            if i_variable in variables_with_coupling_index:
-                input_coupling_signal_index = random.choice(l_input_coupling_signal_indexes)
-            else:
-                input_coupling_signal_index = None
-
-            d_variable_cnf_function[i_variable] = CNFList.generate_cnf(l_internal_variables=l_internal_var_indexes,
-                                                                       input_coupling_signal_index=input_coupling_signal_index,
-                                                                       max_clauses=n_max_of_clauses,
-                                                                       max_literals=n_max_of_literals)
-
-        # Generate the object of AleatoryTemplate
-        o_aleatory_template = LocalNetworkTemplate(n_var_network=n_var_network,
-                                                   d_variable_cnf_function=d_variable_cnf_function,
-                                                   l_output_var_indexes=l_output_var_indexes,
-                                                   v_topology=v_topology,
-                                                   n_edges=n_edges)
-        return o_aleatory_template
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
         # select the internal variables

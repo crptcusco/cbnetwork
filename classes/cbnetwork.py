@@ -4,6 +4,7 @@ from classes.globaltopology import GlobalTopology
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
 from classes.directededge import DirectedEdge
+from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 
 # external imports
@@ -791,13 +792,23 @@ class CBN:
         print(d_global_scenes_count)
 
     @classmethod
-    def cbn_generator(cls, v_topology, n_local_variables, local_template=False, base_graph=None):
-        # GENERATE THE LOCAL DYNAMIC
-        o_local_template = LocalNetworkTemplate.generate_template(n_variables=N_VARIABLES,
-                                                                  n_input_variables=N_INPUT_VARIABLES,
-                                                                  n_output_variables=N_OUTPUT_VARIABLES)
-
+    def cbn_generator(cls, v_topology, n_local_networks, n_edges=None, base_graph=None):
         # GENERATE THE GLOBAL TOPOLOGY
-        l_global_edges = GlobalTopology.generate_edges(v_topology=V_TOPOLOGY, n_nodes=10, n_edges=10,
-                                                       base_graph=None, seed=None)
+        l_global_edges = GlobalTopology.generate_edges(v_topology=v_topology, n_nodes=n_local_networks,
+                                                       n_edges=None, base_graph=None, seed=None)
+
+        # GENERATE THE LOCAL DYNAMIC
+        o_local_template = LocalNetworkTemplate(v_topology=v_topology, n_var_network=n_local_networks,
+                                                l_global_edges=l_global_edges):
+
+                            generate_template(n_variables=N_VARIABLES,
+                                                                  n_input_variables=N_INPUT_VARIABLES,
+                                                                  n_output_variables=N_OUTPUT_VARIABLES))
+
+
+
+
+
+
+
 

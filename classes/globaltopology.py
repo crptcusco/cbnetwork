@@ -286,4 +286,5 @@ class GlobalTopology:
             G = nx.relabel_nodes(G, {i: i + 1 for i in range(9)})
             l_edges = list(G.edges())
             return l_edges
-
+        else:
+            return l_edges
