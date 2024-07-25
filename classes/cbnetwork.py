@@ -28,6 +28,7 @@ class CBN:
         l_global_scenes (list): List of global scenes.
         o_global_topology (GlobalTopology): Global topology object.
     """
+
     def __init__(self, l_local_networks, l_directed_edges):
         # basic attributes
         self.l_local_networks = l_local_networks
@@ -43,13 +44,13 @@ class CBN:
         self.o_global_topology = None
 
     @staticmethod
-    def generate_local_networks_indexes_variables(n_local_networks, n_var_network):
+    def generate_local_networks_indexes_variables(n_local_networks, n_vars_network):
         """
         Generates local networks and their variable indexes.
 
         Args:
             n_local_networks (int): Number of local networks to generate.
-            n_var_network (int): Number of variables per network.
+            n_vars_network (int): Number of variables per network.
 
         Returns:
             list: List of LocalNetwork objects.
@@ -58,13 +59,13 @@ class CBN:
         v_cont_var = 1
         for v_num_network in range(1, n_local_networks + 1):
             # generate the variables of the networks
-            l_var_intern = list(range(v_cont_var, v_cont_var + n_var_network))
+            l_var_intern = list(range(v_cont_var, v_cont_var + n_vars_network))
             # create the Local Network object
             o_local_network = LocalNetwork(v_num_network, l_var_intern)
             # add the local network object to the list
             l_local_networks.append(o_local_network)
             # update the index of the variables
-            v_cont_var += n_var_network
+            v_cont_var += n_vars_network
         return l_local_networks
 
     @staticmethod
@@ -791,24 +792,119 @@ class CBN:
         # Print the dictionary of combinations and their counts
         print(d_global_scenes_count)
 
-    @classmethod
-    def cbn_generator(cls, v_topology, n_local_networks, n_edges=None, base_graph=None):
+    @staticmethod
+    def cbn_generator(v_topology, n_local_networks, n_vars_network, n_input_variables, n_output_variables,
+                      n_max_of_clauses=None, n_max_of_literals=None, n_edges=None, base_graph=None):
+
+        """
+        Generate a special CBN
+
+        Args:
+            n_output_variables:
+            n_input_variables:
+            n_vars_network:
+            n_max_of_literals:
+            n_max_of_clauses:
+            v_topology: The topology of the CBN cam be 'aleatory'
+            n_local_networks: The number of local networks
+            n_edges: the number of edges between local networks
+            base_graph: a graph who is base for the new graph
+        Returns:
+            A CBN generated from a template
+
+        """
+
         # GENERATE THE GLOBAL TOPOLOGY
         l_global_edges = GlobalTopology.generate_edges(v_topology=v_topology, n_nodes=n_local_networks,
-                                                       n_edges=None, base_graph=None, seed=None)
+                                                       n_edges=n_edges, base_graph=base_graph, seed=None)
 
-        # GENERATE THE LOCAL DYNAMIC
-        o_local_template = LocalNetworkTemplate(v_topology=v_topology, n_var_network=n_local_networks,
-                                                l_global_edges=l_global_edges):
+        # GENERATE THE LOCAL NETWORK TEMPLATE
+        o_template = LocalNetworkTemplate(v_topology=v_topology,
+                                          n_vars_network=n_vars_network,
+                                          n_input_variables=n_input_variables,
+                                          n_output_variables=n_output_variables,
+                                          n_max_of_clauses=n_max_of_clauses,
+                                          n_max_of_literals=n_max_of_literals)
 
-                            generate_template(n_variables=N_VARIABLES,
-                                                                  n_input_variables=N_INPUT_VARIABLES,
-                                                                  n_output_variables=N_OUTPUT_VARIABLES))
+        # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
+        o_cbn = CBN.generate_cbn_from_template(v_topology=v_topology,
+                                               n_local_networks=n_local_networks,
+                                               n_vars_network=n_vars_network,
+                                               o_template=o_template,
+                                               l_global_edges=l_global_edges)
 
+        return o_cbn
 
+        # self.l_edges = l_global_edges
+        # self.n_edges = len(l_global_edges)
+        # n_var_network=n_var_network,
+        #                                        d_variable_cnf_function=d_variable_cnf_function,
+        #                                        l_output_var_indexes=l_output_var_indexes,
+        #                                        v_topology=v_topology,
+        #                                        n_edges=n_edges)
 
+        # # GENERATE THE LOCAL DYNAMIC
+        # o_local_template = LocalNetworkTemplate(v_topology=v_topology, n_var_network=n_local_networks,
+        #                                         l_global_edges=l_global_edges):
+        #
+        #                     generate_template(n_variables=N_VARIABLES,
+        #                                                           n_input_variables=N_INPUT_VARIABLES,
+        #                                                           n_output_variables=N_OUTPUT_VARIABLES))
 
+    @staticmethod
+    def generate_cbn_from_template(v_topology, n_local_networks, n_vars_network, o_template, l_global_edges):
 
+        # generate the local networks with the indexes and variables (without relations or dynamics)
+        l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks=n_local_networks,
+                                                                         n_vars_network=n_vars_network)
 
+        # generate the directed edges between the local networks
+        l_directed_edges = []
 
+        # Get the last index of the variables for the indexes of the directed edges
+        i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
 
+        # generate the directed edges given the last variable generated and the selected output variables
+        i_directed_edge = 1
+        for relation in l_global_edges:
+            output_local_network = relation[0]
+            input_local_network = relation[1]
+
+            # get the output variables from template
+            l_output_variables = o_template.get_output_variables_from_template(output_local_network, l_local_networks)
+
+            # generate the coupling function
+            coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
+            # generate the Directed-Edge object
+            o_directed_edge = DirectedEdge(index=i_directed_edge,
+                                           index_variable_signal=i_last_variable,
+                                           input_local_network=input_local_network,
+                                           output_local_network=output_local_network,
+                                           l_output_variables=l_output_variables,
+                                           coupling_function=coupling_function)
+            i_last_variable += 1
+            i_directed_edge += 1
+            # add the directed-edge object to the list
+            l_directed_edges.append(o_directed_edge)
+
+        # Process the coupling signals for every local network
+        for o_local_network in l_local_networks:
+            # find the signals for every local network
+            l_input_signals = CBN.find_input_edges_by_network_index(index=o_local_network.index,
+                                                                    l_directed_edges=l_directed_edges)
+            # process the input signals of the local network
+            o_local_network.process_input_signals(l_input_signals=l_input_signals)
+
+        # generate dynamic of the local networks with template
+        l_local_networks = o_template.generate_local_dynamic_with_template(l_local_networks=l_local_networks,
+                                                                           l_directed_edges=l_directed_edges,
+                                                                           v_topology=v_topology)
+
+        # generate the special coupled boolean network
+        o_cbn = CBN(l_local_networks=l_local_networks,
+                    l_directed_edges=l_directed_edges)
+
+        # add the Global Topology Object
+        o_cbn.o_global_topology = o_global_topology
+
+        return o_cbn

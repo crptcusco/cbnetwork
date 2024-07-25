@@ -4,7 +4,6 @@ import pandas as pd
 import pickle
 
 # Local imports
-from classes.localtemplates import AleatoryTemplate
 from classes.utils.customtext import CustomText
 
 # Experiment parameters

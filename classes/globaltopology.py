@@ -69,23 +69,13 @@ class GlobalTopology:
         6: "aleatory_gnc"
     }
 
-    def __init__(self, n_nodes, v_topology=1, n_edges=None, o_graph=None, seed=None):
-        """
-        Initialize the CBNTopology class.
-        :param seed: Optional; Seed for random number generator.
-        """
+    def __init__(self, l_edges):
+        self.l_edges = l_edges
+        o_graph = nx.DiGraph().add_edges_from(self.l_edges)
 
-        self.n_nodes = n_nodes
-        self.v_topology = v_topology
-        self.n_edges = n_edges  # the number of edges that have the graph
         self.o_graph = o_graph  # A networkx Graph object to make the visualizations
-
         self.d_network_color = {}  # Dictionary with the colors
         self.generate_local_nets_colors()  # Generate the colors for every local network
-
-        self.seed = seed
-        if seed is not None:
-            random.seed(seed)
 
     @classmethod
     def show_allowed_topologies(cls):
