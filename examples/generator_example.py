@@ -6,7 +6,7 @@ from classes.cbnetwork import CBN
 # Parameters
 N_LOCAL_NETWORKS = 6
 N_VARS_NETWORK = 5
-V_TOPOLOGY = 2
+V_TOPOLOGY = 4
 N_EDGES = 10
 N_INPUT_VARS = 2
 N_OUTPUT_VARS = 2

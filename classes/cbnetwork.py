@@ -913,14 +913,14 @@ class CBN:
             CustomText.print_simple_line()
             print("Local Network:", o_local_network.index)
 
-            # find the directed edges by network index
-            l_input_signals_by_network = CBN.find_input_edges_by_network_index(index=o_local_network.index,
-                                                                               l_directed_edges=l_directed_edges)
+            # # find the directed edges by network index
+            # l_input_signals_by_network = CBN.find_input_edges_by_network_index(index=o_local_network.index,
+            #                                                                    l_directed_edges=l_directed_edges)
 
             # add the variable index of the directed edges
-            for o_signal in l_input_signals_by_network:
-                o_local_network.l_var_exterm.append(o_signal.index_variable)
-            o_local_network.l_var_total = o_local_network.l_var_intern + o_local_network.l_var_exterm
+            # for o_signal in l_input_signals_by_network:
+            #     o_local_network.l_var_exterm.append(o_signal.index_variable)
+            # o_local_network.l_var_total = o_local_network.l_var_intern + o_local_network.l_var_exterm
 
             # generate the function description of the variables
             des_funct_variables = []

@@ -1,6 +1,4 @@
-# external imports
 import random
-
 
 class CNFList:
     @staticmethod
@@ -37,6 +35,17 @@ class CNFList:
         # Remove duplicate clauses
         l_cnf = CNFList.remove_duplicates(l_cnf)
 
+        # Ensure there's at least one non-empty clause
+        if not l_cnf:
+            # If all generated clauses are empty, add at least one valid clause
+            clause = []
+            while len(clause) < max_literals:
+                var = random.choice(l_inter_vars)
+                if random.choice([True, False]):
+                    var = -var
+                clause.append(var)
+            l_cnf.append(clause)
+
         return l_cnf
 
     @staticmethod
@@ -58,6 +67,7 @@ class CNFList:
         unique_clauses = set(tuple(sorted(clause)) for clause in l_cnf)
         # Convert the unique tuples back to lists
         return [list(clause) for clause in unique_clauses]
+
 
 
 # parameters
