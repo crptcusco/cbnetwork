@@ -63,7 +63,7 @@ class GlobalTopology:
 
         elif v_topology == 2:
             # Generar un grafo aleatorio con la topología fija
-            return AleatoryFixedDigraph(n_nodes=n_nodes, n_edges=n_edges, o_base_global_topology=o_base_global_topology)
+            return AleatoryFixedDigraph(n_nodes=n_nodes, n_edges=n_edges)
 
         elif v_topology == 3:
             # Generar un grafo cíclico
@@ -108,7 +108,7 @@ class GlobalTopology:
         ax.axis("off")
 
     def get_edges(self):
-        return list(self.o_graph.edges())
+        return self.l_edges
 
     def get_nodes(self):
         return set(self.o_graph.nodes())
@@ -143,20 +143,15 @@ class CompleteDigraph(GlobalTopology):
         l_edges = list(G.edges())
         super().__init__(v_topology=1, l_edges=l_edges)  # Assuming v_topology=1 represents complete graph
 
-    def get_edges(self):
-        return self.l_edges
-
 
 class AleatoryFixedDigraph(GlobalTopology):
-    def __init__(self, n_nodes, n_edges=None, o_base_global_topology=None, add_edges=False, add_node=False):
-
+    def __init__(self, n_nodes, n_edges=None):
         self.n_nodes = n_nodes
         self.l_nodes = list(range(1, n_nodes + 1))
         self.n_edges = n_edges if n_edges is not None else n_nodes
         self.l_edges = []
         self.generate_edges()
-
-        super().__init__(v_topology=2, l_edges=self.l_edges)  # Assuming v_topology=2 represents this type of graph
+        super().__init__(v_topology=2, l_edges=self.l_edges)
 
     def generate_edges(self):
         G = nx.DiGraph()
@@ -176,13 +171,7 @@ class AleatoryFixedDigraph(GlobalTopology):
 
         self.l_edges = list(G.edges())
 
-    def get_edges(self):
-        return self.l_edges
-
-    def add_edge(self, base_graph):
-        self.l_edges = base_graph.get_edges()
-        self.l_nodes = list(base_graph.get_nodes())
-
+    def add_edge(self):
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
         G.add_edges_from(self.l_edges)
@@ -193,31 +182,55 @@ class AleatoryFixedDigraph(GlobalTopology):
                 G.add_edge(u, v)
                 self.l_edges.append((u, v))
                 break
+
         self.n_edges = len(self.l_edges)
+        self.update_parent_graph()
 
-    def add_node(self, base_graph):
-
-    def add_edges_for_new_nodes(self, n_nodes, o_base_global_topology):
-        """
-        Agregar aristas para los nuevos nodos cuando se aumenta el número de nodos en el grafo.
-        """
-        existing_nodes = len(o_base_global_topology.get_nodes())
-        new_nodes = list(range(existing_nodes + 1, n_nodes + 1))
-        self.l_nodes.extend(new_nodes)
-
+    def add_node(self):
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
         G.add_edges_from(self.l_edges)
 
-        # Asegurar que el grafo esté conectado con los nuevos nodos
-        for new_node in new_nodes:
-            u = random.choice(self.l_nodes[:existing_nodes])
-            G.add_edge(u, new_node)
-            self.l_edges.append((u, new_node))
+        new_node = max(self.l_nodes) + 1
+        self.l_nodes.append(new_node)
+        G.add_node(new_node)
 
-        while G.number_of_edges() < self.n_edges:
-            u, v = random.sample(self.l_nodes, 2)
-            if G.in_degree(v) < 2 and not G.has_edge(u, v):
-                G.add_edge(u, v)
-                self.l_edges.append((u, v))
+        # Remove an edge
+        edge_to_remove = random.choice(list(G.edges))
+        G.remove_edge(*edge_to_remove)
+        self.l_edges.remove(edge_to_remove)
 
+        # Add an edge to the new node
+        while True:
+            u = random.choice(self.l_nodes[:-1])
+            if not G.has_edge(u, new_node):
+                G.add_edge(u, new_node)
+                self.l_edges.append((u, new_node))
+                break
+
+        # Add an edge from the new node
+        while True:
+            v = random.choice(self.l_nodes[:-1])
+            if G.in_degree(v) < 2 and not G.has_edge(new_node, v):
+                G.add_edge(new_node, v)
+                self.l_edges.append((new_node, v))
+                break
+
+        # Ensure all nodes are connected
+        for node in self.l_nodes:
+            if G.in_degree(node) == 0 and G.out_degree(node) == 0:
+                u = random.choice([n for n in self.l_nodes if n != node])
+                G.add_edge(u, node)
+                self.l_edges.append((u, node))
+
+        self.n_nodes += 1
+        self.n_edges = len(self.l_edges)
+        self.update_parent_graph()
+
+    def update_parent_graph(self):
+        self.o_graph = nx.DiGraph()
+        self.o_graph.add_nodes_from(self.l_nodes)
+        self.o_graph.add_edges_from(self.l_edges)
+
+    def get_edges(self):
+        return self.l_edges
