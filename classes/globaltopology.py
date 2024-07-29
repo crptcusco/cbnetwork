@@ -120,7 +120,30 @@ class PathDigraph(GlobalTopology):
         # Ajustar los índices para que empiecen desde 1
         G = nx.relabel_nodes(G, {i: i + 1 for i in range(n_nodes)})
         l_edges = list(G.edges())
-        super().__init__(v_topology=4, l_edges=l_edges)
+        self.n_nodes = n_nodes
+        super().__init__(v_topology=4, l_edges=l_edges)  # Suponiendo que v_topology=4 representa grafo de camino
+
+    def add_node(self):
+        """
+        Agrega un nuevo nodo al grafo de camino y ajusta las aristas para mantener la estructura lineal.
+        """
+        # Determinar el ID del nuevo nodo
+        new_node = self.n_nodes + 1
+
+        # Determinar el último nodo
+        last_node = self.n_nodes
+
+        # Añadir el nuevo nodo al grafo
+        self.o_graph.add_node(new_node)
+
+        # Conectar el último nodo al nuevo nodo
+        self.o_graph.add_edge(last_node, new_node)
+
+        # Actualizar la lista de aristas
+        self.l_edges = list(self.o_graph.edges())
+
+        # Incrementar el conteo de nodos
+        self.n_nodes += 1
 
 
 class CycleDigraph(GlobalTopology):
@@ -130,17 +153,70 @@ class CycleDigraph(GlobalTopology):
         # Ajustar los índices para que empiecen desde 1
         G = nx.relabel_nodes(G, {i: i + 1 for i in range(n_nodes)})
         l_edges = list(G.edges())
-        super().__init__(v_topology=3, l_edges=l_edges)
+        self.n_nodes = n_nodes
+        super().__init__(v_topology=3, l_edges=l_edges)  # Suponiendo que v_topology=3 representa grafo cíclico
+
+    def add_node(self):
+        """
+        Agrega un nuevo nodo al grafo cíclico y ajusta las aristas para mantener la estructura cíclica.
+        """
+        # Determinar el ID del nuevo nodo
+        new_node = self.n_nodes + 1
+
+        # Determinar el último nodo y el primer nodo
+        last_node = self.n_nodes
+        first_node = 1
+
+        # Eliminar la arista que cierra el ciclo actual
+        self.o_graph.remove_edge(last_node, first_node)
+
+        # Añadir el nuevo nodo al grafo
+        self.o_graph.add_node(new_node)
+
+        # Conectar el nuevo nodo al último nodo
+        self.o_graph.add_edge(last_node, new_node)
+
+        # Conectar el nuevo nodo al primer nodo
+        self.o_graph.add_edge(new_node, first_node)
+
+        # Actualizar la lista de aristas
+        self.l_edges = list(self.o_graph.edges())
+
+        # Incrementar el conteo de nodos
+        self.n_nodes += 1
 
 
 class CompleteDigraph(GlobalTopology):
     def __init__(self, n_nodes):
-        # Create a complete graph with n_nodes
+        # Crear un grafo completo con n_nodes nodos
         G = nx.complete_graph(n_nodes, create_using=nx.DiGraph())
-        # Adjust the indices to start from 1
+        # Ajustar los índices para que empiecen desde 1
         G = nx.relabel_nodes(G, {i: i + 1 for i in G.nodes()})
         l_edges = list(G.edges())
-        super().__init__(v_topology=1, l_edges=l_edges)  # Assuming v_topology=1 represents complete graph
+        self.n_nodes = n_nodes
+        super().__init__(v_topology=1, l_edges=l_edges)  # Suponiendo que v_topology=1 representa grafo completo
+
+    def add_node(self):
+        """
+        Agrega un nuevo nodo al grafo completo y lo conecta con todos los nodos existentes.
+        """
+        # Determinar el ID del nuevo nodo
+        new_node = max(self.o_graph.nodes()) + 1
+
+        # Agregar el nuevo nodo al grafo
+        self.o_graph.add_node(new_node)
+
+        # Conectar el nuevo nodo con todos los nodos existentes
+        for node in self.o_graph.nodes():
+            if node != new_node:
+                self.o_graph.add_edge(new_node, node)
+                self.o_graph.add_edge(node, new_node)
+
+        # Actualizar la lista de aristas
+        self.l_edges = list(self.o_graph.edges())
+
+        # Incrementar el conteo de nodos
+        self.n_nodes += 1
 
 
 class AleatoryFixedDigraph(GlobalTopology):
