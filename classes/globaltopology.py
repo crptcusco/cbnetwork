@@ -41,13 +41,12 @@ class GlobalTopology:
             print(key, "-", value)
 
     @classmethod
-    def generate_sample_topology(cls, v_topology, n_nodes, n_edges=None, o_base_global_topology=None):
+    def generate_sample_topology(cls, v_topology, n_nodes, n_edges=None):
         """
         Genera una topología global basada en el tipo de topología especificado.
         :param v_topology: Tipo de topología a generar.
         :param n_nodes: Número de nodos en la topología.
         :param n_edges: Número de aristas en la topología (si aplica).
-        :param o_base_global_topology: Objeto de la topología global base (si aplica).
         :return: Instancia de la clase de topología específica.
         """
         if v_topology not in cls.allowed_topologies.keys():

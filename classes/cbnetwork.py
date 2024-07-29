@@ -811,10 +811,8 @@ class CBN:
         """
 
         # GENERATE THE GLOBAL TOPOLOGY
-        o_global_topology = GlobalTopology.generate_sample_topology(v_topology=v_topology,
-                                                                    n_nodes=n_local_networks,
-                                                                    n_edges=n_edges,
-                                                                    o_base_global_topology=base_graph)
+        o_global_topology = GlobalTopology.generate_sample_topology(v_topology=v_topology, n_nodes=n_local_networks,
+                                                                    n_edges=n_edges)
 
         # GENERATE THE LOCAL NETWORK TEMPLATE
         o_template = LocalNetworkTemplate(v_topology=v_topology,
