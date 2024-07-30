@@ -5,12 +5,15 @@ import time
 import pandas as pd
 import pickle
 
+from classes.cbnetwork import CBN
+
 # Agregar el directorio principal del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # local imports
-from classes.localtemplates import AleatoryTemplate
+from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
+from classes.globaltopology import GlobalTopology
 
 """
 Experiment 6 - Test the aleatory CBNs with different number of local networks
@@ -20,12 +23,12 @@ Experiment 6 - Test the aleatory CBNs with different number of local networks
 N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
-N_VAR_NETWORK = 5
-N_OUTPUT_VARIABLES = 2
-N_INPUT_VARIABLES = 2
+N_VARS_NETWORK = 5
+N_OUTPUT_VARS = 2
+N_INPUT_VARS = 2
 V_TOPOLOGY = 2
-N_CLAUSES_FUNCTION = 2
-# N_LITERALS_FUNCTION = 3
+N_MAX_CLAUSES = 2
+N_MAX_LITERALS = 2
 n_edges = 3
 
 # verbose parameters
@@ -66,27 +69,32 @@ if os.path.exists(file_path):
 
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
-    # generate the aleatory local network template object
-    o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
-                                                                      v_topology=V_TOPOLOGY)
-    old_o_graph = None
+
+    # GENERATE THE LOCAL NETWORK TEMPLATE
+    o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
+                                      n_vars_network=N_VARS_NETWORK,
+                                      n_input_variables=N_INPUT_VARS,
+                                      n_output_variables=N_OUTPUT_VARS,
+                                      n_max_of_clauses=N_MAX_CLAUSES,
+                                      n_max_of_literals=N_MAX_LITERALS)
+
+    # GENERATE THE GLOBAL TOPOLOGY
+    o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
+                                                                n_nodes=N_LOCAL_NETWORKS_MIN,
+                                                                n_edges=n_edges)
+
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
         n_edges = n_local_networks
         l_data_sample = []
         print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
-        print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VAR_NETWORK}")
+        print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VARS_NETWORK}")
 
-        # If it is the first number of edges, generate a linear CBN from the template
-        if old_o_graph is None:
-            o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                   n_local_networks=n_local_networks,
-                                                                   n_edges=n_edges)
-        # Update the number of directed edges
-        else:
-            o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                   n_local_networks=n_local_networks,
-                                                                   n_edges=n_edges,
-                                                                   o_base_graph=old_o_graph)
+        # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
+        o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
+                                               n_local_networks=n_local_networks,
+                                               n_vars_network=N_VARS_NETWORK,
+                                               o_template=o_template,
+                                               l_global_edges=o_global_topology.l_edges)
 
         # find attractors
         v_begin_find_attractors = time.time()
@@ -149,6 +157,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
         # Close the file
         file.close()
         print("Pickle object saved in:", pickle_path)
+
+        # add node to topology
+        o_global_topology.add_node()
 
         CustomText.print_duplex_line()
     CustomText.print_stars()
