@@ -29,7 +29,7 @@ class CBN:
     """
 
     def __init__(self, l_local_networks, l_directed_edges):
-        # basic attributes
+        # 1_manual attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
 
@@ -41,205 +41,6 @@ class CBN:
 
         # graphs
         self.o_global_topology = None
-
-    @staticmethod
-    def generate_local_networks_indexes_variables(n_local_networks, n_vars_network):
-        """
-        Generates local networks and their variable indexes.
-
-        Args:
-            n_local_networks (int): Number of local networks to generate.
-            n_vars_network (int): Number of variables per network.
-
-        Returns:
-            list: List of LocalNetwork objects.
-        """
-        l_local_networks = []
-        v_cont_var = 1
-        for v_num_network in range(1, n_local_networks + 1):
-            # generate the variables of the networks
-            l_var_intern = list(range(v_cont_var, v_cont_var + n_vars_network))
-            # create the Local Network object
-            o_local_network = LocalNetwork(v_num_network, l_var_intern)
-            # add the local network object to the list
-            l_local_networks.append(o_local_network)
-            # update the index of the variables
-            v_cont_var += n_vars_network
-        return l_local_networks
-
-    @staticmethod
-    def generate_directed_edges(i_last_variable, l_local_networks, l_relations, n_output_variables=2):
-        """
-        Generates directed edges based on local networks and their relations.
-
-        Args:
-            i_last_variable (int): Index of the last variable.
-            l_local_networks (list): List of LocalNetwork objects.
-            l_relations (list): List of tuples representing relations between local networks.
-            n_output_variables (int, optional): Number of output variables. Defaults to 2.
-
-        Returns:
-            list: List of DirectedEdge objects.
-        """
-        l_directed_edges = []
-        i_directed_edge = i_last_variable + 1
-        index_edge = 1
-
-        for o_local_network in l_local_networks:
-            l_local_networks_co = []
-            for t_relation in l_relations:
-                if t_relation[1] == o_local_network.index:
-                    o_local_network_aux = next(filter(lambda x: x.index == t_relation[0], l_local_networks), None)
-                    l_local_networks_co.append(o_local_network_aux)
-
-            for o_local_network_co in l_local_networks_co:
-                l_output_variables = random.sample(o_local_network_co.l_var_intern, n_output_variables)
-                if n_output_variables == 1:
-                    coupling_function = l_output_variables[0]
-                else:
-                    coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
-
-                o_directed_edge = DirectedEdge(index_edge, i_directed_edge, o_local_network.index,
-                                               o_local_network_co.index, l_output_variables, coupling_function)
-                l_directed_edges.append(o_directed_edge)
-                i_directed_edge += 1
-                index_edge += 1
-
-        return l_directed_edges
-
-    @staticmethod
-    def find_input_edges_by_network_index(index, l_directed_edges):
-        """
-        Finds all input edges for a given network index.
-
-        Args:
-            index (int): The index of the local network.
-            l_directed_edges (list): List of DirectedEdge objects.
-
-        Returns:
-            list: List of DirectedEdge objects that are input edges for the specified network index.
-        """
-        return [edge for edge in l_directed_edges if edge.input_local_network == index]
-
-    @staticmethod
-    def find_output_edges_by_network_index(index, l_directed_edges):
-        """
-        Finds all output edges for a given network index.
-
-        Args:
-            index (int): The index of the local network.
-            l_directed_edges (list): List of DirectedEdge objects.
-
-        Returns:
-            list: List of DirectedEdge objects that are output edges for the specified network index.
-        """
-        return [edge for edge in l_directed_edges if edge.output_local_network == index]
-
-    @staticmethod
-    def generate_local_networks_variables_dynamic(l_local_networks, l_directed_edges):
-        """
-        Generates the dynamics for each local network by creating internal variables and their clauses.
-
-        Args:
-            l_local_networks (list): List of LocalNetwork objects.
-            l_directed_edges (list): List of DirectedEdge objects.
-
-        Returns:
-            list: List of updated LocalNetwork objects with dynamic variables.
-        """
-
-        # the max number of clauses and literals is fixed in 2 and 3 respectively
-        NUMBER_MAX_OF_CLAUSES = 2
-        NUMBER_MAX_OF_LITERALS = 3
-
-        l_local_networks_updated = []
-        for o_local_network in l_local_networks:
-            l_aux_variables = []
-            l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
-            for o_signal in l_input_signals:
-                l_aux_variables.append(o_signal.index_variable)
-            l_aux_variables.extend(o_local_network.l_var_intern)
-
-            des_funct_variables = []
-            for i_local_variable in o_local_network.l_var_intern:
-                l_clauses_node = []
-                for _ in range(randint(1, NUMBER_MAX_OF_CLAUSES)):
-                    v_num_variable = randint(1, NUMBER_MAX_OF_LITERALS)
-                    l_literals_variables = random.sample(l_aux_variables, v_num_variable)
-                    l_clauses_node.append(l_literals_variables)
-
-                o_internal_variable = InternalVariable(i_local_variable, l_clauses_node)
-                des_funct_variables.append(o_internal_variable)
-
-            o_local_network.des_funct_variables = des_funct_variables.copy()
-            l_local_networks_updated.append(o_local_network)
-            CustomText.make_sub_title(f"Local network created : {o_local_network.index}")
-
-        return l_local_networks_updated
-
-    @staticmethod
-    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, l_edges, n_output_variables=2,
-                                          n_input_variables=2, n_edges=None, local_template=None):
-        """
-        Generates an instance of a CBN.
-
-        Args:
-            n_local_networks (int): Number of local networks to generate.
-            n_var_network (int): Number of variables per network.
-            v_topology (int): Type of topology for the CBN.
-            l_edges (list): List of global edges.
-            n_output_variables (int): Number of output variables.
-            n_input_variables (int): Number of input variables.
-            n_edges (int): Number of edges in the CBN.
-            local_template (AleatoryTemplate): Template for local networks.
-
-        Returns:
-            CBN: The generated CBN object.
-        """
-
-        CustomText.make_title('CBN GENERATION')
-
-        # generate the local network dynamic
-        # if the template is None generated an aleatory dynamic for the variables
-        if local_template is None:
-            # generate the local networks with the indexes and variables (without relations or dynamics)
-            l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, n_var_network)
-
-            # generate the CBN topology
-            o_global_topology = GlobalTopology(v_topology=v_topology, l_edges=l_edges)
-            o_global_topology.generate_networkx_graph()
-            l_relations = o_global_topology.get_edges()
-
-            # search the last variable from the local network variables
-            i_last_variable = l_local_networks[-1].l_var_intern[-1]
-
-            # generate the directed edges given the last variable generated
-            l_directed_edges = CBN.generate_directed_edges(i_last_variable=i_last_variable,
-                                                           l_local_networks=l_local_networks,
-                                                           l_relations=l_relations,
-                                                           n_output_variables=n_output_variables)
-
-            # Process the coupling signals for every local network
-            for o_local_network in l_local_networks:
-                # find the signals for every local network
-                l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
-                o_local_network.process_input_signals(l_input_signals)
-
-            l_local_networks = CBN.generate_local_networks_variables_dynamic(l_local_networks=l_local_networks,
-                                                                             l_directed_edges=l_directed_edges)
-
-            # create the cbn object
-            o_cbn = CBN(l_local_networks, l_directed_edges)
-            # add the Global Topology Object
-            o_cbn.o_global_topology = o_global_topology
-            return o_cbn
-
-        # if you have a template we use the template for the variables dynamics
-        else:
-            o_cbn = local_template.generate_cbn_from_template(v_topology=v_topology,
-                                                              n_local_networks=n_local_networks,
-                                                              n_edges=n_edges)
-            return o_cbn
 
     def process_output_signals(self):
         # update output signals for every local network
@@ -788,6 +589,199 @@ class CBN:
         # Print the dictionary of combinations and their counts
         print(d_global_scenes_count)
 
+    # OLD GENERATOR
+    @staticmethod
+    def generate_local_networks_indexes_variables(n_local_networks, n_vars_network):
+        """
+        Generates local networks and their variable indexes.
+
+        Args:
+            n_local_networks (int): Number of local networks to generate.
+            n_vars_network (int): Number of variables per network.
+
+        Returns:
+            list: List of LocalNetwork objects.
+        """
+        l_local_networks = []
+        v_cont_var = 1
+        for v_num_network in range(1, n_local_networks + 1):
+            # generate the variables of the networks
+            l_var_intern = list(range(v_cont_var, v_cont_var + n_vars_network))
+            # create the Local Network object
+            o_local_network = LocalNetwork(v_num_network, l_var_intern)
+            # add the local network object to the list
+            l_local_networks.append(o_local_network)
+            # update the index of the variables
+            v_cont_var += n_vars_network
+        return l_local_networks
+
+    @staticmethod
+    def generate_directed_edges(i_last_variable, l_local_networks, l_relations, n_output_variables=2):
+        """
+        Generates directed edges based on local networks and their relations.
+
+        Args:
+            i_last_variable (int): Index of the last variable.
+            l_local_networks (list): List of LocalNetwork objects.
+            l_relations (list): List of tuples representing relations between local networks.
+            n_output_variables (int, optional): Number of output variables. Defaults to 2.
+
+        Returns:
+            list: List of DirectedEdge objects.
+        """
+        l_directed_edges = []
+        i_directed_edge = i_last_variable + 1
+        index_edge = 1
+
+        for o_local_network in l_local_networks:
+            l_local_networks_co = []
+            for t_relation in l_relations:
+                if t_relation[1] == o_local_network.index:
+                    o_local_network_aux = next(filter(lambda x: x.index == t_relation[0], l_local_networks), None)
+                    l_local_networks_co.append(o_local_network_aux)
+
+            for o_local_network_co in l_local_networks_co:
+                l_output_variables = random.sample(o_local_network_co.l_var_intern, n_output_variables)
+                if n_output_variables == 1:
+                    coupling_function = l_output_variables[0]
+                else:
+                    coupling_function = " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
+
+                o_directed_edge = DirectedEdge(index_edge, i_directed_edge, o_local_network.index,
+                                               o_local_network_co.index, l_output_variables, coupling_function)
+                l_directed_edges.append(o_directed_edge)
+                i_directed_edge += 1
+                index_edge += 1
+
+        return l_directed_edges
+
+    @staticmethod
+    def find_input_edges_by_network_index(index, l_directed_edges):
+        """
+        Finds all input edges for a given network index.
+
+        Args:
+            index (int): The index of the local network.
+            l_directed_edges (list): List of DirectedEdge objects.
+
+        Returns:
+            list: List of DirectedEdge objects that are input edges for the specified network index.
+        """
+        return [edge for edge in l_directed_edges if edge.input_local_network == index]
+
+    @staticmethod
+    def find_output_edges_by_network_index(index, l_directed_edges):
+        """
+        Finds all output edges for a given network index.
+
+        Args:
+            index (int): The index of the local network.
+            l_directed_edges (list): List of DirectedEdge objects.
+
+        Returns:
+            list: List of DirectedEdge objects that are output edges for the specified network index.
+        """
+        return [edge for edge in l_directed_edges if edge.output_local_network == index]
+
+    @staticmethod
+    def generate_local_networks_variables_dynamic(l_local_networks, l_directed_edges):
+        """
+        Generates the dynamics for each local network by creating internal variables and their clauses.
+
+        Args:
+            l_local_networks (list): List of LocalNetwork objects.
+            l_directed_edges (list): List of DirectedEdge objects.
+
+        Returns:
+            list: List of updated LocalNetwork objects with dynamic variables.
+        """
+
+        # the max number of clauses and literals is fixed in 2 and 3 respectively
+        NUMBER_MAX_OF_CLAUSES = 2
+        NUMBER_MAX_OF_LITERALS = 3
+
+        l_local_networks_updated = []
+        for o_local_network in l_local_networks:
+            l_aux_variables = []
+            l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+            for o_signal in l_input_signals:
+                l_aux_variables.append(o_signal.index_variable)
+            l_aux_variables.extend(o_local_network.l_var_intern)
+
+            des_funct_variables = []
+            for i_local_variable in o_local_network.l_var_intern:
+                l_clauses_node = []
+                for _ in range(randint(1, NUMBER_MAX_OF_CLAUSES)):
+                    v_num_variable = randint(1, NUMBER_MAX_OF_LITERALS)
+                    l_literals_variables = random.sample(l_aux_variables, v_num_variable)
+                    l_clauses_node.append(l_literals_variables)
+
+                o_internal_variable = InternalVariable(i_local_variable, l_clauses_node)
+                des_funct_variables.append(o_internal_variable)
+
+            o_local_network.des_funct_variables = des_funct_variables.copy()
+            l_local_networks_updated.append(o_local_network)
+            CustomText.make_sub_title(f"Local network created : {o_local_network.index}")
+
+        return l_local_networks_updated
+
+    @staticmethod
+    def generate_aleatory_cbn_by_topology(n_local_networks, n_var_network, v_topology, l_edges=None,
+                                          n_output_variables=2, n_input_variables=2, n_edges=None):
+        """
+        Generates an instance of a CBN.
+
+        Args:
+            n_local_networks (int): Number of local networks to generate.
+            n_var_network (int): Number of variables per network.
+            v_topology (int): Type of topology for the CBN.
+            l_edges (list): List of global edges.
+            n_output_variables (int): Number of output variables.
+            n_input_variables (int): Number of input variables.
+            n_edges (int): Number of edges in the CBN.
+            local_template (AleatoryTemplate): Template for local networks.
+
+        Returns:
+            CBN: The generated CBN object.
+        """
+
+        CustomText.make_title('CBN GENERATION')
+
+        # generate the CBN topology
+        o_global_topology = GlobalTopology.generate_sample_topology(v_topology=v_topology, n_nodes=n_local_networks)
+
+        # generate the local network dynamic
+
+        # generate the local networks with the indexes and variables (without relations or dynamics)
+        l_local_networks = CBN.generate_local_networks_indexes_variables(n_local_networks, n_var_network)
+
+        l_relations = o_global_topology.get_edges()
+
+        # search the last variable from the local network variables
+        i_last_variable = l_local_networks[-1].l_var_intern[-1]
+
+        # generate the directed edges given the last variable generated
+        l_directed_edges = CBN.generate_directed_edges(i_last_variable=i_last_variable,
+                                                       l_local_networks=l_local_networks,
+                                                       l_relations=l_relations,
+                                                       n_output_variables=n_output_variables)
+
+        # Process the coupling signals for every local network
+        for o_local_network in l_local_networks:
+            # find the signals for every local network
+            l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+            o_local_network.process_input_signals(l_input_signals)
+
+        l_local_networks = CBN.generate_local_networks_variables_dynamic(l_local_networks=l_local_networks,
+                                                                         l_directed_edges=l_directed_edges)
+
+        # create the cbn object
+        o_cbn = CBN(l_local_networks, l_directed_edges)
+        # add the Global Topology Object
+        o_cbn.o_global_topology = o_global_topology
+        return o_cbn
+
+    # NEW GENERATOR
     @staticmethod
     def cbn_generator(v_topology, n_local_networks, n_vars_network, n_input_variables, n_output_variables,
                       n_max_of_clauses=None, n_max_of_literals=None, n_edges=None, base_graph=None):

@@ -24,7 +24,7 @@ class LocalNetworkTemplate:
         self.generate_local_dynamic()
 
     def generate_local_dynamic(self):
-        # basic properties
+        # 1_manual properties
         l_internal_var_indexes = list(range(self.n_vars_network + 1, (self.n_vars_network * 2) + 1))
 
         l_input_coupling_signal_indexes = [self.n_vars_network * 2 + 1]
@@ -83,7 +83,7 @@ class LocalNetworkTemplate:
     #     :return: Dictionary of cnf function for variable and list of exit variables
     #     """
     #
-    #     # basic properties
+    #     # 1_manual properties
     #     l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
     #     l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
     #     l_input_coupling_signal_indexes = [n_var_network * 2 + 1]
@@ -129,7 +129,7 @@ class LocalNetworkTemplate:
     #     :return: Dictionary of cnf function for variable and list of exit variables
     #     """
     #
-    #     # basic properties
+    #     # 1_manual properties
     #     l_internal_var_indexes = list(range(n_var_network + 1, (n_var_network * 2) + 1))
     #     l_output_var_indexes = random.sample(range(1, n_var_network + 1), n_output_variables)
     #     l_input_coupling_signal_indexes = [n_var_network * 2 + 1]

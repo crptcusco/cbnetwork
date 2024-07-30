@@ -9,7 +9,7 @@ from classes.utils.customtext import CustomText
 
 class LocalNetwork:
     def __init__(self, num_local_network, l_var_intern):
-        # basic properties
+        # 1_manual properties
         self.index = num_local_network
         self.l_var_intern = l_var_intern
 
