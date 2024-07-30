@@ -19,44 +19,76 @@ class CBN:
     Class representing a Complex Boolean Network (CBN).
 
     Attributes:
-        l_local_networks (list): List of local networks in the CBN.
-        l_directed_edges (list): List of directed edges in the CBN.
+        l_local_networks (list[LocalNetwork]): List of local networks in the CBN.
+        l_directed_edges (list[DirectedEdge]): List of directed edges in the CBN.
         d_local_attractors (dict): Dictionary of local attractors.
         d_attractor_pair (dict): Dictionary of attractor pairs.
         d_attractor_fields (dict): Dictionary of attractor fields.
-        l_global_scenes (list): List of global scenes.
+        l_global_scenes (list[GlobalScene]): List of global scenes.
         o_global_topology (GlobalTopology): Global topology object.
     """
 
-    def __init__(self, l_local_networks, l_directed_edges):
-        # 1_manual attributes
+    def __init__(self, l_local_networks: list, l_directed_edges: list):
+        """
+        Initializes the Complex Boolean Network with local networks and directed edges.
+
+        Args:
+            l_local_networks (list): List of local networks in the CBN.
+            l_directed_edges (list): List of directed edges in the CBN.
+        """
+        # Initial attributes
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
 
-        # calculated attributes
-        self.d_local_attractors = None
-        self.d_attractor_pair = None
-        self.d_attractor_fields = None
-        self.l_global_scenes = None
+        # Calculated attributes
+        self.d_local_attractors = {}
+        self.d_attractor_pair = {}
+        self.d_attractor_fields = {}
+        self.l_global_scenes = []
 
-        # graphs
+        # Graphs
         self.o_global_topology = None
 
-    def process_output_signals(self):
-        # update output signals for every local network
-        for o_local_network in self.l_local_networks:
-            for t_relation in self.l_directed_edges:
-                if o_local_network.l_index == t_relation[1]:
-                    o_local_network.l_output_signals.append(t_relation)
-                    print(t_relation)
+    def process_output_signals(self) -> None:
+        """
+        Update output signals for every local network based on directed edges.
 
-    def update_network_by_index(self, o_local_network_update):
+        This method iterates over all local networks and directed edges,
+        and appends each directed edge to the output signals of the local
+        network if the local network's index matches the destination node
+        of the directed edge.
+        """
+        # Create a dictionary for quick lookup of output signals
+        local_network_dict = {network.l_index: network for network in self.l_local_networks}
+
+        # Update output signals for each local network
+        for edge in self.l_directed_edges:
+            source, destination = edge
+            if destination in local_network_dict:
+                o_local_network = local_network_dict[destination]
+                o_local_network.l_output_signals.append(edge)
+                print(edge)
+
+    def update_network_by_index(self, o_local_network_update) -> bool:
+        """
+        Update a local network in the list by its index.
+
+        Args:
+            o_local_network_update (LocalNetwork): The local network object with updated information.
+
+        Returns:
+            bool: True if the network was found and updated, False otherwise.
+        """
+        # Iterate over the list of local networks
         for i, o_local_network in enumerate(self.l_local_networks):
-            if o_local_network.l_index == o_local_network_update.l_index:
+            if o_local_network.index == o_local_network_update.index:
+                # Update the local network in the list
                 self.l_local_networks[i] = o_local_network_update
-                print("Local Network updated")
+                print(f"Local Network with index {o_local_network_update.index} updated")
                 return True
-        print("ERROR:", "Local Network not found")
+
+        # If no network was found, print an error message
+        print(f"ERROR: Local Network with index {o_local_network_update.index} not found")
         return False
 
     def find_local_attractors_sequential(self):

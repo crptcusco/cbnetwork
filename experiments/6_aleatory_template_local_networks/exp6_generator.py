@@ -5,8 +5,6 @@ import time
 import pandas as pd
 import pickle
 
-from classes.cbnetwork import CBN
-
 # Agregar el directorio principal del proyecto al sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -14,13 +12,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 from classes.globaltopology import GlobalTopology
+from classes.cbnetwork import CBN
 
 """
 Experiment 6 - Test the aleatory CBNs with different number of local networks
 """
 
 # experiment parameters
-N_SAMPLES = 1000
+N_SAMPLES = 100
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VARS_NETWORK = 5
@@ -29,7 +28,7 @@ N_INPUT_VARS = 2
 V_TOPOLOGY = 2
 N_MAX_CLAUSES = 2
 N_MAX_LITERALS = 2
-n_edges = 3
+n_edges = None
 
 # verbose parameters
 SHOW_MESSAGES = True
@@ -80,14 +79,13 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
 
     # GENERATE THE GLOBAL TOPOLOGY
     o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
-                                                                n_nodes=N_LOCAL_NETWORKS_MIN,
-                                                                n_edges=n_edges)
+                                                                n_nodes=N_LOCAL_NETWORKS_MIN)
+    print("PASO GLOBAL TOPOLOGY")
 
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
-        n_edges = n_local_networks
         l_data_sample = []
         print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
-        print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VARS_NETWORK}")
+        print(f"NETWORKS: {n_local_networks} VARIABLES: {N_VARS_NETWORK}")
 
         # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
         o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
@@ -119,10 +117,10 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
             # initial parameters
             "i_sample": i_sample,
             "n_local_networks": n_local_networks,
-            "n_var_network": N_VAR_NETWORK,
+            "n_var_network": N_VARS_NETWORK,
             "v_topology": V_TOPOLOGY,
-            "n_output_variables": N_OUTPUT_VARIABLES,
-            "n_clauses_function": N_CLAUSES_FUNCTION,
+            "n_output_variables": N_OUTPUT_VARS,
+            "n_clauses_function": N_MAX_CLAUSES,
             "n_edges": n_local_networks,
             # calculate parameters
             "n_local_attractors": o_cbn.get_n_local_attractors(),

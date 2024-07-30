@@ -1,4 +1,6 @@
 # internal imports
+import time
+
 from classes.utils.customtext import CustomText
 
 # external imports
@@ -262,6 +264,8 @@ class AleatoryFixedDigraph(GlobalTopology):
         self.update_parent_graph()
 
     def add_node(self):
+        start_time = time.time()
+
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
         G.add_edges_from(self.l_edges)
@@ -269,11 +273,13 @@ class AleatoryFixedDigraph(GlobalTopology):
         new_node = max(self.l_nodes) + 1
         self.l_nodes.append(new_node)
         G.add_node(new_node)
+        print(f"Adding new node: {new_node}")
 
         # Remove an edge
         edge_to_remove = random.choice(list(G.edges))
         G.remove_edge(*edge_to_remove)
         self.l_edges.remove(edge_to_remove)
+        print(f"Removed edge: {edge_to_remove}")
 
         # Add an edge to the new node
         while True:
@@ -281,6 +287,7 @@ class AleatoryFixedDigraph(GlobalTopology):
             if not G.has_edge(u, new_node):
                 G.add_edge(u, new_node)
                 self.l_edges.append((u, new_node))
+                print(f"Added edge from {u} to {new_node}")
                 break
 
         # Add an edge from the new node
@@ -289,6 +296,7 @@ class AleatoryFixedDigraph(GlobalTopology):
             if G.in_degree(v) < 2 and not G.has_edge(new_node, v):
                 G.add_edge(new_node, v)
                 self.l_edges.append((new_node, v))
+                print(f"Added edge from {new_node} to {v}")
                 break
 
         # Ensure all nodes are connected
@@ -297,10 +305,14 @@ class AleatoryFixedDigraph(GlobalTopology):
                 u = random.choice([n for n in self.l_nodes if n != node])
                 G.add_edge(u, node)
                 self.l_edges.append((u, node))
+                print(f"Ensured connectivity by adding edge from {u} to {node}")
 
         self.n_nodes += 1
         self.n_edges = len(self.l_edges)
         self.update_parent_graph()
+
+        end_time = time.time()
+        print(f"Node {new_node} added in {end_time - start_time} seconds")
 
     def update_parent_graph(self):
         self.o_graph = nx.DiGraph()
