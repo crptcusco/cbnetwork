@@ -1,8 +1,21 @@
 import random
 
+
 class CNFList:
     @staticmethod
     def generate_cnf(l_inter_vars, input_coup_sig_index, max_clauses=2, max_literals=3):
+        """
+        Generates a CNF (Conjunctive Normal Form) list with random clauses.
+
+        Args:
+            l_inter_vars (list): List of internal variables.
+            input_coup_sig_index (int): Index of the input coupling signal.
+            max_clauses (int): Maximum number of clauses to generate.
+            max_literals (int): Maximum number of literals per clause.
+
+        Returns:
+            list: List of clauses in CNF format.
+        """
         num_clauses = random.randint(1, max_clauses)  # Ensure at least one clause is generated
         l_cnf = []
 
@@ -50,6 +63,15 @@ class CNFList:
 
     @staticmethod
     def simplify_clause(clause):
+        """
+        Simplifies a clause by removing duplicate and complementary literals.
+
+        Args:
+            clause (list): List of literals in a clause.
+
+        Returns:
+            list: Simplified clause.
+        """
         # Remove duplicate literals
         clause = list(set(clause))
 
@@ -63,22 +85,29 @@ class CNFList:
 
     @staticmethod
     def remove_duplicates(l_cnf):
+        """
+        Removes duplicate clauses from the CNF list.
+
+        Args:
+            l_cnf (list): List of clauses in CNF format.
+
+        Returns:
+            list: List of unique clauses.
+        """
         # Convert each clause to a tuple and create a set to remove duplicates
         unique_clauses = set(tuple(sorted(clause)) for clause in l_cnf)
         # Convert the unique tuples back to lists
         return [list(clause) for clause in unique_clauses]
 
-
-
-# parameters
-N_VARIABLES = 5
-N_INPUT_VARIABLES = 2
-N_OUTPUT_VARIABLES = 2
-V_TOPOLOGY = 2
-
-# Example usage:
-l_internal_variables = [1, 2, 3, 4, 5]
-input_coupling_signal_index = 6
-for variable in l_internal_variables:
-    cnf = CNFList.generate_cnf(l_internal_variables, input_coupling_signal_index)
-    print(variable, ":", cnf)
+# # parameters
+# N_VARIABLES = 5
+# N_INPUT_VARIABLES = 2
+# N_OUTPUT_VARIABLES = 2
+# V_TOPOLOGY = 2
+#
+# # Example usage:
+# l_internal_variables = [1, 2, 3, 4, 5]
+# input_coupling_signal_index = 6
+# for variable in l_internal_variables:
+#     cnf = CNFList.generate_cnf(l_internal_variables, input_coupling_signal_index)
+#     print(variable, ":", cnf)

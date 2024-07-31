@@ -1,15 +1,25 @@
-import re  # profiler_analysis of regular expressions
-import operator  # unary operator management
-
-from string import ascii_lowercase, ascii_uppercase  # import the list of uppercase and lowercase letters
-from itertools import product  # generate combinations of numbers
-from collections import namedtuple  # structures like trees
-from classes.utils.customtext import CustomText  # utils for texts
+import re
+import operator
+from string import ascii_lowercase, ascii_uppercase
+from itertools import product
+from collections import namedtuple
+from classes.utils.customtext import CustomText
 
 
 class DirectedEdge:
     def __init__(self, index, index_variable_signal, input_local_network, output_local_network, l_output_variables,
                  coupling_function):
+        """
+        Initialize a DirectedEdge instance.
+
+        Args:
+            index (int): The index of the directed edge.
+            index_variable_signal (int): The index of the variable signal.
+            input_local_network (int): The index of the input local network.
+            output_local_network (int): The index of the output local network.
+            l_output_variables (list): List of output variables.
+            coupling_function (str): The coupling function.
+        """
         self.index = index
         self.index_variable = index_variable_signal
         self.input_local_network = input_local_network
@@ -21,40 +31,60 @@ class DirectedEdge:
         # True table for signal with the output variables
         self.true_table = self.process_true_table()
         # Dictionary for kind status of the signal
-        self.d_kind_signal = {1: "RESTRICTED",
-                              2: "NOT COMPUTE",
-                              3: "STABLE",
-                              4: "NOT STABLE"}
-        # Defined the initial kind for every coupling signal
+        self.d_kind_signal = {
+            1: "RESTRICTED",
+            2: "NOT COMPUTE",
+            3: "STABLE",
+            4: "NOT STABLE"
+        }
+        # Define the initial kind for every coupling signal
         self.kind_signal = 2
-        # Dictionary for group the attractors by his output signal value
-        self.d_out_value_to_attractor = {1: [], 0: []}
-        # List of the compatible pair attractors
-        self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
+        # Dictionary for grouping attractors by their output signal value
+        self.d_out_value_to_attractor = {
+            1: [],
+            0: []
+        }
+        # List of compatible pair attractors
+        self.d_comp_pairs_attractors_by_value = {
+            0: [],
+            1: []
+        }
 
     def show(self):
-        # CustomText.print_simple_line()
+        """
+        Display the details of the DirectedEdge instance.
+
+        This method prints out information about the directed edge, including its index, the relationship between
+        the input and output local networks, the variable index, the list of output variables, the coupling function,
+        the truth table, and the kind of signal.
+        """
+        # Print the header with detailed information about the edge
         CustomText.make_sub_sub_title(f"Index Edge: {self.index} - "
                                       f"Relation: {self.output_local_network} -> {self.input_local_network} - "
                                       f"Variable: {self.index_variable}")
+
+        # Print the list of output variables and the coupling function
         print("Variables:", self.l_output_variables, ", Coupling Function:", self.coupling_function)
+
+        # Print the truth table of the coupling function
         print("Truth table:", self.true_table)
-        print("Kind signal:", self.kind_signal,
-              "-", self.d_kind_signal[self.kind_signal])
+
+        # Print the kind of signal and its description
+        print("Kind signal:", self.kind_signal, "-", self.d_kind_signal[self.kind_signal])
 
     def process_true_table(self):
-        r_true_table = {}
-        # print("Generating the True Table")
-        # First we must understand the coupling signal
-        # we will use regular expressions to recognize the boolean formula
+        """
+        Generates the truth table for the Boolean formula represented by the coupling function.
 
-        # TOKENIZATION
-        # Regular expression matching optional whitespace followed by a token
-        # (if group 1 matches) or an error (if group 2 matches).
+        This method parses the Boolean formula, evaluates it for all possible permutations of output variables,
+        and constructs a truth table mapping input combinations to their corresponding output values.
+        """
+        r_true_table = {}  # Dictionary to store the truth table results
+
+        # Tokenization
+        # Regular expression to match tokens in the Boolean formula
         TOKEN_RE = re.compile(r'\s*(?:([A-Za-z01()~∧∨→↔])|(\S))')
-
-        # Special token indicating the end of the input string.
-        TOKEN_END = '<end of input>'
+        TOKEN_END = '<end of input>'  # Special token indicating the end of input
 
         def tokenize(s):
             """Generate tokens from the string s, followed by TOKEN_END."""
@@ -66,7 +96,8 @@ class DirectedEdge:
                     raise SyntaxError("Unexpected character {!r}".format(error))
             yield TOKEN_END
 
-        # PARSING
+        # Parsing
+        # Define structures for the parse tree
         Constant = namedtuple('Constant', 'value')
         Variable = namedtuple('Variable', 'name')
         UnaryOp = namedtuple('UnaryOp', 'op operand')
@@ -78,12 +109,10 @@ class DirectedEdge:
         # Tokens representing variables.
         VARIABLES = set(ascii_lowercase) | set(ascii_uppercase)
 
-        # Map from unary operator to function implementing it.
+        # Unary and binary operators
         UNARY_OPERATORS = {
             '~': operator.not_,
         }
-
-        # Map from binary operator to function implementing it.
         BINARY_OPERATORS = {
             '∧': operator.and_,
             '∨': operator.or_,
@@ -97,13 +126,9 @@ class DirectedEdge:
             token = next(tokens)  # The current token.
 
             def error(expected):
-                # Current token failed to match, so raise syntax error.
-                raise SyntaxError("Expected {} but found {!r}"
-                                  .format(expected, token))
+                raise SyntaxError("Expected {} but found {!r}".format(expected, token))
 
             def match(valid_tokens):
-                # If the current token is found in valid_tokens, consume it
-                # and return True. Otherwise, return False.
                 nonlocal token
                 if token in valid_tokens:
                     token = next(tokens)
@@ -112,7 +137,6 @@ class DirectedEdge:
                     return False
 
             def term():
-                # Parse a <Term> starting at the current token.
                 t = token
                 if match(VARIABLES):
                     return Variable(name=t)
@@ -128,7 +152,6 @@ class DirectedEdge:
                     error("term")
 
             def unary_expr():
-                # Parse a <UnaryExpr> starting at the current token.
                 t = token
                 if match('~'):
                     operand = unary_expr()
@@ -137,10 +160,6 @@ class DirectedEdge:
                     return term()
 
             def binary_expr(parse_left, valid_operators, parse_right):
-                # Parse a binary expression starting at the current token.
-                # Call parse_left to parse the left operand; the operator must
-                # be found in valid_operators; call parse_right to parse the
-                # right operand.
                 left = parse_left()
                 t = token
                 if match(valid_operators):
@@ -150,15 +169,12 @@ class DirectedEdge:
                     return left
 
             def implication():
-                # Parse an <Implication> starting at the current token.
                 return binary_expr(unary_expr, '→↔', implication)
 
             def conjunction():
-                # Parse a <Conjunction> starting at the current token.
                 return binary_expr(implication, '∧', conjunction)
 
             def disjunction():
-                # Parse a <Disjunction> starting at the current token.
                 return binary_expr(conjunction, '∨', disjunction)
 
             tree = disjunction()
@@ -167,9 +183,7 @@ class DirectedEdge:
             return tree
 
         def evaluate(tree, env):
-            """Evaluate the expression in the parse tree in the context of an
-            environment mapping variable names to their values.
-            """
+            """Evaluate the expression in the parse tree in the context of an environment mapping variable names to their values."""
             if isinstance(tree, Constant):
                 return tree.value
             elif isinstance(tree, Variable):
@@ -181,60 +195,58 @@ class DirectedEdge:
             else:
                 raise TypeError("Expected tree, found {!r}".format(type(tree)))
 
-        # we have to create a dictionary for each variable in the output set
+        # Create a dictionary for each variable in the output set
         l_abecedario = list(ascii_uppercase)
-
         dict_aux_var_saida = {}
         cont_aux_abecedario = 0
         for variable_saida in self.l_output_variables:
             dict_aux_var_saida[" " + str(variable_saida) + " "] = l_abecedario[cont_aux_abecedario]
-            cont_aux_abecedario = cont_aux_abecedario + 1
+            cont_aux_abecedario += 1
 
-        # generate combinations of the output signal
-        l_permutations = []
-        for v_permutacion in product([True, False], repeat=len(self.l_output_variables)):
-            l_permutations.append(v_permutacion)
+        # Generate all permutations of the output signals
+        l_permutations = list(product([True, False], repeat=len(self.l_output_variables)))
 
-        # process each of the permutations we simply have to evaluate and solve
+        # Process each permutation to evaluate the Boolean formula
         for c_permutation in l_permutations:
             aux_dictionary = dict(zip(dict_aux_var_saida.values(), c_permutation))
-            aux_acoplament_function = self.coupling_function
+            aux_coupling_function = self.coupling_function
             for aux_element in dict_aux_var_saida.keys():
-                aux_acoplament_function = aux_acoplament_function.replace(str(aux_element),
-                                                                          str(dict_aux_var_saida[aux_element]))
-            # print("========= Signal =========")
-            # print(aux_acoplament_function)
-            # print(dict_aux_var_saida)
-            # print(aux_dictionary)
-            # print("========= End Signal =========")
-            # Creating the key of the truth table
-            aux_key = ''
-            for v_literal in c_permutation:
-                if v_literal:
-                    aux_key = aux_key + "1"
-                else:
-                    aux_key = aux_key + "0"
-            if evaluate(parse(aux_acoplament_function), aux_dictionary):
+                aux_coupling_function = aux_coupling_function.replace(str(aux_element),
+                                                                      str(dict_aux_var_saida[aux_element]))
+            # Create the key for the truth table
+            aux_key = ''.join("1" if v else "0" for v in c_permutation)
+            if evaluate(parse(aux_coupling_function), aux_dictionary):
                 r_true_table[aux_key] = "1"
             else:
                 r_true_table[aux_key] = "0"
 
-        # print the true table
-        # print(r_true_table)
-        # sys.exit()
-
         return r_true_table
 
     def show_dict_v_output_signal_attractor(self):
+        """
+        Display the dictionary mapping output signal values to their attractors.
+
+        This method prints each output signal value and the corresponding list of attractors from the dictionary.
+        """
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
             print(signal_value, "-", l_attractors)
 
     def show_v_output_signal_attractor(self):
+        """
+        Display the output signal values and their corresponding attractors.
+
+        This method prints each output signal value followed by a detailed list of attractors.
+        For each attractor, it calls its `show` method to display its details.
+        """
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
             print("Output signal Value -", signal_value, "- Attractors:")
             for o_attractor in l_attractors:
                 o_attractor.show()
 
     # def show_d_comp_pairs_attractors_by_value(self, value):
-    #     self.d_comp_pairs_attractors_by_value()
+    #     """
+    #     Display compatible pairs of attractors by their output signal value.
     #
+    #     This method is commented out. It could be implemented to show pairs of attractors based on the given value.
+    #     """
+    #     self.d_comp_pairs_attractors_by_value()

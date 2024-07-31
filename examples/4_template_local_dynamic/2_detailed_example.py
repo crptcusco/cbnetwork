@@ -37,3 +37,24 @@ o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
 
 o_cbn.show_description()
 
+# Find attractors
+o_cbn.find_local_attractors_sequential()
+o_cbn.show_local_attractors()
+
+# find the compatible pairs
+o_cbn.find_compatible_pairs()
+o_cbn.show_attractor_pairs()
+
+# Find attractor fields
+o_cbn.mount_stable_attractor_fields()
+o_cbn.show_stable_attractor_fields()
+
+# show the kind of every coupled signal
+o_cbn.show_coupled_signals_kind()
+
+# Show the number of attractor fields by global scene
+o_cbn.generate_global_scenes()
+o_cbn.show_global_scenes()
+
+# Count the attractor fields by global scene
+o_cbn.count_fields_by_global_scenes()

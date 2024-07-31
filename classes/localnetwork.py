@@ -1,61 +1,100 @@
-# external imports
-from satispy import Variable  # Library to resolve SAT
-from satispy.solver import Minisat  # Library to resolve SAT
+# External imports
+from satispy import Variable  # Library to solve SAT problems
+from satispy.solver import Minisat  # SAT solver library
 
-# internal imports
+# Internal imports
 from classes.localscene import LocalScene, LocalAttractor, LocalState
 from classes.utils.customtext import CustomText
 
 
 class LocalNetwork:
     def __init__(self, num_local_network, l_var_intern):
-        # 1_manual properties
+        """
+        Initialize a LocalNetwork instance.
+
+        Args:
+            num_local_network (int): The index of the local network.
+            l_var_intern (list): List of internal variables.
+        """
+        # Manual properties
         self.index = num_local_network
         self.l_var_intern = l_var_intern
 
         # Processed properties
-        self.des_funct_variables = []
-        self.l_var_exterm = []
-        self.l_var_total = []
-        self.num_var_total = 0
-        self.dic_var_cnf = {}
+        self.des_funct_variables = []  # List of desired function variables
+        self.l_var_exterm = []  # List of external variables
+        self.l_var_total = []  # List of all variables
+        self.num_var_total = 0  # Total number of variables
+        self.dic_var_cnf = {}  # Dictionary of CNF variables
 
-        self.l_input_signals = []
-        self.l_output_signals = []
+        self.l_input_signals = []  # List of input signals
+        self.l_output_signals = []  # List of output signals
 
         # Calculated properties
-        self.count_attractor = 1
-        self.l_local_scenes = []
+        self.count_attractor = 1  # Counter for attractors
+        self.l_local_scenes = []  # List of local scenes
 
     def show(self):
+        """
+        Display the details of the LocalNetwork instance.
+        """
+        # Print the subtitle for the local network
         CustomText.make_sub_sub_title(f"Local Network: {self.index}")
+
+        # Print the internal variables
         print('Internal Variables: ', self.l_var_intern)
+
+        # Print the external variables
         print('External Variables: ', self.l_var_exterm)
+
+        # Print the total variables
         print('Total Variables: ', self.l_var_total)
-        # Description variables
+
+        # Print the description of each function variable
         for o_internal_variable in self.des_funct_variables:
             o_internal_variable.show()
 
     def process_input_signals(self, l_input_signals):
-        # Processing the input signals of local network
+        """
+        Process the input signals of the local network and update variable lists.
+
+        :param l_input_signals: List of input signal objects.
+        """
+        # Process the input signals and append their indices to the external variables list
         for o_signal in l_input_signals:
             self.l_var_exterm.append(o_signal.index_variable)
-        # add the local variables
+
+        # Add internal variables to the total variables list
         self.l_var_total.extend(self.l_var_intern.copy())
-        # add the external variables from coupling signal
+
+        # Add external variables to the total variables list
         self.l_var_total.extend(self.l_var_exterm.copy())
-        # calculate the number of total variables
+
+        # Calculate the number of total variables
         self.num_var_total = len(self.l_var_total)
 
     def get_internal_variable(self, i_variable):
+        """
+        Retrieve an internal variable by its index.
+
+        :param i_variable: Index of the internal variable to retrieve.
+        :return: The internal variable object if found, otherwise None.
+        """
         for o_internal_variable in self.des_funct_variables:
             if o_internal_variable.l_index == i_variable:
                 return o_internal_variable
+        return None  # Return None if the variable is not found
 
     def update_internal_variable(self, o_internal_variable_to_update):
+        """
+        Update an internal variable in the list of descriptive function variables.
+
+        :param o_internal_variable_to_update: The internal variable object with updated values.
+        """
         for i, o_internal_variable in enumerate(self.des_funct_variables):
             if o_internal_variable.l_index == o_internal_variable_to_update.l_index:
                 self.des_funct_variables[i] = o_internal_variable_to_update
+                return  # Exit after updating the variable
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
@@ -93,127 +132,140 @@ class LocalNetwork:
 
     @staticmethod
     def gen_boolean_formulation(o_local_network, n_transitions, l_attractors_clauses, scene):
-        # create dictionary of cnf variables!!
+        """
+        Generate the boolean formulation for the given local network. This formulation includes:
+        - CNF variable creation
+        - Boolean expressions for each transition
+        - Assignment values for permutations
+        - Incorporation of attractor clauses
+
+        :param o_local_network: The local network object for which to generate the boolean formulation.
+        :param n_transitions: Number of transitions in the boolean formulation.
+        :param l_attractors_clauses: List of clauses representing attractors.
+        :param scene: Optional scene string used to assign specific values to variables.
+        :return: The complete boolean function as a Variable object.
+        """
+        # Create dictionary of CNF variables for each transition
         for variable in o_local_network.l_var_total:
             for transition_c in range(0, n_transitions):
-                o_local_network.dic_var_cnf[str(variable) + "_" + str(transition_c)] = Variable(
-                    str(variable) + "_" + str(transition_c))
+                o_local_network.dic_var_cnf[f"{variable}_{transition_c}"] = Variable(f"{variable}_{transition_c}")
 
         cont_transition = 0
         boolean_function = Variable("0_0")
+
         for transition in range(1, n_transitions):
             cont_clause_global = 0
             boolean_expression_equivalence = Variable("0_0")
+
             for o_variable_model in o_local_network.des_funct_variables:
                 cont_clause = 0
                 boolean_expression_clause_global = Variable("0_0")
+
                 for clause in o_variable_model.cnf_function:
                     boolean_expression_clause = Variable("0_0")
                     cont_term = 0
+
                     for term in clause:
                         term_aux = abs(int(term))
                         if cont_term == 0:
                             if str(term)[0] != "-":
-                                boolean_expression_clause = o_local_network.dic_var_cnf[
-                                    str(term_aux) + "_" + str(transition - 1)]
+                                boolean_expression_clause = o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
                             else:
-                                boolean_expression_clause = -o_local_network.dic_var_cnf[
-                                    str(term_aux) + "_" + str(transition - 1)]
+                                boolean_expression_clause = -o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
                         else:
                             if str(term)[0] != "-":
-                                boolean_expression_clause = o_local_network.dic_var_cnf[str(term_aux) + "_" + str(
-                                    transition - 1)] | boolean_expression_clause
+                                boolean_expression_clause |= o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
                             else:
-                                boolean_expression_clause = -o_local_network.dic_var_cnf[
-                                    str(term_aux) + "_" + str(transition - 1)] | boolean_expression_clause
-                        cont_term = cont_term + 1
+                                boolean_expression_clause |= -o_local_network.dic_var_cnf[
+                                    f"{term_aux}_{transition - 1}"]
+
+                        cont_term += 1
+
                     if cont_clause == 0:
                         boolean_expression_clause_global = boolean_expression_clause
                     else:
-                        boolean_expression_clause_global = boolean_expression_clause_global & boolean_expression_clause
-                    cont_clause = cont_clause + 1
+                        boolean_expression_clause_global &= boolean_expression_clause
+
+                    cont_clause += 1
+
                 if cont_clause_global == 0:
                     boolean_expression_equivalence = o_local_network.dic_var_cnf[
-                                                         str(o_variable_model.index) + "_" + str(
-                                                             transition)] >> boolean_expression_clause_global
-                    boolean_expression_equivalence = boolean_expression_equivalence & (
-                            boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        str(o_variable_model.index) + "_" + str(transition)])
+                                                         f"{o_variable_model.index}_{transition}"] >> boolean_expression_clause_global
+                    boolean_expression_equivalence &= boolean_expression_clause_global >> o_local_network.dic_var_cnf[
+                        f"{o_variable_model.index}_{transition}"]
                 else:
-                    boolean_expression_equivalence = boolean_expression_equivalence & (o_local_network.dic_var_cnf[
-                                                                                           str(o_variable_model.index) + "_" + str(
-                                                                                               transition)] >> boolean_expression_clause_global)
-                    boolean_expression_equivalence = boolean_expression_equivalence & (
-                            boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        str(o_variable_model.index) + "_" + str(transition)])
+                    boolean_expression_equivalence &= o_local_network.dic_var_cnf[
+                                                          f"{o_variable_model.index}_{transition}"] >> boolean_expression_clause_global
+                    boolean_expression_equivalence &= boolean_expression_clause_global >> o_local_network.dic_var_cnf[
+                        f"{o_variable_model.index}_{transition}"]
+
                 if not o_variable_model.cnf_function:
                     print("ENTER ATYPICAL CASE!!!")
-                    boolean_function = boolean_function & (
-                            o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)] | -
-                    o_local_network.dic_var_cnf[str(o_variable_model.index) + "_" + str(transition)])
-                cont_clause_global = cont_clause_global + 1
+                    boolean_function &= (o_local_network.dic_var_cnf[f"{o_variable_model.index}_{transition}"] | -
+                    o_local_network.dic_var_cnf[f"{o_variable_model.index}_{transition}"])
+
+                cont_clause_global += 1
+
             if cont_transition == 0:
                 boolean_function = boolean_expression_equivalence
             else:
-                boolean_function = boolean_function & boolean_expression_equivalence
-            # validate blank gens
-            cont_transition = cont_transition + 1
+                boolean_function &= boolean_expression_equivalence
 
-        # ASSIGN VALUES FOR PERMUTATIONS
+            cont_transition += 1
+
+        # Assign values for permutations if a scene is provided
         if scene is not None:
             cont_permutation = 0
             for element in o_local_network.l_var_exterm:
-                # print oRDD.list_of_v_exterm
                 for v_transition in range(0, n_transitions):
-                    # print l_signal_coupling[cont_permutation]
                     if scene[cont_permutation] == "0":
-                        boolean_function = boolean_function & -o_local_network.dic_var_cnf[
-                            str(element) + "_" + str(v_transition)]
-                        # print (str(element) +"_"+ str(v_transition))
+                        boolean_function &= -o_local_network.dic_var_cnf[f"{element}_{v_transition}"]
                     else:
-                        boolean_function = boolean_function & o_local_network.dic_var_cnf[
-                            str(element) + "_" + str(v_transition)]
-                        # print (str(element) +"_"+ str(v_transition))
-                cont_permutation = cont_permutation + 1
+                        boolean_function &= o_local_network.dic_var_cnf[f"{element}_{v_transition}"]
 
-        # add attractors to boolean function
-        if len(l_attractors_clauses) > 0:
+                cont_permutation += 1
+
+        # Add attractors to the boolean function
+        if l_attractors_clauses:
             boolean_function_of_attractors = Variable("0_0")
             cont_clause = 0
+
             for clause in l_attractors_clauses:
                 bool_expr_clause_attractors = Variable("0_0")
                 cont_term = 0
+
                 for term in clause:
                     term_aux = abs(int(term))
                     if cont_term == 0:
                         if term[0] != "-":
-                            bool_expr_clause_attractors = o_local_network.dic_var_cnf[
-                                str(term_aux) + "_" + str(n_transitions - 1)]
+                            bool_expr_clause_attractors = o_local_network.dic_var_cnf[f"{term_aux}_{n_transitions - 1}"]
                         else:
                             bool_expr_clause_attractors = -o_local_network.dic_var_cnf[
-                                str(term_aux) + "_" + str(n_transitions - 1)]
+                                f"{term_aux}_{n_transitions - 1}"]
                     else:
                         if term[0] != "-":
-                            bool_expr_clause_attractors = bool_expr_clause_attractors & \
-                                                          o_local_network.dic_var_cnf[
-                                                              str(term_aux) + "_" + str(
-                                                                  n_transitions - 1)]
+                            bool_expr_clause_attractors &= o_local_network.dic_var_cnf[
+                                f"{term_aux}_{n_transitions - 1}"]
                         else:
-                            bool_expr_clause_attractors = bool_expr_clause_attractors & - \
-                                o_local_network.dic_var_cnf[str(term_aux) + "_" + str(n_transitions - 1)]
-                    cont_term = cont_term + 1
+                            bool_expr_clause_attractors &= -o_local_network.dic_var_cnf[
+                                f"{term_aux}_{n_transitions - 1}"]
+
+                    cont_term += 1
+
                 if cont_clause == 0:
                     boolean_function_of_attractors = -bool_expr_clause_attractors
                 else:
-                    boolean_function_of_attractors = boolean_function_of_attractors & - bool_expr_clause_attractors
-                cont_clause = cont_clause + 1
-            boolean_function = boolean_function & boolean_function_of_attractors
+                    boolean_function_of_attractors &= -bool_expr_clause_attractors
 
-        # Add all the variables of position 0 to the boolean function
+                cont_clause += 1
+
+            boolean_function &= boolean_function_of_attractors
+
+        # Ensure all variables are included in the boolean function
         for variable in o_local_network.l_var_total:
-            boolean_function = boolean_function & (o_local_network.dic_var_cnf[str(variable) + "_0"] |
-                                                   - o_local_network.dic_var_cnf[str(variable) + "_0"])
-        # print(boolean_function)
+            boolean_function &= (
+                    o_local_network.dic_var_cnf[f"{variable}_0"] | -o_local_network.dic_var_cnf[f"{variable}_0"])
+
         return boolean_function
 
     @staticmethod

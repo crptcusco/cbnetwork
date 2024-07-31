@@ -1,14 +1,14 @@
-# external imports
+# External imports
 import os
 import sys
 import time
 import pandas as pd
 import pickle
 
-# Agregar el directorio principal del proyecto al sys.path
+# Add the project's main directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# local imports
+# Local imports
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 from classes.globaltopology import GlobalTopology
@@ -18,8 +18,8 @@ from classes.cbnetwork import CBN
 Experiment 6 - Test the aleatory CBNs with different number of local networks
 """
 
-# experiment parameters
-N_SAMPLES = 100
+# Experiment parameters
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VARS_NETWORK = 5
@@ -28,16 +28,15 @@ N_INPUT_VARS = 2
 V_TOPOLOGY = 2
 N_MAX_CLAUSES = 2
 N_MAX_LITERALS = 2
-n_edges = None
 
-# verbose parameters
+# Verbose parameters
 SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
-print("=" * 80)
+print("=" * 50)
 
-# Capture the time for all the experiment
+# Capture the time for the entire experiment
 v_begin_exp = time.time()
 
 # Experiment Name
@@ -47,24 +46,22 @@ EXPERIMENT_NAME = "exp6_data"
 OUTPUT_FOLDER = 'outputs'
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-# create an experiment directory by parameters
-DIRECTORY_PATH = (OUTPUT_FOLDER + "/" + EXPERIMENT_NAME + "_"
-                  + str(N_LOCAL_NETWORKS_MIN) + "_"
-                  + str(N_LOCAL_NETWORKS_MAX)
-                  + "_" + str(N_SAMPLES))
+# Create an experiment directory by parameters
+DIRECTORY_PATH = os.path.join(OUTPUT_FOLDER,
+                              f"{EXPERIMENT_NAME}_{N_LOCAL_NETWORKS_MIN}_{N_LOCAL_NETWORKS_MAX}_{N_SAMPLES}")
 os.makedirs(DIRECTORY_PATH, exist_ok=True)
 
-# create a directory to save the pkl files
-DIRECTORY_PKL = DIRECTORY_PATH + "/pkl_cbn"
+# Create a directory to save the pickle files
+DIRECTORY_PKL = os.path.join(DIRECTORY_PATH, "pkl_cbn")
 os.makedirs(DIRECTORY_PKL, exist_ok=True)
 
-# generate the experiment data file in csv
-file_path = DIRECTORY_PATH + '/data.csv'
+# Generate the experiment data file in CSV
+file_path = os.path.join(DIRECTORY_PATH, 'data.csv')
 
-# Erase the file if exists
+# Erase the file if it exists
 if os.path.exists(file_path):
     os.remove(file_path)
-    print("Existing file deleted:", file_path)
+    print(f"Existing file deleted: {file_path}")
 
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
@@ -80,12 +77,12 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
     # GENERATE THE GLOBAL TOPOLOGY
     o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                 n_nodes=N_LOCAL_NETWORKS_MIN)
-    print("PASO GLOBAL TOPOLOGY")
+    print("Generated Global Topology")
 
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
         l_data_sample = []
-        print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
-        print(f"NETWORKS: {n_local_networks} VARIABLES: {N_VARS_NETWORK}")
+        print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
+        print(f"Networks: {n_local_networks} Variables: {N_VARS_NETWORK}")
 
         # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
         o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
@@ -94,13 +91,13 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
                                                o_template=o_template,
                                                l_global_edges=o_global_topology.l_edges)
 
-        # find attractors
+        # Find attractors
         v_begin_find_attractors = time.time()
         o_cbn.find_local_attractors_sequential()
         v_end_find_attractors = time.time()
         n_time_find_attractors = v_end_find_attractors - v_begin_find_attractors
 
-        # find the compatible pairs
+        # Find the compatible pairs
         v_begin_find_pairs = time.time()
         o_cbn.find_compatible_pairs()
         v_end_find_pairs = time.time()
@@ -112,9 +109,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
         v_end_find_fields = time.time()
         n_time_find_fields = v_end_find_fields - v_begin_find_fields
 
-        # collect indicators
+        # Collect indicators
         d_collect_indicators = {
-            # initial parameters
+            # Initial parameters
             "i_sample": i_sample,
             "n_local_networks": n_local_networks,
             "n_var_network": N_VARS_NETWORK,
@@ -122,41 +119,35 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
             "n_output_variables": N_OUTPUT_VARS,
             "n_clauses_function": N_MAX_CLAUSES,
             "n_edges": n_local_networks,
-            # calculate parameters
+            # Calculated parameters
             "n_local_attractors": o_cbn.get_n_local_attractors(),
             "n_pair_attractors": o_cbn.get_n_pair_attractors(),
             "n_attractor_fields": o_cbn.get_n_attractor_fields(),
-            # time parameters
+            # Time parameters
             "n_time_find_attractors": n_time_find_attractors,
             "n_time_find_pairs": n_time_find_pairs,
             "n_time_find_fields": n_time_find_fields
         }
         l_data_sample.append(d_collect_indicators)
 
-        # save the collected indicator to profiler_analysis
+        # Save the collected indicators to CSV
         pf_res = pd.DataFrame(l_data_sample)
         pf_res.reset_index(drop=True, inplace=True)
 
-        # if the file exist, open the 'a' mode (append), else create a new file
         mode = 'a' if os.path.exists(file_path) else 'w'
-        # Add the header only if is a new file
         header = not os.path.exists(file_path)
-        #  save the data in csv file
         pf_res.to_csv(file_path, mode=mode, header=header, index=False)
 
-        print("Experiment data saved in:", file_path)
+        print(f"Experiment data saved in: {file_path}")
 
-        # Open a file in binary write mode (wb)
-        pickle_path = DIRECTORY_PKL + '/cbn_' + str(i_sample) + '_' + str(n_local_networks) + ".pkl"
+        # Save the object to a pickle file
+        pickle_path = os.path.join(DIRECTORY_PKL, f'cbn_{i_sample}_{n_local_networks}.pkl')
         with open(pickle_path, 'wb') as file:
-            # Use pickle.dump to save the object to the file
             pickle.dump(o_cbn, file)
 
-        # Close the file
-        file.close()
-        print("Pickle object saved in:", pickle_path)
+        print(f"Pickle object saved in: {pickle_path}")
 
-        # add node to topology
+        # Add node to topology
         o_global_topology.add_node()
 
         CustomText.print_duplex_line()
@@ -166,7 +157,7 @@ CustomText.print_dollars()
 # Take the time of the experiment
 v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
-print("Time experiment (in seconds): ", v_time_exp)
+print(f"Time experiment (in seconds): {v_time_exp}")
 
-print("=" * 80)
+print("=" * 50)
 print("END EXPERIMENT")

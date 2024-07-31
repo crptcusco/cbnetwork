@@ -1,13 +1,12 @@
-# internal imports
+# Internal imports
 import time
-
-from classes.utils.customtext import CustomText
-
-# external imports
 import random
-import networkx as nx  # generate networks
-import matplotlib.pyplot as plt  # library to make draws
-import matplotlib.colors as mco  # library who have the list of colors
+
+# External imports
+import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.colors as mco
+from classes.utils.customtext import CustomText
 
 
 class GlobalTopology:
@@ -21,85 +20,75 @@ class GlobalTopology:
     }
 
     def __init__(self, v_topology, l_edges):
+        """
+        Initializes the global topology with the specified type and edges.
+        """
         self.v_topology = v_topology
         self.l_edges = l_edges
-
-        # Create the networkx graph
         self.o_graph = nx.DiGraph()
         self.o_graph.add_edges_from(self.l_edges)
-
-        # Dictionary with the colors
         self.d_network_color = {}
-        # Generate the colors for every local network
         self.generate_local_nets_colors()
 
     @classmethod
     def show_allowed_topologies(cls):
         """
-        Display the allowed topologies.
+        Displays the allowed topologies for Directed Graphs.
         """
         CustomText.make_sub_title("List of allowed topologies of Directed Graphs")
         for key, value in cls.allowed_topologies.items():
-            print(key, "-", value)
+            print(f"{key} - {value}")
 
     @classmethod
     def generate_sample_topology(cls, v_topology, n_nodes, n_edges=None):
         """
-        Genera una topología global basada en el tipo de topología especificado.
-        :param v_topology: Tipo de topología a generar.
-        :param n_nodes: Número de nodos en la topología.
-        :param n_edges: Número de aristas en la topología (si aplica).
-        :return: Instancia de la clase de topología específica.
+        Generates a global topology based on the specified type.
+        :param v_topology: Type of topology to generate.
+        :param n_nodes: Number of nodes in the topology.
+        :param n_edges: Number of edges in the topology (if applicable).
+        :return: Instance of the specific topology class.
         """
-        if v_topology not in cls.allowed_topologies.keys():
+        if v_topology not in cls.allowed_topologies:
             print('ERROR: Not permitted option')
             return None
         if n_nodes <= 1:
-            print('ERROR: Number of nodes less or equal to 1')
+            print('ERROR: Number of nodes must be greater than 1')
             return None
 
         if v_topology == 1:
-            # Generar un grafo completo
             return CompleteDigraph(n_nodes=n_nodes)
-
         elif v_topology == 2:
-            # Generar un grafo aleatorio con la topología fija
             return AleatoryFixedDigraph(n_nodes=n_nodes, n_edges=n_edges)
-
         elif v_topology == 3:
-            # Generar un grafo cíclico
-            return CycleDigraph(n_nodes=n_nodes)  # Devolver una instancia de CycleDigraph
-
+            return CycleDigraph(n_nodes=n_nodes)
         elif v_topology == 4:
-            # Generar un grafo de camino
-            return PathDigraph(n_nodes=n_nodes)  # Devolver una instancia de PathDigraph
-
+            return PathDigraph(n_nodes=n_nodes)
+        # Placeholders for additional topologies
         elif v_topology == 5:
-            # Aquí deberías definir o implementar la topología aleatoria GN
             pass
-
         elif v_topology == 6:
-            # Aquí deberías definir o implementar la topología aleatoria GNC
             pass
 
-        # Si no se encuentra un tipo de topología válido, retornar None
         return None
 
     def generate_local_nets_colors(self):
+        """
+        Generates random colors for local networks.
+        """
         l_colors = list(mco.CSS4_COLORS.keys())
         random.shuffle(l_colors)
         for i, color in enumerate(l_colors):
             self.d_network_color[i] = color
 
     def plot_topology(self, ax=None):
+        """
+        Plots the topology using matplotlib.
+        :param ax: Matplotlib axis to plot on; if None, use the current axis.
+        """
         if ax is None:
             ax = plt.gca()
 
-        if self.v_topology == 1:
-            pos = nx.random_layout(self.o_graph)
-        else:
-            pos = nx.circular_layout(self.o_graph)
-
+        pos = nx.random_layout(self.o_graph) if self.v_topology == 1 else nx.circular_layout(self.o_graph)
         node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.o_graph.nodes()]
         nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors, node_size=500, ax=ax)
         nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black', ax=ax)
@@ -109,120 +98,97 @@ class GlobalTopology:
         ax.axis("off")
 
     def get_edges(self):
+        """
+        Returns the list of edges in the graph.
+        """
         return self.l_edges
 
     def get_nodes(self):
+        """
+        Returns the set of nodes in the graph.
+        """
         return set(self.o_graph.nodes())
 
 
 class PathDigraph(GlobalTopology):
     def __init__(self, n_nodes):
-        # Crear un grafo de camino
-        G = nx.path_graph(n_nodes, nx.DiGraph())
-        # Ajustar los índices para que empiecen desde 1
+        """
+        Initializes a path graph with the given number of nodes.
+        """
+        G = nx.path_graph(n_nodes, create_using=nx.DiGraph())
         G = nx.relabel_nodes(G, {i: i + 1 for i in range(n_nodes)})
         l_edges = list(G.edges())
         self.n_nodes = n_nodes
-        super().__init__(v_topology=4, l_edges=l_edges)  # Suponiendo que v_topology=4 representa grafo de camino
+        super().__init__(v_topology=4, l_edges=l_edges)
 
     def add_node(self):
         """
-        Agrega un nuevo nodo al grafo de camino y ajusta las aristas para mantener la estructura lineal.
+        Adds a new node to the path graph and maintains the linear structure.
         """
-        # Determinar el ID del nuevo nodo
         new_node = self.n_nodes + 1
-
-        # Determinar el último nodo
         last_node = self.n_nodes
-
-        # Añadir el nuevo nodo al grafo
         self.o_graph.add_node(new_node)
-
-        # Conectar el último nodo al nuevo nodo
         self.o_graph.add_edge(last_node, new_node)
-
-        # Actualizar la lista de aristas
         self.l_edges = list(self.o_graph.edges())
-
-        # Incrementar el conteo de nodos
         self.n_nodes += 1
 
 
 class CycleDigraph(GlobalTopology):
     def __init__(self, n_nodes):
-        # Crear un grafo cíclico
-        G = nx.cycle_graph(n_nodes, nx.DiGraph())
-        # Ajustar los índices para que empiecen desde 1
+        """
+        Initializes a cycle graph with the given number of nodes.
+        """
+        G = nx.cycle_graph(n_nodes, create_using=nx.DiGraph())
         G = nx.relabel_nodes(G, {i: i + 1 for i in range(n_nodes)})
         l_edges = list(G.edges())
         self.n_nodes = n_nodes
-        super().__init__(v_topology=3, l_edges=l_edges)  # Suponiendo que v_topology=3 representa grafo cíclico
+        super().__init__(v_topology=3, l_edges=l_edges)
 
     def add_node(self):
         """
-        Agrega un nuevo nodo al grafo cíclico y ajusta las aristas para mantener la estructura cíclica.
+        Adds a new node to the cycle graph and maintains the cyclic structure.
         """
-        # Determinar el ID del nuevo nodo
         new_node = self.n_nodes + 1
-
-        # Determinar el último nodo y el primer nodo
         last_node = self.n_nodes
         first_node = 1
-
-        # Eliminar la arista que cierra el ciclo actual
         self.o_graph.remove_edge(last_node, first_node)
-
-        # Añadir el nuevo nodo al grafo
         self.o_graph.add_node(new_node)
-
-        # Conectar el nuevo nodo al último nodo
         self.o_graph.add_edge(last_node, new_node)
-
-        # Conectar el nuevo nodo al primer nodo
         self.o_graph.add_edge(new_node, first_node)
-
-        # Actualizar la lista de aristas
         self.l_edges = list(self.o_graph.edges())
-
-        # Incrementar el conteo de nodos
         self.n_nodes += 1
 
 
 class CompleteDigraph(GlobalTopology):
     def __init__(self, n_nodes):
-        # Crear un grafo completo con n_nodes nodos
+        """
+        Initializes a complete graph with the given number of nodes.
+        """
         G = nx.complete_graph(n_nodes, create_using=nx.DiGraph())
-        # Ajustar los índices para que empiecen desde 1
         G = nx.relabel_nodes(G, {i: i + 1 for i in G.nodes()})
         l_edges = list(G.edges())
         self.n_nodes = n_nodes
-        super().__init__(v_topology=1, l_edges=l_edges)  # Suponiendo que v_topology=1 representa grafo completo
+        super().__init__(v_topology=1, l_edges=l_edges)
 
     def add_node(self):
         """
-        Agrega un nuevo nodo al grafo completo y lo conecta con todos los nodos existentes.
+        Adds a new node to the complete graph and connects it to all existing nodes.
         """
-        # Determinar el ID del nuevo nodo
         new_node = max(self.o_graph.nodes()) + 1
-
-        # Agregar el nuevo nodo al grafo
         self.o_graph.add_node(new_node)
-
-        # Conectar el nuevo nodo con todos los nodos existentes
         for node in self.o_graph.nodes():
             if node != new_node:
                 self.o_graph.add_edge(new_node, node)
                 self.o_graph.add_edge(node, new_node)
-
-        # Actualizar la lista de aristas
         self.l_edges = list(self.o_graph.edges())
-
-        # Incrementar el conteo de nodos
         self.n_nodes += 1
 
 
 class AleatoryFixedDigraph(GlobalTopology):
     def __init__(self, n_nodes, n_edges=None):
+        """
+        Initializes a random directed graph with fixed edges.
+        """
         self.n_nodes = n_nodes
         self.l_nodes = list(range(1, n_nodes + 1))
         self.n_edges = n_edges if n_edges is not None else n_nodes
@@ -231,6 +197,9 @@ class AleatoryFixedDigraph(GlobalTopology):
         super().__init__(v_topology=2, l_edges=self.l_edges)
 
     def generate_edges(self):
+        """
+        Generates edges for the random directed graph.
+        """
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
 
@@ -245,10 +214,12 @@ class AleatoryFixedDigraph(GlobalTopology):
 
         mapping = {node: node + 1 for node in G.nodes()}
         G = nx.relabel_nodes(G, mapping)
-
         self.l_edges = list(G.edges())
 
     def add_edge(self):
+        """
+        Adds a new edge to the graph while maintaining constraints.
+        """
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
         G.add_edges_from(self.l_edges)
@@ -264,6 +235,9 @@ class AleatoryFixedDigraph(GlobalTopology):
         self.update_parent_graph()
 
     def add_node(self):
+        """
+        Adds a new node to the graph and updates the edges.
+        """
         start_time = time.time()
 
         G = nx.DiGraph()
@@ -275,13 +249,11 @@ class AleatoryFixedDigraph(GlobalTopology):
         G.add_node(new_node)
         print(f"Adding new node: {new_node}")
 
-        # Remove an edge
         edge_to_remove = random.choice(list(G.edges))
         G.remove_edge(*edge_to_remove)
         self.l_edges.remove(edge_to_remove)
         print(f"Removed edge: {edge_to_remove}")
 
-        # Add an edge to the new node
         while True:
             u = random.choice(self.l_nodes[:-1])
             if not G.has_edge(u, new_node):
@@ -290,7 +262,6 @@ class AleatoryFixedDigraph(GlobalTopology):
                 print(f"Added edge from {u} to {new_node}")
                 break
 
-        # Add an edge from the new node
         while True:
             v = random.choice(self.l_nodes[:-1])
             if G.in_degree(v) < 2 and not G.has_edge(new_node, v):
@@ -299,7 +270,6 @@ class AleatoryFixedDigraph(GlobalTopology):
                 print(f"Added edge from {new_node} to {v}")
                 break
 
-        # Ensure all nodes are connected
         for node in self.l_nodes:
             if G.in_degree(node) == 0 and G.out_degree(node) == 0:
                 u = random.choice([n for n in self.l_nodes if n != node])
@@ -315,9 +285,15 @@ class AleatoryFixedDigraph(GlobalTopology):
         print(f"Node {new_node} added in {end_time - start_time} seconds")
 
     def update_parent_graph(self):
+        """
+        Updates the graph representation after modifications.
+        """
         self.o_graph = nx.DiGraph()
         self.o_graph.add_nodes_from(self.l_nodes)
         self.o_graph.add_edges_from(self.l_edges)
 
     def get_edges(self):
+        """
+        Returns the list of edges in the graph.
+        """
         return self.l_edges

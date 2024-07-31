@@ -4,17 +4,21 @@ import pandas as pd
 import pickle
 
 # Local imports
+from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
+from classes.globaltopology import GlobalTopology
+from classes.cbnetwork import CBN
 
 # Experiment parameters
-N_SAMPLES = 100
+N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 9
+N_LOCAL_NETWORKS_MAX = 6
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 2
 N_CLAUSES_FUNCTION = 2
+N_LITERALS = 2
 
 # Verbose parameters
 SHOW_MESSAGES = True
@@ -53,26 +57,30 @@ if os.path.exists(file_path):
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):
     # Generate the aleatory local network template object
-    o_topology_template = AleatoryTemplate.generate_aleatory_template(n_var_network=N_VAR_NETWORK,
-                                                                      v_topology=V_TOPOLOGY)
-    for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
-        old_o_graph = None
-        for n_edges in range(n_local_networks, n_local_networks + (n_local_networks // 2) + 1):
-            l_data_sample = []
-            print(f"EXPERIMENT {i_sample} OF {N_SAMPLES} TOPOLOGY: {V_TOPOLOGY}")
-            print(f"NETWORKS: {n_local_networks} EDGES: {n_edges} VARIABLES: {N_VAR_NETWORK}")
+    o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
+                                      n_vars_network=N_VAR_NETWORK,
+                                      n_input_variables=N_INPUT_VARIABLES,
+                                      n_output_variables=N_OUTPUT_VARIABLES,
+                                      n_max_of_clauses=N_CLAUSES_FUNCTION,
+                                      n_max_of_literals=N_LITERALS)
 
-            # If it is the first number of edges, generate a linear CBN from the template
-            if old_o_graph is None:
-                o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                       n_local_networks=n_local_networks,
-                                                                       n_edges=n_edges)
-            # Update the number of directed edges
-            else:
-                o_cbn = o_topology_template.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                                                       n_local_networks=n_local_networks,
-                                                                       n_edges=n_edges,
-                                                                       o_base_graph=old_o_graph)
+    for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
+        l_data_sample = []
+        print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
+        print(f"Networks: {n_local_networks} Variables: {N_VAR_NETWORK}")
+
+        # Generate the global topology object
+        o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
+                                                                    n_nodes=n_local_networks)
+        print("Generated Global Topology")
+
+        for n_edges in range(n_local_networks, n_local_networks + (n_local_networks // 2) + 1):
+            # Generate the CBN with the topology and template
+            o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
+                                                   n_local_networks=n_local_networks,
+                                                   n_vars_network=N_VAR_NETWORK,
+                                                   o_template=o_template,
+                                                   l_global_edges=o_global_topology.l_edges)
 
             # Find attractors
             v_begin_find_attractors = time.time()
@@ -102,7 +110,7 @@ for i_sample in range(1, N_SAMPLES + 1):
                 "n_output_variables": N_OUTPUT_VARIABLES,
                 "n_clauses_function": N_CLAUSES_FUNCTION,
                 "n_edges": n_edges,
-                # Calculate parameters
+                # Calculated parameters
                 "n_local_attractors": o_cbn.get_n_local_attractors(),
                 "n_pair_attractors": o_cbn.get_n_pair_attractors(),
                 "n_attractor_fields": o_cbn.get_n_attractor_fields(),
@@ -113,11 +121,10 @@ for i_sample in range(1, N_SAMPLES + 1):
             }
             l_data_sample.append(d_collect_indicators)
 
-            # Save the collected indicator to profiler_analysis
+            # Save the collected indicators to CSV
             pf_res = pd.DataFrame(l_data_sample)
             pf_res.reset_index(drop=True, inplace=True)
 
-            # Save the data in CSV file
             mode = 'a' if os.path.exists(file_path) else 'w'
             header = not os.path.exists(file_path)
             pf_res.to_csv(file_path, mode=mode, header=header, index=False)
@@ -131,12 +138,13 @@ for i_sample in range(1, N_SAMPLES + 1):
 
             print("Pickle object saved in:", pickle_path)
 
-            # Update old_graph
-            old_o_graph = o_cbn.o_global_topology.o_graph
+            # Add an edge to the global topology
+            if n_edges < n_local_networks + (n_local_networks // 2):
+                o_global_topology.add_edge()
 
             CustomText.print_duplex_line()
-    CustomText.print_stars()
-CustomText.print_dollars()
+        CustomText.print_stars()
+    CustomText.print_dollars()
 
 # Take the time of the experiment
 v_end_exp = time.time()
@@ -145,4 +153,3 @@ print("Time experiment (in seconds): ", v_time_exp)
 
 print("=" * 80)
 print("END EXPERIMENT")
-
