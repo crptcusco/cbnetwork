@@ -99,15 +99,3 @@ class CNFList:
         # Convert the unique tuples back to lists
         return [list(clause) for clause in unique_clauses]
 
-# # parameters
-# N_VARIABLES = 5
-# N_INPUT_VARIABLES = 2
-# N_OUTPUT_VARIABLES = 2
-# V_TOPOLOGY = 2
-#
-# # Example usage:
-# l_internal_variables = [1, 2, 3, 4, 5]
-# input_coupling_signal_index = 6
-# for variable in l_internal_variables:
-#     cnf = CNFList.generate_cnf(l_internal_variables, input_coupling_signal_index)
-#     print(variable, ":", cnf)

@@ -66,7 +66,7 @@ class LocalNetworkTemplate:
         Display information about the LocalNetworkTemplate.
         """
         print("Local Network Template")
-        print("-" * 80)
+        print("-" * 50)
         print("Local dynamic:")
         for key, value in self.d_variable_cnf_function.items():
             print(key, ":", value)

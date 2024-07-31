@@ -12,7 +12,7 @@ from classes.cbnetwork import CBN
 # Experiment parameters
 N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 3
-N_LOCAL_NETWORKS_MAX = 6
+N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
@@ -25,7 +25,7 @@ SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
-print("=" * 80)
+print("=" * 50)
 
 # Capture the time for all the experiment
 v_begin_exp = time.time()
@@ -72,7 +72,7 @@ for i_sample in range(1, N_SAMPLES + 1):
         # Generate the global topology object
         o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                     n_nodes=n_local_networks)
-        print("Generated Global Topology")
+        # print("Generated Global Topology")
 
         for n_edges in range(n_local_networks, n_local_networks + (n_local_networks // 2) + 1):
             # Generate the CBN with the topology and template
@@ -138,9 +138,8 @@ for i_sample in range(1, N_SAMPLES + 1):
 
             print("Pickle object saved in:", pickle_path)
 
-            # Add an edge to the global topology
-            if n_edges < n_local_networks + (n_local_networks // 2):
-                o_global_topology.add_edge()
+            # add edge
+            o_global_topology.add_edge()
 
             CustomText.print_duplex_line()
         CustomText.print_stars()
@@ -151,5 +150,5 @@ v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
 
-print("=" * 80)
+print("=" * 50)
 print("END EXPERIMENT")
