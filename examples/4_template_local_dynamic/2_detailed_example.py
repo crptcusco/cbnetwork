@@ -8,8 +8,8 @@ from classes.localtemplates import LocalNetworkTemplate
 # Parameters
 N_LOCAL_NETWORKS = 6
 N_VARS_NETWORK = 5
-V_TOPOLOGY = 4
-N_EDGES = 10
+V_TOPOLOGY = 2
+N_EDGES = 6
 N_INPUT_VARS = 2
 N_OUTPUT_VARS = 2
 N_MAX_CLAUSES = 2

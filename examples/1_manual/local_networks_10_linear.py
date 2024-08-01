@@ -35,18 +35,26 @@ for i_local_net in d_network_variables.keys():
 # generate the directed edges
 cont_output_variable = 0
 index_variable_signal = (n_local_nets * n_var_net) + 1
+index_signal = 1
 for t_edge in l_edges:
     l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
     # generate coupling function
     coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
     # generate the Directed Edge object
-    o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables, coupling_function)
+    o_directed_edge = DirectedEdge(index=index_signal,
+                                   index_variable_signal=index_variable_signal,
+                                   input_local_network=t_edge[1],
+                                   output_local_network=t_edge[0],
+                                   l_output_variables=l_output_variables,
+                                   coupling_function=coupling_function)
     # add the directed object to list
     l_directed_edges.append(o_directed_edge)
     # updating the count of variables
     cont_output_variable += 5
     # updating the index variable signal
     index_variable_signal += 1
+    # update index signal
+    index_signal += 1
 
 # Generate the functions for every variable in the CBN
 d_var_cnf_func = {}
@@ -71,7 +79,7 @@ for key, value in d_var_cnf_func.items():
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.l_index, l_directed_edges)
+    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
     o_local_network.process_input_signals(l_input_signals)
     for i_local_variable in o_local_network.l_var_intern:
         o_variable_model = InternalVariable(i_local_variable, d_var_cnf_func[i_local_variable])
@@ -107,4 +115,11 @@ o_cbn.show_stable_attractor_fields()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
+
+# Show the number of attractor fields by global scene
+o_cbn.generate_global_scenes()
+o_cbn.show_global_scenes()
+
+# Count the attractor fields by global scene
+o_cbn.count_fields_by_global_scenes()
 
