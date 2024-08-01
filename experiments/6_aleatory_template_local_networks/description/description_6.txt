@@ -1,0 +1,66 @@
+**************************************************
+CBN DESCRIPTION
+==================================================
+LOCAL NETWORKS: [1, 2, 3, 4, 5, 6]
+--------------------------------------------------
+Local Network: 1
+Internal Variables:  [1, 2, 3, 4, 5]
+External Variables:  [36]
+Total Variables:  [1, 2, 3, 4, 5, 36]
+Variable Index: 1 -> CNF :[[36], [-5, -1]]
+Variable Index: 2 -> CNF :[[-4, 3]]
+Variable Index: 3 -> CNF :[[-5, -2]]
+Variable Index: 4 -> CNF :[[36], [3, 4]]
+Variable Index: 5 -> CNF :[[-4, 5], [-3, 5]]
+--------------------------------------------------
+Local Network: 2
+Internal Variables:  [6, 7, 8, 9, 10]
+External Variables:  [31, 32]
+Total Variables:  [6, 7, 8, 9, 10, 31, 32]
+Variable Index: 6 -> CNF :[[31, 32], [-10, -6]]
+Variable Index: 7 -> CNF :[[-9, 8]]
+Variable Index: 8 -> CNF :[[-10, -7]]
+Variable Index: 9 -> CNF :[[31, 32], [8, 9]]
+Variable Index: 10 -> CNF :[[-9, 10], [-8, 10]]
+--------------------------------------------------
+Local Network: 3
+Internal Variables:  [11, 12, 13, 14, 15]
+External Variables:  [33, 34]
+Total Variables:  [11, 12, 13, 14, 15, 33, 34]
+Variable Index: 11 -> CNF :[[33, 34], [-15, -11]]
+Variable Index: 12 -> CNF :[[-14, 13]]
+Variable Index: 13 -> CNF :[[-15, -12]]
+Variable Index: 14 -> CNF :[[33, 34], [13, 14]]
+Variable Index: 15 -> CNF :[[-14, 15], [-13, 15]]
+--------------------------------------------------
+Local Network: 4
+Internal Variables:  [16, 17, 18, 19, 20]
+External Variables:  []
+Total Variables:  [16, 17, 18, 19, 20]
+Variable Index: 16 -> CNF :[[-20, -16]]
+Variable Index: 17 -> CNF :[[-19, 18]]
+Variable Index: 18 -> CNF :[[-20, -17]]
+Variable Index: 19 -> CNF :[[18, 19]]
+Variable Index: 20 -> CNF :[[-19, 20], [-18, 20]]
+--------------------------------------------------
+Local Network: 5
+Internal Variables:  [21, 22, 23, 24, 25]
+External Variables:  []
+Total Variables:  [21, 22, 23, 24, 25]
+Variable Index: 21 -> CNF :[[-25, -21]]
+Variable Index: 22 -> CNF :[[-24, 23]]
+Variable Index: 23 -> CNF :[[-25, -22]]
+Variable Index: 24 -> CNF :[[23, 24]]
+Variable Index: 25 -> CNF :[[-24, 25], [-23, 25]]
+--------------------------------------------------
+Local Network: 6
+Internal Variables:  [26, 27, 28, 29, 30]
+External Variables:  [35]
+Total Variables:  [26, 27, 28, 29, 30, 35]
+Variable Index: 26 -> CNF :[[35], [-30, -26]]
+Variable Index: 27 -> CNF :[[-29, 28]]
+Variable Index: 28 -> CNF :[[-30, -27]]
+Variable Index: 29 -> CNF :[[35], [28, 29]]
+Variable Index: 30 -> CNF :[[-29, 30], [-28, 30]]
+==================================================
+DIRECTED EDGES: [1, 2, 3, 4, 5, 6]
