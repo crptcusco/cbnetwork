@@ -1,10 +1,9 @@
 #!/bin/bash
-#SBATCH --nodes=2            # Número de Nós
-#SBATCH --ntasks-per-node=3  # Número de tarefas por Nó
-#SBATCH --ntasks=6          # Número total de tarefas
-#SBATCH -p cpu_small        # Fila (partition) a ser utilizada
+#SBATCH --nodes=3            # Número de Nós
+#SBATCH --ntasks-per-node=1  # Número de tarefas por Nó
+#SBATCH --ntasks=3           # Número total de tarefas
+#SBATCH -p cpu               # Fila (partition) a ser utilizada
 #SBATCH -J CRPT              # Nome do job
-#SBATCH --time=48:00:00      # Tempo máximo de execução
 #SBATCH -e log/slurm-%j.err  # Arquivo de erro
 #SBATCH -o log/slurm-%j.out  # Arquivo de saída
 
