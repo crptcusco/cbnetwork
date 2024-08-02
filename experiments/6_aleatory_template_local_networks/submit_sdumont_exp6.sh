@@ -40,7 +40,7 @@ pip install --upgrade typeguard
 pip install parsl satispy networkx pandas matplotlib
 
 # Navega até o diretório de trabalho
-cd /scratch/deephash/carlos.tovar/cbnetwork/experiments/1_networks_linear
+cd /scratch/deephash/carlos.tovar/cbnetwork/experiments/6_aleatory_template_local_networks
 
 echo "Starting Test Script"
 export PYTHONPATH=/scratch/deephash/carlos.tovar/cbnetwork/:$PYTHONPATH
