@@ -4,7 +4,7 @@
 #SBATCH --ntasks=18          # Número total de tarefas
 #SBATCH -p cpu_shared        # Fila (partition) a ser utilizada
 #SBATCH -J CRPT              # Nome do job
-#SBATCH --mem=300G           # Memoria total solicitada
+#SBATCH --mem=200G           # Memoria total solicitada
 #SBATCH --time=48:00:00      # Tempo máximo de execução
 #SBATCH -e log/slurm-%j.err  # Arquivo de erro
 #SBATCH -o log/slurm-%j.out  # Arquivo de saída
