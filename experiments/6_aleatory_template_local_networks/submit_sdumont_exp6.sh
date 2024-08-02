@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --nodes=3            # Número de Nós
+#SBATCH --nodes=3 -C cpu     # Número de Nós
 #SBATCH --ntasks-per-node=1  # Número de tarefas por Nó
 #SBATCH --ntasks=3           # Número total de tarefas
 #SBATCH -p cpu_small         # Fila (partition) a ser utilizada
