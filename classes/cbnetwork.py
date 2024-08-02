@@ -66,7 +66,7 @@ class CBN:
             if destination in local_network_dict:
                 o_local_network = local_network_dict[destination]
                 o_local_network.l_output_signals.append(edge)
-                print(edge)
+                # print(edge)
 
     def update_network_by_index(self, o_local_network_update) -> bool:
         """
@@ -83,11 +83,11 @@ class CBN:
             if o_local_network.index == o_local_network_update.index:
                 # Update the local network in the list
                 self.l_local_networks[i] = o_local_network_update
-                print(f"Local Network with index {o_local_network_update.index} updated")
+                # print(f"Local Network with index {o_local_network_update.index} updated")
                 return True
 
         # If no network was found, print an error message
-        print(f"ERROR: Local Network with index {o_local_network_update.index} not found")
+        # print(f"ERROR: Local Network with index {o_local_network_update.index} not found")
         return False
 
     def find_local_attractors_sequential(self) -> None:
@@ -115,7 +115,7 @@ class CBN:
         # Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
-        print('Number of local attractors:', self._count_total_attractors())
+        # print('Number of local attractors:', self._count_total_attractors())
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
 
     def _generate_local_scenes(self, o_local_network: LocalNetwork) -> Optional[List[str]]:
@@ -200,13 +200,13 @@ class CBN:
             signal_set_length = len(set(l_signals_for_output))
             if signal_set_length == 1:
                 o_output_signal.kind_signal = 1
-                print("INFO: the output signal is restricted")
+                # print("INFO: the output signal is restricted")
             elif signal_set_length == 2:
                 o_output_signal.kind_signal = 3
-                print("INFO: the output signal is stable")
+                # print("INFO: the output signal is stable")
             else:
                 o_output_signal.kind_signal = 4
-                print("INFO: the scene signal is not stable. This CBN doesn't have stable Attractor Fields")
+                # print("INFO: the scene signal is not stable. This CBN doesn't have stable Attractor Fields")
 
     def find_compatible_pairs(self) -> None:
         """
@@ -254,7 +254,7 @@ class CBN:
                 n_pairs += len(o_output_signal.d_comp_pairs_attractors_by_value[0])
                 n_pairs += len(o_output_signal.d_comp_pairs_attractors_by_value[1])
 
-        print(f'Number of attractor pairs: {n_pairs}')
+        # print(f'Number of attractor pairs: {n_pairs}')
         CustomText.make_sub_sub_title('END FIND ATTRACTOR PAIRS')
 
     def order_edges_by_compatibility(self):
@@ -300,7 +300,7 @@ class CBN:
 
         # Combine the base list with the rest of the groups
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
-        print("Directed Edges ordered.")
+        # print("Directed Edges ordered.")
 
     def mount_stable_attractor_fields(self) -> None:
         """
@@ -383,7 +383,7 @@ class CBN:
         for i, base_element in enumerate(l_base_pairs, start=1):
             self.d_attractor_fields[i] = list({item for pair in base_element for item in pair})
 
-        print("Number of attractor fields found:", len(l_base_pairs))
+        # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
     # SHOW FUNCTIONS
@@ -473,6 +473,33 @@ class CBN:
         print("Number of attractor fields:", self.get_n_attractor_fields())
         CustomText.print_simple_line()
 
+    # Método para mostrar el diccionario de atractores locales
+    def show_local_attractors_dictionary(self) -> None:
+        CustomText.make_title('Global Dictionary of local attractors')
+        for key, value in self.d_local_attractors.items():
+            print(key, '->', value)
+
+    # Método para mostrar campos de atractores estables de manera detallada
+    def show_stable_attractor_fields_detailed(self) -> None:
+        CustomText.print_duplex_line()
+        print("Show the list of attractor fields")
+        print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
+        for key, value in self.d_attractor_fields.items():
+            CustomText.print_simple_line()
+            print(key, '->', value)
+            for i_attractor in value:
+                print(i_attractor, '->', self.d_local_attractors[i_attractor])
+                o_attractor = self.get_local_attractor_by_index(i_attractor)
+                if o_attractor:
+                    o_attractor.show()
+
+    # Método para mostrar campos de atractores
+    def show_attractors_fields(self) -> None:
+        CustomText.make_sub_title('List of attractor fields')
+        for key, value in self.d_attractor_fields.items():
+            print(key, "->", value)
+        print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
+
     # GET FUNCTIONS
     def get_network_by_index(self, index: int) -> Optional[LocalNetwork]:
         for o_local_network in self.l_local_networks:
@@ -539,35 +566,8 @@ class CBN:
                 for o_attractor in o_scene.l_attractors:
                     if o_attractor.g_index == i_attractor:
                         return o_attractor
-        print('ERROR: Attractor index not found')
+        # print('ERROR: Attractor index not found')
         return None
-
-    # Método para mostrar el diccionario de atractores locales
-    def show_local_attractors_dictionary(self) -> None:
-        CustomText.make_title('Global Dictionary of local attractors')
-        for key, value in self.d_local_attractors.items():
-            print(key, '->', value)
-
-    # Método para mostrar campos de atractores estables de manera detallada
-    def show_stable_attractor_fields_detailed(self) -> None:
-        CustomText.print_duplex_line()
-        print("Show the list of attractor fields")
-        print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
-        for key, value in self.d_attractor_fields.items():
-            CustomText.print_simple_line()
-            print(key, '->', value)
-            for i_attractor in value:
-                print(i_attractor, '->', self.d_local_attractors[i_attractor])
-                o_attractor = self.get_local_attractor_by_index(i_attractor)
-                if o_attractor:
-                    o_attractor.show()
-
-    # Método para mostrar campos de atractores
-    def show_attractors_fields(self) -> None:
-        CustomText.make_sub_title('List of attractor fields')
-        for key, value in self.d_attractor_fields.items():
-            print(key, "->", value)
-        print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
 
     # Método para generar escenas globales
     def generate_global_scenes(self) -> None:
@@ -951,8 +951,8 @@ class CBN:
 
         # Update the dynamics for each local network
         for o_local_network in l_local_networks:
-            CustomText.print_simple_line()
-            print("Local Network:", o_local_network.index)
+            # CustomText.print_simple_line()
+            # print("Local Network:", o_local_network.index)
 
             # List to hold the function descriptions for the variables
             des_funct_variables = []
@@ -976,8 +976,8 @@ class CBN:
             # Update the local network with the function descriptions
             o_local_network.des_funct_variables = des_funct_variables.copy()
             l_local_networks_updated.append(o_local_network)
-            print("Local network created:", o_local_network.index)
-            CustomText.print_simple_line()
+            # print("Local network created:", o_local_network.index)
+            # CustomText.print_simple_line()
 
         # Return the updated list of local networks
         return l_local_networks_updated
@@ -1007,9 +1007,9 @@ class CBN:
         i_template_variable = i_local_variable - ((o_local_network.index - 1) * n_local_variables) + n_local_variables
         pre_l_clauses_node = o_template.d_variable_cnf_function[i_template_variable]
 
-        print("Local Variable index:", i_local_variable)
-        print("Template Variable index:", i_template_variable)
-        print("Template Function:", pre_l_clauses_node)
+        # print("Local Variable index:", i_local_variable)
+        # print("Template Variable index:", i_template_variable)
+        # print("Template Function:", pre_l_clauses_node)
 
         # Update the CNF function clauses with the specific variable index
         l_clauses_node = []
@@ -1045,8 +1045,8 @@ class CBN:
         # Remove empty clauses
         l_clauses_node = [clause for clause in l_clauses_node if clause]
 
-        print("Local Variable Index:", i_local_variable)
-        print("CNF Function:", l_clauses_node)
+        # print("Local Variable Index:", i_local_variable)
+        # print("CNF Function:", l_clauses_node)
 
         return l_clauses_node
 
