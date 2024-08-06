@@ -10,7 +10,7 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # Experiment parameters
-N_SAMPLES = 700
+N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VAR_NETWORK = 5
@@ -65,16 +65,18 @@ for i_sample in range(1, N_SAMPLES + 1):
                                       n_max_of_literals=N_LITERALS)
 
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
-        l_data_sample = []
-        print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
-        print(f"Networks: {n_local_networks} Variables: {N_VAR_NETWORK}")
-
         # Generate the global topology object
         o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                     n_nodes=n_local_networks)
         # print("Generated Global Topology")
+        v_begin_edges = n_local_networks
+        v_end_edges = n_local_networks + (n_local_networks // 2) + 1
 
-        for n_edges in range(n_local_networks, n_local_networks + (n_local_networks // 2) + 1):
+        for n_edges in range(v_begin_edges, v_end_edges):
+            print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
+            print(f"Networks: {n_local_networks} Variables: {N_VAR_NETWORK}")
+            print(f"Current edges: {n_edges}")
+
             # Generate the CBN with the topology and template
             o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
                                                    n_local_networks=n_local_networks,
@@ -119,15 +121,10 @@ for i_sample in range(1, N_SAMPLES + 1):
                 "n_time_find_pairs": n_time_find_pairs,
                 "n_time_find_fields": n_time_find_fields
             }
-            l_data_sample.append(d_collect_indicators)
 
             # Save the collected indicators to CSV
-            pf_res = pd.DataFrame(l_data_sample)
-            pf_res.reset_index(drop=True, inplace=True)
-
-            mode = 'a' if os.path.exists(file_path) else 'w'
-            header = not os.path.exists(file_path)
-            pf_res.to_csv(file_path, mode=mode, header=header, index=False)
+            pf_res = pd.DataFrame([d_collect_indicators])  # Wrap in list to create a single-row DataFrame
+            pf_res.to_csv(file_path, mode='a', header=not os.path.exists(file_path), index=False)
 
             print("Experiment data saved in:", file_path)
 
