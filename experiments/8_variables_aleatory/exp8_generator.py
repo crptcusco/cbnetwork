@@ -137,7 +137,8 @@ for i_sample in range(1, N_SAMPLES + 1):
         o_global_topology.add_edge()
 
         CustomText.print_duplex_line()
-    CustomText.print_dollars()
+    CustomText.print_stars()
+CustomText.print_dollars()
 
 # Take the time of the experiment
 v_end_exp = time.time()
