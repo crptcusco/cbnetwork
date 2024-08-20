@@ -71,7 +71,6 @@ for i_sample in range(1, N_SAMPLES + 1):
                                           n_max_of_clauses=N_CLAUSES_FUNCTION,
                                           n_max_of_literals=N_LITERALS)
 
-
         print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
         print(f"Networks: {N_LOCAL_NETWORKS} Variables: {N_LOCAL_NETWORKS}")
         print(f"Current edges: {N_EDGES}")
