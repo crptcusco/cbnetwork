@@ -62,7 +62,7 @@ for i_sample in range(1, N_SAMPLES + 1):
     o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                 n_nodes=N_LOCAL_NETWORKS)
 
-    for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1):
+    for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5):
         # Generate the aleatory local network template object
         o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
                                           n_vars_network=n_vars_network,
