@@ -133,8 +133,8 @@ for i_sample in range(1, N_SAMPLES + 1):
 
         print("Pickle object saved in:", pickle_path)
 
-        # add edge
-        o_global_topology.add_edge()
+        # # add edge
+        # o_global_topology.add_edge()
 
         CustomText.print_duplex_line()
     CustomText.print_stars()
