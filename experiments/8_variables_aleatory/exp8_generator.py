@@ -62,7 +62,7 @@ for i_sample in range(1, N_SAMPLES + 1):
     o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                 n_nodes=N_LOCAL_NETWORKS)
 
-    for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1):
+    for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5):
         # Generate the aleatory local network template object
         o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
                                           n_vars_network=n_vars_network,
@@ -70,7 +70,6 @@ for i_sample in range(1, N_SAMPLES + 1):
                                           n_output_variables=N_OUTPUT_VARIABLES,
                                           n_max_of_clauses=N_CLAUSES_FUNCTION,
                                           n_max_of_literals=N_LITERALS)
-
 
         print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
         print(f"Networks: {N_LOCAL_NETWORKS} Variables: {N_LOCAL_NETWORKS}")
@@ -134,11 +133,12 @@ for i_sample in range(1, N_SAMPLES + 1):
 
         print("Pickle object saved in:", pickle_path)
 
-        # add edge
-        o_global_topology.add_edge()
+        # # add edge
+        # o_global_topology.add_edge()
 
         CustomText.print_duplex_line()
-    CustomText.print_dollars()
+    CustomText.print_stars()
+CustomText.print_dollars()
 
 # Take the time of the experiment
 v_end_exp = time.time()
