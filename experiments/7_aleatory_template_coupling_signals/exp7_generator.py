@@ -57,12 +57,9 @@ if os.path.exists(file_path):
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):
     # Generate the aleatory local network template object
-    o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
-                                      n_vars_network=N_VAR_NETWORK,
-                                      n_input_variables=N_INPUT_VARIABLES,
-                                      n_output_variables=N_OUTPUT_VARIABLES,
-                                      n_max_of_clauses=N_CLAUSES_FUNCTION,
-                                      n_max_of_literals=N_LITERALS)
+    o_template = LocalNetworkTemplate(n_vars_network=N_VAR_NETWORK, n_input_variables=N_INPUT_VARIABLES,
+                                      n_output_variables=N_OUTPUT_VARIABLES, n_max_of_clauses=N_CLAUSES_FUNCTION,
+                                      n_max_of_literals=N_LITERALS, v_topology=V_TOPOLOGY)
 
     for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):
         # Generate the global topology object

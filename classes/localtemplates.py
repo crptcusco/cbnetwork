@@ -6,8 +6,8 @@ from classes.cnflist import CNFList
 
 
 class LocalNetworkTemplate:
-    def __init__(self, v_topology, n_vars_network, n_input_variables, n_output_variables,
-                 n_max_of_clauses=None, n_max_of_literals=None):
+    def __init__(self, n_vars_network, n_input_variables, n_output_variables,
+                 n_max_of_clauses=None, n_max_of_literals=None, v_topology=1):
         """
         Initialize a LocalNetworkTemplate object.
 

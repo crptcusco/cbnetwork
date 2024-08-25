@@ -21,12 +21,9 @@ o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOG
                                                             n_edges=N_EDGES)
 
 # GENERATE THE LOCAL NETWORK TEMPLATE
-o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
-                                  n_vars_network=N_VARS_NETWORK,
-                                  n_input_variables=N_INPUT_VARS,
-                                  n_output_variables=N_OUTPUT_VARS,
-                                  n_max_of_clauses=N_MAX_CLAUSES,
-                                  n_max_of_literals=N_MAX_LITERALS)
+o_template = LocalNetworkTemplate(n_vars_network=N_VARS_NETWORK, n_input_variables=N_INPUT_VARS,
+                                  n_output_variables=N_OUTPUT_VARS, n_max_of_clauses=N_MAX_CLAUSES,
+                                  n_max_of_literals=N_MAX_LITERALS, v_topology=V_TOPOLOGY)
 
 # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
 o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,

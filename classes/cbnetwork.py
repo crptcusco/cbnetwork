@@ -782,14 +782,9 @@ class CBN:
         )
 
         # GENERATE THE LOCAL NETWORK TEMPLATE
-        o_template = LocalNetworkTemplate(
-            v_topology=v_topology,
-            n_vars_network=n_vars_network,
-            n_input_variables=n_input_variables,
-            n_output_variables=n_output_variables,
-            n_max_of_clauses=n_max_of_clauses,
-            n_max_of_literals=n_max_of_literals
-        )
+        o_template = LocalNetworkTemplate(n_vars_network=n_vars_network, n_input_variables=n_input_variables,
+                                          n_output_variables=n_output_variables, n_max_of_clauses=n_max_of_clauses,
+                                          n_max_of_literals=n_max_of_literals, v_topology=v_topology)
 
         # GENERATE THE CBN WITH THE TOPOLOGY AND TEMPLATE
         o_cbn = CBN.generate_cbn_from_template(

@@ -67,12 +67,9 @@ if os.path.exists(file_path):
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
 
     # GENERATE THE LOCAL NETWORK TEMPLATE
-    o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
-                                      n_vars_network=N_VARS_NETWORK,
-                                      n_input_variables=N_INPUT_VARS,
-                                      n_output_variables=N_OUTPUT_VARS,
-                                      n_max_of_clauses=N_MAX_CLAUSES,
-                                      n_max_of_literals=N_MAX_LITERALS)
+    o_template = LocalNetworkTemplate(n_vars_network=N_VARS_NETWORK, n_input_variables=N_INPUT_VARS,
+                                      n_output_variables=N_OUTPUT_VARS, n_max_of_clauses=N_MAX_CLAUSES,
+                                      n_max_of_literals=N_MAX_LITERALS, v_topology=V_TOPOLOGY)
 
     # GENERATE THE GLOBAL TOPOLOGY
     o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,

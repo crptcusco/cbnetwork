@@ -64,12 +64,9 @@ for i_sample in range(1, N_SAMPLES + 1):
 
     for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5):
         # Generate the aleatory local network template object
-        o_template = LocalNetworkTemplate(v_topology=V_TOPOLOGY,
-                                          n_vars_network=n_vars_network,
-                                          n_input_variables=N_INPUT_VARIABLES,
-                                          n_output_variables=N_OUTPUT_VARIABLES,
-                                          n_max_of_clauses=N_CLAUSES_FUNCTION,
-                                          n_max_of_literals=N_LITERALS)
+        o_template = LocalNetworkTemplate(n_vars_network=n_vars_network, n_input_variables=N_INPUT_VARIABLES,
+                                          n_output_variables=N_OUTPUT_VARIABLES, n_max_of_clauses=N_CLAUSES_FUNCTION,
+                                          n_max_of_literals=N_LITERALS, v_topology=V_TOPOLOGY)
 
         print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
         print(f"Networks: {N_LOCAL_NETWORKS} Variables: {N_LOCAL_NETWORKS}")
