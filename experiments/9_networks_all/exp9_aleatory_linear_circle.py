@@ -16,7 +16,7 @@ using aleatory generated template for the local network
 """
 
 # experiment parameters
-N_SAMPLES = 10
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 9
 N_VARS_NETWORK = 5
