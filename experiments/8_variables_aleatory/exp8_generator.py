@@ -1,29 +1,26 @@
+# external imports
 import os
 import time
 import pandas as pd
 import pickle
 
-# Local imports
+# local imports
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # experiment parameters
-N_SAMPLES = 1000
+N_SAMPLES = 10
 N_LOCAL_NETWORKS = 5
 N_EDGES = 5
 N_VARIABLE_NET_MIN = 5
-N_VARIABLE_NET_MAX = 45
+N_VARIABLE_NET_MAX = 30
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 2
-
 N_CLAUSES_FUNCTION = 2
 N_LITERALS = 2
-
-# Verbose parameters
-SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
@@ -33,7 +30,7 @@ print("=" * 50)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp7_data"
+EXPERIMENT_NAME = "exp8_data"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'
@@ -69,8 +66,8 @@ for i_sample in range(1, N_SAMPLES + 1):
                                           n_max_of_literals=N_LITERALS, v_topology=V_TOPOLOGY)
 
         print(f"Experiment {i_sample} of {N_SAMPLES} - Topology: {V_TOPOLOGY}")
-        print(f"Networks: {N_LOCAL_NETWORKS} Variables: {N_LOCAL_NETWORKS}")
-        print(f"Current edges: {N_EDGES}")
+        print(f"Networks: {N_LOCAL_NETWORKS} Variables Min: {N_VARIABLE_NET_MIN}")
+        print(f"Variables Max: {N_VARIABLE_NET_MAX} Current Variables: {n_vars_network}")
 
         # Generate the CBN with the topology and template
         o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
@@ -129,9 +126,6 @@ for i_sample in range(1, N_SAMPLES + 1):
             pickle.dump(o_cbn, file)
 
         print("Pickle object saved in:", pickle_path)
-
-        # # add edge
-        # o_global_topology.add_edge()
 
         CustomText.print_duplex_line()
     CustomText.print_stars()
