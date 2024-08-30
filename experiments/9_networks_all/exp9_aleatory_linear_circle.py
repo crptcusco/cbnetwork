@@ -63,14 +63,12 @@ if os.path.exists(file_path):
     print("Existing file deleted:", file_path)
 
 # Begin the process
-for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
-    for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
-        # Generate the aleatory local network template object
-        o_template = LocalNetworkTemplate(n_vars_network=N_VARS_NETWORK, n_input_variables=N_INPUT_VARIABLES,
-                                          n_output_variables=N_OUTPUT_VARIABLES, n_max_of_clauses=N_CLAUSES_FUNCTION,
-                                          n_max_of_literals=N_LITERALS)
-
-
+for i_sample in range(1, N_SAMPLES + 1):  # 1 - 1000 , 1, 2
+    # Generate the aleatory local network template object
+    o_template = LocalNetworkTemplate(n_vars_network=N_VARS_NETWORK, n_input_variables=N_INPUT_VARIABLES,
+                                      n_output_variables=N_OUTPUT_VARIABLES, n_max_of_clauses=N_CLAUSES_FUNCTION,
+                                      n_max_of_literals=N_LITERALS)
+    for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX + 1):  # 5
         for i_topology in L_TOPOLOGIES:
             # Generate the global topology object
             o_global_topology = GlobalTopology.generate_sample_topology(v_topology=i_topology,
