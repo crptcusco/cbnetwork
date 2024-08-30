@@ -1,3 +1,4 @@
+# external imports
 import os
 import time
 import pandas as pd
@@ -19,9 +20,6 @@ N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 2
 N_CLAUSES_FUNCTION = 2
 N_LITERALS = 2
-
-# Verbose parameters
-SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
@@ -65,7 +63,7 @@ for i_sample in range(1, N_SAMPLES + 1):
         # Generate the global topology object
         o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
                                                                     n_nodes=n_local_networks)
-        # print("Generated Global Topology")
+        # Calculate the range of edges
         v_begin_edges = n_local_networks
         v_end_edges = n_local_networks + (n_local_networks // 2) + 1
 
@@ -132,7 +130,7 @@ for i_sample in range(1, N_SAMPLES + 1):
 
             print("Pickle object saved in:", pickle_path)
 
-            # add edge
+            # add edge - update the topology
             o_global_topology.add_edge()
 
             CustomText.print_duplex_line()
