@@ -11,7 +11,7 @@ from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 
 """
-Experiment 9 - Test the path and 3_ring_aleatory structures 
+Experiment 5 - Test the path and 3_ring_aleatory structures 
 using aleatory generated template for the local network 
 """
 
@@ -37,7 +37,7 @@ print("="*80)
 v_begin_exp = time.time()
 
 # Experiment Name
-EXPERIMENT_NAME = "exp9_aleatory_linear_circle"
+EXPERIMENT_NAME = "exp5_aleatory_linear_circle"
 
 # Create the 'outputs' directory if it doesn't exist
 OUTPUT_FOLDER = 'outputs'
