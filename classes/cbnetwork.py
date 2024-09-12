@@ -583,7 +583,7 @@ class CBN:
         self.o_global_topology.plot_topology(ax=ax)
 
     # Método para contar campos estables por escenas globales
-    def count_fields_by_global_scenes(self) -> Dict[str, int]:
+    def count_fields_by_global_scenes(self):
         # CustomText.make_sub_title('Counting the stable attractor fields by global scene')
         self.d_global_scenes_count: Dict[str, int] = {}
         for key, o_attractor_field in self.d_attractor_fields.items():
@@ -599,6 +599,9 @@ class CBN:
                 self.d_global_scenes_count[combination_key] += 1
             else:
                 self.d_global_scenes_count[combination_key] = 1
+        # return self.d_global_scenes_count
+
+    def get_global_scene_attractor_fields(self):
         return self.d_global_scenes_count
 
     # NEW GENERATOR
