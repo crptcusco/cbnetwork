@@ -11,11 +11,11 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # experiment parameters
-N_SAMPLES = 10
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS = 5
 N_EDGES = 5
 N_VARIABLE_NET_MIN = 5
-N_VARIABLE_NET_MAX = 30
+N_VARIABLE_NET_MAX = 20
 N_OUTPUT_VARIABLES = 2
 N_INPUT_VARIABLES = 2
 V_TOPOLOGY = 2
