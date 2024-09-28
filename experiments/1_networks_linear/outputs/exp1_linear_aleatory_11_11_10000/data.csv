@@ -1,2 +1,0 @@
-i_sample,n_local_networks,n_var_network,v_topology,n_output_variables,n_clauses_function,n_local_attractors,n_pair_attractors,n_attractor_fields,n_time_find_attractors,n_time_find_pairs,n_time_find_fields
-1,11,5,4,2,2,42,76,2048,0.7395095825195312,0.0003285408020019531,0.10213804244995117
