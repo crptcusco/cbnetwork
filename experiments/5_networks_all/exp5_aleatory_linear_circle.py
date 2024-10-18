@@ -4,9 +4,9 @@ import time
 import pandas as pd
 import pickle
 
+# local imports
 from classes.cbnetwork import CBN
 from classes.globaltopology import GlobalTopology
-# local imports
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 
