@@ -94,7 +94,7 @@ class GlobalTopology:
         nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black', ax=ax)
         nx.draw_networkx_edges(self.o_graph, pos, arrows=True, ax=ax, width=3)
 
-        ax.set_title("CBN Topology")
+        # ax.set_title("CBN Topology")
         ax.axis("off")
 
     def get_edges(self):
