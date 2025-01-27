@@ -1,0 +1,3 @@
+sudo apt-get install graphviz
+pip install graphviz pydot
+python -m pip install mimesis
