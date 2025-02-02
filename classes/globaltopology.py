@@ -16,7 +16,11 @@ class GlobalTopology:
         3: "cycle",
         4: "path",
         5: "aleatory_gn",
-        6: "aleatory_gnc"
+        6: "aleatory_gnc",
+        7: "dorogovtsev_mendes",
+        8: "small_world",
+        9: "scale_free",
+        10: "random"
     }
 
     def __init__(self, v_topology, l_edges):
@@ -63,12 +67,18 @@ class GlobalTopology:
             return CycleDigraph(n_nodes=n_nodes)
         elif v_topology == 4:
             return PathDigraph(n_nodes=n_nodes)
-        # Placeholders for additional topologies
         elif v_topology == 5:
             pass
         elif v_topology == 6:
             pass
-
+        elif v_topology == 7:
+            return DorogovtsevMendesDigraph(n_nodes=n_nodes)
+        elif v_topology == 8:
+            return SmallWorldGraph(n_nodes=n_nodes,k_neighbors=3,p_rewire=0.5)
+        elif v_topology == 9:
+            return ScaleFreeGraph(n_nodes=n_nodes,m_edges=2)
+        elif v_topology == 10:
+            return RandomGraph(n_nodes=n_nodes,p_edge=0.5)
         return None
 
     def generate_local_nets_colors(self):
@@ -212,8 +222,11 @@ class AleatoryFixedDigraph(GlobalTopology):
             if G.in_degree(v) < 2 and not G.has_edge(u, v):
                 G.add_edge(u, v)
 
+        # update the nodes labels
         mapping = {node: node + 1 for node in G.nodes()}
         G = nx.relabel_nodes(G, mapping)
+
+        # update the list of edges
         self.l_edges = list(G.edges())
 
     def add_edge(self):
@@ -292,8 +305,304 @@ class AleatoryFixedDigraph(GlobalTopology):
         self.o_graph.add_nodes_from(self.l_nodes)
         self.o_graph.add_edges_from(self.l_edges)
 
-    def get_edges(self):
+
+class DorogovtsevMendesDigraph(GlobalTopology):
+    def __init__(self, n_nodes):
         """
-        Returns the list of edges in the graph.
+        Initializes a directed Dorogovtsev-Mendes graph.
         """
-        return self.l_edges
+
+        if n_nodes < 3:
+            raise ValueError("El número mínimo de nodos para este modelo es 3.")
+
+        self.n_nodes = n_nodes
+        self.l_nodes = list(range(1, n_nodes + 1))
+        self.l_edges = [(1, 2), (2, 3), (3, 1)]  # Triángulo inicial
+        self.n_edges = len(self.l_edges)
+
+        # Agregar nodos adicionales
+        for new_node in range(4, self.n_nodes + 1):
+            self.add_node(new_node)
+
+        super().__init__(v_topology=7, l_edges=self.l_edges)
+
+    def add_node(self, new_node=None):
+        """
+        Adds a new node to the Dorogovtsev-Mendes directed graph while maintaining its structural properties.
+        """
+        if new_node is None:
+            new_node = max(self.l_nodes) + 1
+
+        self.l_nodes.append(new_node)
+
+        # Seleccionar una arista existente aleatoriamente
+        u, v = random.choice(self.l_edges)
+
+        # Conectar el nuevo nodo a ambos extremos de la arista seleccionada
+        self.l_edges.append((new_node, u))
+        self.l_edges.append((new_node, v))
+
+        self.n_nodes += 1
+        self.update_parent_graph()
+
+    def update_parent_graph(self):
+        """
+        Updates the graph representation after modifications.
+        """
+        self.o_graph = nx.DiGraph()
+        self.o_graph.add_nodes_from(self.l_nodes)
+        self.o_graph.add_edges_from(self.l_edges)
+
+    def generate_edge(self):
+        """
+        Agrega una nueva arista al grafo dirigido Dorogovtsev-Mendes mientras mantiene sus propiedades estructurales.
+        """
+        if len(self.l_edges) >= (self.n_nodes - 1) * 2:
+            raise ValueError("No se pueden agregar más aristas manteniendo la estructura de Dorogovtsev-Mendes.")
+
+        # Seleccionar una arista existente aleatoriamente
+        u, v = random.choice(self.l_edges)
+
+        # Crear un nuevo nodo
+        new_node = max(self.l_nodes) + 1
+        self.l_nodes.append(new_node)
+
+        # Conectar el nuevo nodo a ambos extremos de la arista seleccionada
+        self.l_edges.append((new_node, u))
+        self.l_edges.append((new_node, v))
+
+        self.n_nodes += 1
+        self.n_edges = len(self.l_edges)
+
+        self.update_parent_graph()
+
+
+class SmallWorldGraph(GlobalTopology):
+    def __init__(self, n_nodes, k_neighbors, p_rewire):
+        """
+        Modelo Small-World de Watts-Strogatz.
+
+        :param n_nodes: Número de nodos
+        :param k_neighbors: Cada nodo se conecta a k vecinos más cercanos en un anillo
+        :param p_rewire: Probabilidad de reconectar una arista
+        """
+        self.n_nodes = n_nodes
+        self.k_neighbors = k_neighbors
+        self.p_rewire = p_rewire
+        self.graph = nx.watts_strogatz_graph(n_nodes, k_neighbors, p_rewire)
+
+        # Renumerar nodos para que comiencen en 1
+        mapping = {node: node + 1 for node in self.graph.nodes()}
+        self.graph = nx.relabel_nodes(self.graph, mapping)
+
+        # Actualizar listas
+        self.l_nodes = list(self.graph.nodes)
+        self.l_edges = list(self.graph.edges)
+
+        super().__init__(v_topology=8, l_edges=self.l_edges)
+
+    def add_edge(self, u, v):
+        """
+        Añade una nueva arista entre los nodos u y v manteniendo la estructura Small-World.
+        """
+        if (u, v) in self.l_edges or (v, u) in self.l_edges:
+            return  # Evita duplicar aristas
+
+        # Respetar la proximidad del modelo Small-World
+        if abs(u - v) <= self.k_neighbors // 2 or random.random() < self.p_rewire:
+            self.graph.add_edge(u, v)
+            self.l_edges.append((u, v))
+
+        self.update_parent_graph()
+
+    def add_node(self):
+        """Añade un nuevo nodo y lo conecta a k vecinos al azar manteniendo la estructura Small-World."""
+        new_node = max(self.l_nodes) + 1 if self.l_nodes else 1  # Si está vacío, empieza en 1
+        self.graph.add_node(new_node)
+        self.l_nodes.append(new_node)
+
+        # Conectar con `k_neighbors` nodos existentes
+        neighbors = random.sample(self.l_nodes[:-1], min(self.k_neighbors, len(self.l_nodes) - 1))
+        for neighbor in neighbors:
+            self.add_edge(new_node, neighbor)
+
+        self.update_parent_graph()
+
+    import random
+
+    def generate_edge(self):
+        """
+        Genera una nueva arista aleatoria manteniendo las restricciones del modelo Small-World.
+        """
+        # Seleccionar un nodo al azar
+        u = random.choice(self.l_nodes)
+
+        # Definir posibles vecinos respetando la distancia en la topología anillo
+        possible_neighbors = [
+            v for v in self.l_nodes if v != u and abs(v - u) <= self.k_neighbors // 2
+        ]
+
+        # Con probabilidad p_rewire, conectar con un nodo aleatorio
+        if random.random() < self.p_rewire:
+            possible_neighbors = [v for v in self.l_nodes if v != u]
+
+        # Si no hay vecinos posibles, salir
+        if not possible_neighbors:
+            return None
+
+        # Elegir un nodo vecino válido
+        v = random.choice(possible_neighbors)
+
+        # Evitar duplicar aristas
+        if (u, v) in self.l_edges or (v, u) in self.l_edges:
+            return None
+
+        # Agregar la arista
+        self.add_edge(u, v)
+        return (u, v)
+
+    def update_parent_graph(self):
+        """
+        Actualiza la representación del grafo después de modificaciones.
+        """
+        self.o_graph = nx.DiGraph()
+        self.o_graph.add_nodes_from(self.l_nodes)
+        self.o_graph.add_edges_from(self.l_edges)
+
+
+class ScaleFreeGraph(GlobalTopology):
+    def __init__(self, n_nodes, m_edges):
+        """
+        Modelo Scale-Free de Barabási-Albert.
+
+        :param n_nodes: Número de nodos
+        :param m_edges: Número de aristas a añadir por cada nuevo nodo
+        """
+        self.n_nodes = n_nodes
+        self.m_edges = m_edges
+        self.graph = nx.barabasi_albert_graph(n_nodes, m_edges)
+        self.l_nodes = list(self.graph.nodes)
+        self.l_edges = list(self.graph.edges)
+
+        # Renumerar nodos para que comiencen en 1
+        mapping = {node: node + 1 for node in self.graph.nodes()}
+        self.graph = nx.relabel_nodes(self.graph, mapping)
+
+        # Actualizar listas
+        self.l_nodes = list(self.graph.nodes)
+        self.l_edges = list(self.graph.edges)
+
+        super().__init__(v_topology=9, l_edges=self.l_edges)
+
+    def add_edge(self, u, v):
+        """Añade una nueva arista entre los nodos u y v."""
+        self.graph.add_edge(u, v)  # FIX: Usa add_edge en lugar de generate_edge
+        self.l_edges.append((u, v))
+
+        self.update_parent_graph()
+
+    def add_node(self):
+        """Añade un nuevo nodo y lo conecta a m nodos existentes con probabilidad proporcional a su grado."""
+        new_node = max(self.l_nodes) + 1
+        self.l_nodes.append(new_node)
+
+        degrees = dict(self.graph.degree())
+        existing_nodes = list(self.graph.nodes)
+        total_degree = sum(degrees.values())
+
+        if total_degree == 0:
+            targets = random.sample(existing_nodes, self.m_edges)
+        else:
+            probabilities = [degrees[node] / total_degree for node in existing_nodes]
+            targets = random.choices(existing_nodes, weights=probabilities, k=self.m_edges)
+
+        for target in targets:
+            self.add_edge(new_node, target)
+
+        self.update_parent_graph()
+
+    def update_parent_graph(self):
+        """
+        Updates the graph representation after modifications.
+        """
+        self.o_graph = nx.DiGraph()
+        self.o_graph.add_nodes_from(self.l_nodes)
+        self.o_graph.add_edges_from(self.l_edges)
+
+    def generate_edge(self):
+        """Genera una nueva arista basada en el modelo de adjunción preferencial."""
+        if not self.l_nodes:
+            raise ValueError("No hay nodos disponibles para generar una arista.")
+
+        u = random.choice(self.l_nodes)
+
+        degrees = dict(self.graph.degree(self.l_nodes))  # FIX: Pasar lista completa
+        total_degree = sum(degrees.values())
+
+        if total_degree == 0:
+            target = random.choice(self.l_nodes)
+        else:
+            probabilities = [degrees[node] / total_degree for node in self.l_nodes]
+            target = random.choices(self.l_nodes, weights=probabilities, k=1)[0]
+
+        self.add_edge(u, target)
+
+
+class RandomGraph(GlobalTopology):
+    def __init__(self, n_nodes, p_edge):
+        """
+        Modelo Aleatorio de Erdős-Rényi.
+
+        :param n_nodes: Número de nodos
+        :param p_edge: Probabilidad de que exista una arista entre cualquier par de nodos
+        """
+        self.n_nodes = n_nodes
+        self.p_edge = p_edge
+        self.graph = nx.erdos_renyi_graph(n_nodes, p_edge)
+        self.l_nodes = list(self.graph.nodes)
+        self.l_edges = list(self.graph.edges)
+
+        # Renumerar nodos para que comiencen en 1
+        mapping = {node: node + 1 for node in self.graph.nodes()}
+        self.graph = nx.relabel_nodes(self.graph, mapping)
+
+        # Actualizar listas
+        self.l_nodes = list(self.graph.nodes)
+        self.l_edges = list(self.graph.edges)
+
+        super().__init__(v_topology=10, l_edges=self.l_edges)
+
+    def add_edge(self, u, v):
+        """Añade una nueva arista entre los nodos u y v."""
+        self.graph.add_edge(u, v)  # FIX: Usa add_edge en lugar de generate_edge
+        self.l_edges.append((u, v))
+
+        self.update_parent_graph()
+
+    def add_node(self):
+        """Añade un nuevo nodo y lo conecta a nodos existentes con probabilidad p_edge."""
+        new_node = max(self.l_nodes) + 1
+        self.l_nodes.append(new_node)
+        for node in self.l_nodes[:-1]:
+            if random.random() < self.p_edge:
+                self.add_edge(new_node, node)
+
+        self.update_parent_graph()
+
+    def generate_edge(self):
+        """Genera una nueva arista entre dos nodos aleatorios con probabilidad p_edge."""
+        if len(self.l_nodes) < 2:
+            return  # No se pueden generar aristas si hay menos de dos nodos
+
+        u, v = random.sample(self.l_nodes, 2)  # Selecciona dos nodos distintos
+        if (u, v) not in self.l_edges and (v, u) not in self.l_edges:
+            if random.random() < self.p_edge:
+                self.add_edge(u, v)
+
+    def update_parent_graph(self):
+        """
+        Updates the graph representation after modifications.
+        """
+        self.o_graph = nx.DiGraph()
+        self.o_graph.add_nodes_from(self.l_nodes)
+        self.o_graph.add_edges_from(self.l_edges)

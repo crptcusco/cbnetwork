@@ -2,7 +2,9 @@
 import itertools  # libraries to iterate
 from itertools import product  # generate combinations of numbers
 from typing import List, Optional, Any, Dict
+from dask import delayed, compute
 
+# internal imports
 from classes.globalscene import GlobalScene
 from classes.globaltopology import GlobalTopology
 from classes.internalvariable import InternalVariable
@@ -91,6 +93,27 @@ class CBN:
         # print(f"ERROR: Local Network with index {o_local_network_update.index} not found")
         return False
 
+    @staticmethod
+    def _generate_local_scenes(o_local_network: LocalNetwork) -> Optional[List[str]]:
+        """
+        Generate local scenes for the given local network based on external variables.
+
+        Args:
+            o_local_network (LocalNetwork): The local network object.
+
+        Returns:
+            Optional[List[str]]: A list of local scenes or None if there are no external variables.
+        """
+        # if len(o_local_network.l_var_exterm) != 0:
+        #     return list(product('01', repeat=len(o_local_network.l_var_exterm)))
+        # return None
+
+        external_vars_count = len(o_local_network.l_var_exterm)
+        if external_vars_count > 0:
+            # Generate binary combinations for the external variables
+            return [''.join(scene) for scene in product('01', repeat=external_vars_count)]
+        return None
+
     def find_local_attractors_sequential(self) -> None:
         """
         Finds local attractors sequentially and updates the list of local attractors in the object.
@@ -101,8 +124,9 @@ class CBN:
         CustomText.make_title('FIND LOCAL ATTRACTORS')
 
         for o_local_network in self.l_local_networks:
+            # Generate the local network scenes
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
             # Calculate the local attractors for the local network
-            l_local_scenes = self._generate_local_scenes(o_local_network)
             o_local_network = LocalNetwork.find_local_attractors(
                 o_local_network=o_local_network,
                 l_local_scenes=l_local_scenes
@@ -119,19 +143,50 @@ class CBN:
         # print('Number of local attractors:', self._count_total_attractors())
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
 
-    def _generate_local_scenes(self, o_local_network: LocalNetwork) -> Optional[List[str]]:
+    def dask_find_local_attractors(self):
         """
-        Generate local scenes for the given local network based on external variables.
+        Paraleliza el proceso de encontrar atractores locales utilizando Dask.
 
-        Args:
-            o_local_network (LocalNetwork): The local network object.
-
-        Returns:
-            Optional[List[str]]: A list of local scenes or None if there are no external variables.
+        Esta función divide el cálculo de atractores locales en subtareas paralelas y luego combina los resultados.
         """
-        if len(o_local_network.l_var_exterm) != 0:
-            return list(product('01', repeat=len(o_local_network.l_var_exterm)))
-        return None
+        CustomText.make_title("FIND LOCAL ATTRACTORS")
+
+        # Paso 1: Crear tareas paralelas para encontrar atractores locales
+        def process_local_network(o_local_network):
+            """
+            Procesa una red local: genera escenas locales, encuentra atractores, y procesa señales.
+            """
+            # Generar escenas locales
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+
+            # Encontrar atractores locales
+            updated_network = LocalNetwork.find_local_attractors(
+                o_local_network=o_local_network,
+                l_local_scenes=l_local_scenes
+            )
+
+            return updated_network
+
+        # Crear una lista de tareas usando dask.delayed
+        delayed_tasks = [delayed(process_local_network)(o_local_network) for o_local_network in self.l_local_networks]
+
+        # Ejecutar todas las tareas en paralelo
+        updated_networks = compute(*delayed_tasks)
+
+        # Actualizar las redes locales con los resultados
+        self.l_local_networks = list(updated_networks)  # Convertimos la tupla a lista para mantener el formato original
+
+        # Procesar señales de acoplamiento
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
+        # Paso 2: Asignar índices globales a cada atractor
+        self._assign_global_indices_to_attractors()
+
+        # Paso 3: Generar el diccionario de atractores
+        self.generate_attractor_dictionary()
+
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
 
     def _assign_global_indices_to_attractors(self) -> None:
         """
@@ -258,6 +313,106 @@ class CBN:
         # print(f'Number of attractor pairs: {n_pairs}')
         CustomText.make_sub_sub_title('END FIND ATTRACTOR PAIRS')
 
+    def dask_find_compatible_pairs(self) -> None:
+        """
+        Paraleliza la generación de pares de atractores usando señales de salida.
+
+        Utiliza Dask para calcular pares compatibles y asegura que los resultados
+        se integren correctamente a los objetos originales.
+        """
+        CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS")
+
+        # Función auxiliar para encontrar pares de atractores
+        def find_attractor_pairs(signal_value, o_output_signal_index_variable, l_attractors_input):
+            """
+            Encuentra pares de atractores basados en el valor de la señal de entrada.
+
+            Args:
+                signal_value (int): El valor de la señal (0 o 1).
+                o_output_signal_index_variable: Indice de la variable del objeto de señal de salida.
+                l_attractors_input (list): Lista de índices de atractores para la señal de entrada.
+
+            Returns:
+                list: Lista de pares de atractores.
+            """
+            l_attractors_output = [
+                o_attractor.g_index
+                for o_attractor in
+                self.get_attractors_by_input_signal_value(o_output_signal_index_variable, signal_value)
+            ]
+            return list(itertools.product(l_attractors_input, l_attractors_output))
+
+        # Función auxiliar para procesar una señal de salida
+        def process_output_signal(signal_index, l_attractors_input_0, l_attractors_input_1, index_variable):
+            """
+            Procesa una señal de salida y encuentra pares compatibles.
+
+            Args:
+                signal_index: Índice de la señal de salida.
+                l_attractors_input_0: Lista de atractores para valor 0.
+                l_attractors_input_1: Lista de atractores para valor 1.
+                index_variable: Variable de índice de la señal.
+
+            Returns:
+                dict: Diccionario con los pares de atractores.
+            """
+            d_comp_pairs_attractors_by_value = {
+                0: find_attractor_pairs(0, index_variable, l_attractors_input_0),
+                1: find_attractor_pairs(1, index_variable, l_attractors_input_1),
+            }
+
+            # Retorna el índice de la señal y el diccionario generado
+            n_pairs = len(d_comp_pairs_attractors_by_value[0]) + len(d_comp_pairs_attractors_by_value[1])
+            return signal_index, d_comp_pairs_attractors_by_value, n_pairs
+
+        # Crear una lista de tareas paralelas
+        delayed_tasks = []
+        signal_map = {}
+        for o_local_network in self.l_local_networks:
+            l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
+            for o_output_signal in l_output_edges:
+                signal_index = o_output_signal.index
+                signal_map[signal_index] = o_output_signal  # Mapeo para acceder a los objetos originales
+                l_attractors_input_0 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[0]]
+                l_attractors_input_1 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[1]]
+                delayed_tasks.append(
+                    delayed(process_output_signal)(
+                        signal_index, l_attractors_input_0, l_attractors_input_1, o_output_signal.index_variable
+                    )
+                )
+
+        # Antes de computar tareas
+        print(f"Tareas creadas: {len(delayed_tasks)}")
+        for task in delayed_tasks[:5]:  # Muestra solo las primeras 5
+            print(task)
+
+        # Ejecutar las tareas en paralelo
+        results = compute(*delayed_tasks)
+
+        # Después de ejecutar compute
+        print(f"Resultados obtenidos: {len(results)}")
+        for result in results[:5]:
+            print(result)
+
+        for idx, result in enumerate(results[:5]):  # Mostrar solo los primeros 5 para evitar demasiada información
+            print(f"Resultado {idx}: {result}")
+
+        # Actualizar los objetos originales con los resultados
+        n_pairs = 0
+        for signal_index, d_comp_pairs_attractors_by_value, n_signal_pairs in results:
+
+            if signal_index not in signal_map:
+                print(f"Error: Índice de señal {signal_index} no encontrado en signal_map")
+                continue  # Saltar este resultado si hay un problema
+
+            o_output_signal = signal_map[signal_index]
+            o_output_signal.d_comp_pairs_attractors_by_value = d_comp_pairs_attractors_by_value
+            n_pairs += n_signal_pairs
+
+        # Mostrar el resultado final
+        # print(f"Number of attractor pairs: {n_pairs}")
+        CustomText.make_sub_sub_title("END FIND ATTRACTOR PAIRS")
+
     def order_edges_by_compatibility(self):
         """
         Order the directed edges based on their compatibility.
@@ -302,6 +457,51 @@ class CBN:
         # Combine the base list with the rest of the groups
         self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
         # print("Directed Edges ordered.")
+
+    def order_edges_by_grade(self):
+        """
+        Orders the directed edges based on the total degree of the networks they connect.
+
+        The total degree of an edge is the sum of the degrees of its input and output networks.
+        The edges are then reordered to keep adjacent edges (sharing networks) close together.
+        """
+
+        # Paso 1: Calcular el grado de cada red local
+        network_degrees = {net.index: 0 for net in self.l_local_networks}
+
+        for edge in self.l_directed_edges:
+            network_degrees[edge.input_local_network] += 1
+            network_degrees[edge.output_local_network] += 1
+
+        # Paso 2: Calcular el "grado total" de cada arista
+        def calculate_edge_grade(edge):
+            input_degree = network_degrees.get(edge.input_local_network, 0)
+            output_degree = network_degrees.get(edge.output_local_network, 0)
+            return input_degree + output_degree
+
+        # Paso 3: Ordenar aristas por el grado total en orden descendente
+        self.l_directed_edges.sort(key=calculate_edge_grade, reverse=True)
+
+        # Paso 4: Reordenar para mantener aristas adyacentes juntas
+        def is_adjacent(edge1, edge2):
+            return (edge1.input_local_network == edge2.input_local_network or
+                    edge1.input_local_network == edge2.output_local_network or
+                    edge1.output_local_network == edge2.input_local_network or
+                    edge1.output_local_network == edge2.output_local_network)
+
+        ordered_edges = [self.l_directed_edges.pop(0)]  # Comenzamos con la arista de mayor grado
+
+        while self.l_directed_edges:
+            for i, edge in enumerate(self.l_directed_edges):
+                if is_adjacent(ordered_edges[-1], edge):
+                    ordered_edges.append(self.l_directed_edges.pop(i))
+                    break
+            else:
+                # Si no encontramos adyacente, agregamos la siguiente disponible
+                ordered_edges.append(self.l_directed_edges.pop(0))
+
+        # Paso 5: Actualizar la lista de aristas
+        self.l_directed_edges = ordered_edges
 
     def mount_stable_attractor_fields(self) -> None:
         """
@@ -387,12 +587,20 @@ class CBN:
         # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
+
+
     # SHOW FUNCTIONS
     def show_directed_edges(self) -> None:
         CustomText.print_duplex_line()
         print("SHOW THE DIRECTED EDGES OF THE CBN")
         for o_directed_edge in self.l_directed_edges:
             o_directed_edge.show()
+
+    def show_directed_edges_order(self) -> None:
+        CustomText.print_duplex_line()
+        print("SHOW THE EDGES", end=" ")
+        print(" ".join(f"{o_directed_edge.index}: {o_directed_edge.get_edge()}"
+                       for o_directed_edge in self.l_directed_edges))
 
     def show_coupled_signals_kind(self) -> None:
         CustomText.print_duplex_line()

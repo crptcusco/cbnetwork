@@ -5,6 +5,7 @@ from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.internalvariable import InternalVariable
 from classes.localnetwork import LocalNetwork
+from classes.utils.customtext import CustomText
 
 # script to put a manual parameters for the example of 4 networks
 print("MESSAGE:", "LINEAL CBN MANUAL SCRIPT EXAMPLE")
@@ -121,5 +122,6 @@ o_cbn.generate_global_scenes()
 o_cbn.show_global_scenes()
 
 # Count the attractor fields by global scene
+CustomText.make_sub_title("Count Fields by global scenes")
 print(o_cbn.count_fields_by_global_scenes())
 

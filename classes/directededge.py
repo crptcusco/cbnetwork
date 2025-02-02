@@ -1,10 +1,12 @@
+# external imports
 import re
 import operator
 from string import ascii_lowercase, ascii_uppercase
 from itertools import product
 from collections import namedtuple
-from classes.utils.customtext import CustomText
 
+# local imports
+from classes.utils.customtext import CustomText
 
 class DirectedEdge:
     def __init__(self, index, index_variable_signal, input_local_network, output_local_network, l_output_variables,
@@ -71,6 +73,12 @@ class DirectedEdge:
 
         # Print the kind of signal and its description
         print("Kind signal:", self.kind_signal, "-", self.d_kind_signal[self.kind_signal])
+
+    def show_short(self):
+        print(self.output_local_network, ",", self.input_local_network)
+
+    def get_edge(self):
+        return self.output_local_network, self.input_local_network
 
     def process_true_table(self):
         """

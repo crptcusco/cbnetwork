@@ -87,4 +87,5 @@ o_cbn.generate_global_scenes()
 o_cbn.show_global_scenes()
 
 # Count the attractor fields by global scene
+CustomText.make_sub_title("Count Fields by global scenes")
 print(o_cbn.count_fields_by_global_scenes())
