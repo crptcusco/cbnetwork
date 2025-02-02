@@ -222,7 +222,7 @@ class LocalNetworkTemplate:
     #         # generate clauses for every local network adapting the template
     #         for i_local_variable in o_local_network.l_var_intern:
     #             CustomText.print_simple_line()
-    #             # adapting the clause template to the specific variable
+    #             # adapting the clause template to the 5_specific variable
     #             l_clauses_node = self.update_clause_from_template(l_local_networks=l_local_networks,
     #                                                               o_local_network=o_local_network,
     #                                                               i_local_variable=i_local_variable,
@@ -246,7 +246,7 @@ class LocalNetworkTemplate:
     #     l_variables = []
     #     for o_local_network in l_local_networks:
     #         if o_local_network.index == i_local_network:
-    #             # select the specific variables from variable list intern
+    #             # select the 5_specific variables from variable list intern
     #             for position in self.l_output_var_indexes:
     #                 l_variables.append(o_local_network.l_var_intern[position - 1])
     #

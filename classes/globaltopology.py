@@ -50,7 +50,7 @@ class GlobalTopology:
         :param v_topology: Type of topology to generate.
         :param n_nodes: Number of nodes in the topology.
         :param n_edges: Number of edges in the topology (if applicable).
-        :return: Instance of the specific topology class.
+        :return: Instance of the 5_specific topology class.
         """
         if v_topology not in cls.allowed_topologies:
             print('ERROR: Not permitted option')

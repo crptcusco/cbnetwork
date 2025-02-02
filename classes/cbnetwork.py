@@ -1022,7 +1022,7 @@ class CBN:
             # Generate clauses for each local network based on the template
             for i_local_variable in o_local_network.l_var_intern:
                 CustomText.print_simple_line()
-                # Adapt the clause template to the specific variable
+                # Adapt the clause template to the 5_specific variable
                 l_clauses_node = CBN.update_clause_from_template(o_template=o_template,
                                                                  l_local_networks=l_local_networks,
                                                                  o_local_network=o_local_network,
@@ -1048,12 +1048,12 @@ class CBN:
     def update_clause_from_template(o_template, l_local_networks, o_local_network,
                                     i_local_variable, l_directed_edges):
         """
-        Updates the clauses from the template for a specific variable in a local network.
+        Updates the clauses from the template for a 5_specific variable in a local network.
 
         Args:
             o_template: The template containing CNF functions.
             l_local_networks (list): List of LocalNetwork objects.
-            o_local_network: The specific LocalNetwork object being updated.
+            o_local_network: The 5_specific LocalNetwork object being updated.
             i_local_variable: The index of the local variable to update.
             l_directed_edges (list): List of DirectedEdge objects.
 
@@ -1073,7 +1073,7 @@ class CBN:
         # print("Template Variable index:", i_template_variable)
         # print("Template Function:", pre_l_clauses_node)
 
-        # Update the CNF function clauses with the specific variable index
+        # Update the CNF function clauses with the 5_specific variable index
         l_clauses_node = []
         for pre_clause in pre_l_clauses_node:
             # Create a clause by updating variable indices

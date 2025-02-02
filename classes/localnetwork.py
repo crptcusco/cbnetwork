@@ -142,7 +142,7 @@ class LocalNetwork:
         :param o_local_network: The local network object for which to generate the boolean formulation.
         :param n_transitions: Number of transitions in the boolean formulation.
         :param l_attractors_clauses: List of clauses representing attractors.
-        :param scene: Optional scene string used to assign specific values to variables.
+        :param scene: Optional scene string used to assign 5_specific values to variables.
         :return: The complete boolean function as a Variable object.
         """
         # Create dictionary of CNF variables for each transition
