@@ -6,8 +6,7 @@ from classes.localnetwork import LocalNetwork
 from classes.utils.customtext import CustomText
 
 # script to put a manual parameters for the example of 4 networks
-CustomText.print_duplex_line()
-print("CBN MANUAL SCRIPT EXAMPLE: 4 NETWORKS")
+CustomText.make_title("CBN MANUAL SCRIPT EXAMPLE: 4 NETWORKS")
 
 # pass the CBN properties
 l_local_networks = []
@@ -21,8 +20,7 @@ d_network_variables = {1: [1, 2, 3],
 l_edges = [(2, 1), (3, 2), (2, 3), (4, 3)]
 
 # generate the networks
-CustomText.print_duplex_line()
-print("Creating the local networks")
+CustomText.make_sub_title("Creating the local networks")
 for i_local_net in d_network_variables.keys():
     o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
     print("Local Network", i_local_net, "created.")
@@ -89,3 +87,4 @@ o_cbn.show_global_scenes()
 # Count the attractor fields by global scene
 CustomText.make_sub_title("Count Fields by global scenes")
 print(o_cbn.count_fields_by_global_scenes())
+
