@@ -98,6 +98,14 @@ class LocalNetwork:
 
     @staticmethod
     def find_local_attractors(o_local_network, l_local_scenes=None):
+        """
+        Find the attractors for a local network.
+
+        :param o_local_network: The local network object for which to find attractors.
+        :param l_local_scenes: Optional list of local scenes to use for finding attractors.
+        :return: The local network object with updated attractors.
+        """
+        # Print the title for finding attractors
         CustomText.print_simple_line()
         print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
 
@@ -140,9 +148,10 @@ class LocalNetwork:
         - Incorporation of attractor clauses
 
         :param o_local_network: The local network object for which to generate the boolean formulation.
+        :type o_local_network: LocalNetwork
         :param n_transitions: Number of transitions in the boolean formulation.
         :param l_attractors_clauses: List of clauses representing attractors.
-        :param scene: Optional scene string used to assign 5_specific values to variables.
+        :param scene: Optional scene string used to assign specific values to variables.
         :return: The complete boolean function as a Variable object.
         """
         # Create dictionary of CNF variables for each transition

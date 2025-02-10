@@ -1,5 +1,6 @@
 # external imports
 import itertools  # libraries to iterate
+import random
 from itertools import product  # generate combinations of numbers
 from typing import List, Optional, Any, Dict
 from dask import delayed, compute
@@ -51,6 +52,7 @@ class CBN:
         # Graphs
         self.o_global_topology = None
 
+    # PRINCIPAL FUNCTIONS
     def process_output_signals(self) -> None:
         """
         Update output signals for every local network based on directed edges.
@@ -142,51 +144,6 @@ class CBN:
 
         # print('Number of local attractors:', self._count_total_attractors())
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
-
-    def dask_find_local_attractors(self):
-        """
-        Paraleliza el proceso de encontrar atractores locales utilizando Dask.
-
-        Esta función divide el cálculo de atractores locales en subtareas paralelas y luego combina los resultados.
-        """
-        CustomText.make_title("FIND LOCAL ATTRACTORS")
-
-        # Paso 1: Crear tareas paralelas para encontrar atractores locales
-        def process_local_network(o_local_network):
-            """
-            Procesa una red local: genera escenas locales, encuentra atractores, y procesa señales.
-            """
-            # Generar escenas locales
-            l_local_scenes = CBN._generate_local_scenes(o_local_network)
-
-            # Encontrar atractores locales
-            updated_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network,
-                l_local_scenes=l_local_scenes
-            )
-
-            return updated_network
-
-        # Crear una lista de tareas usando dask.delayed
-        delayed_tasks = [delayed(process_local_network)(o_local_network) for o_local_network in self.l_local_networks]
-
-        # Ejecutar todas las tareas en paralelo
-        updated_networks = compute(*delayed_tasks)
-
-        # Actualizar las redes locales con los resultados
-        self.l_local_networks = list(updated_networks)  # Convertimos la tupla a lista para mantener el formato original
-
-        # Procesar señales de acoplamiento
-        for o_local_network in self.l_local_networks:
-            self.process_kind_signal(o_local_network)
-
-        # Paso 2: Asignar índices globales a cada atractor
-        self._assign_global_indices_to_attractors()
-
-        # Paso 3: Generar el diccionario de atractores
-        self.generate_attractor_dictionary()
-
-        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
 
     def _assign_global_indices_to_attractors(self) -> None:
         """
@@ -313,6 +270,332 @@ class CBN:
         # print(f'Number of attractor pairs: {n_pairs}')
         CustomText.make_sub_sub_title('END FIND ATTRACTOR PAIRS')
 
+
+
+    def order_edges_by_compatibility(self):
+        """
+        Order the directed edges based on their compatibility.
+
+        The compatibility is determined if the input or output local network of one edge
+        matches with the input or output local network of any edge in the base group.
+        """
+
+        def is_compatible(l_group_base, o_group):
+            """
+            Check if the given edge group is compatible with any edge in the base group.
+
+            Args:
+                l_group_base (list): List of base edge groups.
+                o_group: Edge group to be checked for compatibility.
+
+            Returns:
+                bool: True if compatible, False otherwise.
+            """
+            for aux_par in l_group_base:
+                if (aux_par.input_local_network == o_group.input_local_network or
+                        aux_par.input_local_network == o_group.output_local_network):
+                    return True
+                elif (aux_par.output_local_network == o_group.output_local_network or
+                      aux_par.output_local_network == o_group.input_local_network):
+                    return True
+            return False
+
+        # Initialize the base list with the first edge group
+        l_base = [self.l_directed_edges[0]]
+        aux_l_rest_groups = self.l_directed_edges[1:]
+
+        # Process each remaining edge group
+        for v_group in aux_l_rest_groups:
+            if is_compatible(l_base, v_group):
+                l_base.append(v_group)
+            else:
+                # If not compatible, move it to the end of the list
+                aux_l_rest_groups.remove(v_group)
+                aux_l_rest_groups.append(v_group)
+
+        # Combine the base list with the rest of the groups
+        self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
+        # print("Directed Edges ordered.")
+
+    def order_edges_by_grade(self):
+        """
+        Orders the directed edges based on the total degree of the networks they connect.
+
+        The total degree of an edge is the sum of the degrees of its input and output networks.
+        The edges are then reordered to keep adjacent edges (sharing networks) close together.
+        """
+
+        # Paso 1: Calcular el grado de cada red local
+        network_degrees = {net.index: 0 for net in self.l_local_networks}
+
+        for edge in self.l_directed_edges:
+            network_degrees[edge.input_local_network] += 1
+            network_degrees[edge.output_local_network] += 1
+
+        # Paso 2: Calcular el "grado total" de cada arista
+        def calculate_edge_grade(edge):
+            input_degree = network_degrees.get(edge.input_local_network, 0)
+            output_degree = network_degrees.get(edge.output_local_network, 0)
+            return input_degree + output_degree
+
+        # Paso 3: Ordenar aristas por el grado total en orden descendente
+        self.l_directed_edges.sort(key=calculate_edge_grade, reverse=True)
+
+        # Paso 4: Reordenar para mantener aristas adyacentes juntas
+        def is_adjacent(edge1, edge2):
+            return (edge1.input_local_network == edge2.input_local_network or
+                    edge1.input_local_network == edge2.output_local_network or
+                    edge1.output_local_network == edge2.input_local_network or
+                    edge1.output_local_network == edge2.output_local_network)
+
+        ordered_edges = [self.l_directed_edges.pop(0)]  # Comenzamos con la arista de mayor grado
+
+        while self.l_directed_edges:
+            for i, edge in enumerate(self.l_directed_edges):
+                if is_adjacent(ordered_edges[-1], edge):
+                    ordered_edges.append(self.l_directed_edges.pop(i))
+                    break
+            else:
+                # Si no encontramos adyacente, agregamos la siguiente disponible
+                ordered_edges.append(self.l_directed_edges.pop(0))
+
+        # Paso 5: Actualizar la lista de aristas
+        self.l_directed_edges = ordered_edges
+
+    def disorder_edges(self):
+        """
+        Desordena aleatoriamente la lista de aristas dirigidas, asegurando que la primera
+        arista no tenga vértices en común con la segunda, y reasigna las aristas en la estructura.
+        """
+        if len(self.l_directed_edges) < 2:
+            return  # No hay suficiente número de aristas para aplicar la condición
+
+        # Mezclar aleatoriamente las aristas
+        random.shuffle(self.l_directed_edges)
+
+        # Verificar si la primera y la segunda comparten algún vértice
+        def have_common_vertex(edge1, edge2):
+            return (edge1.input_local_network in {edge2.input_local_network, edge2.output_local_network} or
+                    edge1.output_local_network in {edge2.input_local_network, edge2.output_local_network})
+
+        # Si la primera y segunda arista tienen un vértice en común, buscar una nueva segunda arista
+        if have_common_vertex(self.l_directed_edges[0], self.l_directed_edges[1]):
+            for i in range(2, len(self.l_directed_edges)):
+                if not have_common_vertex(self.l_directed_edges[0], self.l_directed_edges[i]):
+                    # Intercambiar la segunda arista con una que no comparta vértices
+                    self.l_directed_edges[1], self.l_directed_edges[i] = self.l_directed_edges[i], \
+                    self.l_directed_edges[1]
+                    break
+
+    def mount_stable_attractor_fields(self) -> None:
+        """
+        Assembles compatible attractor fields.
+
+        This function assembles fields of attractors that are compatible with each other.
+        """
+
+        def evaluate_pair(base_pairs: list, candidate_pair: tuple) -> bool:
+            """
+            Checks if a candidate attractor pair is compatible with a base attractor pair.
+
+            Args:
+                base_pairs (list): List of base attractor pairs.
+                candidate_pair (tuple): Candidate attractor pair.
+
+            Returns:
+                bool: True if the candidate pair is compatible with the base pairs, False otherwise.
+            """
+
+            # Extract the indices of local networks from each attractor pair
+            base_attractor_indices = {attractor for pair in base_pairs for attractor in pair}
+
+            # Generate the list of already visited networks
+            already_visited_networks = {self.d_local_attractors[idx][0] for idx in base_attractor_indices}
+
+            double_check = 0
+            for candidate_idx in candidate_pair:
+                if self.d_local_attractors[candidate_idx][0] in already_visited_networks:
+                    if candidate_idx in base_attractor_indices:
+                        double_check += 1
+                else:
+                    double_check += 1
+
+            return double_check == 2
+
+        def cartesian_product_mod(base_pairs: list, candidate_pairs: list) -> list:
+            """
+            Performs the modified Cartesian product of the attractor pairs lists.
+
+            Args:
+                base_pairs (list): List of base attractor pairs.
+                candidate_pairs (list): List of candidate attractor pairs.
+
+            Returns:
+                list: List of candidate attractor fields.
+            """
+            field_pair_list = []
+
+            for base_pair in base_pairs:
+                for candidate_pair in candidate_pairs:
+                    if isinstance(base_pair, tuple):
+                        base_pair = [base_pair]
+                    if evaluate_pair(base_pair, candidate_pair):
+                        new_pair = base_pair + [candidate_pair]
+                        field_pair_list.append(new_pair)
+
+            return field_pair_list
+
+        CustomText.make_title('FIND ATTRACTOR FIELDS')
+
+        # Order the edges by compatibility
+        self.order_edges_by_compatibility()
+
+        # Generate the base list of pairs made with 0 or 1 coupling signal
+        l_base_pairs = set(self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0] +
+                           self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
+
+        # Iterate over each edge to form unions with the base
+        for o_directed_edge in self.l_directed_edges[1:]:
+            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
+                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
+            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+
+            if not l_base_pairs:
+                break
+
+        # Generate a dictionary of attractor fields
+        self.d_attractor_fields = {}
+        for i, base_element in enumerate(l_base_pairs, start=1):
+            self.d_attractor_fields[i] = list({item for pair in base_element for item in pair})
+
+        # print("Number of attractor fields found:", len(l_base_pairs))
+        CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
+
+    # DASK FUNCTIONS
+    def dask_find_local_attractors(self):
+        """
+        Paraleliza el proceso de encontrar atractores locales utilizando Dask.
+
+        Esta función divide el cálculo de atractores locales en subtareas paralelas y luego combina los resultados.
+        """
+        CustomText.make_title("FIND LOCAL ATTRACTORS")
+
+        # Paso 1: Crear tareas paralelas para encontrar atractores locales
+        def process_local_network(o_local_network):
+            """
+            Procesa una red local: genera escenas locales, encuentra atractores, y procesa señales.
+            """
+            # Generar escenas locales
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+
+            # Encontrar atractores locales
+            updated_network = LocalNetwork.find_local_attractors(
+                o_local_network=o_local_network,
+                l_local_scenes=l_local_scenes
+            )
+
+            return updated_network
+
+        # Crear una lista de tareas usando dask.delayed
+        delayed_tasks = [delayed(process_local_network)(o_local_network) for o_local_network in self.l_local_networks]
+
+        # Ejecutar todas las tareas en paralelo
+        updated_networks = compute(*delayed_tasks)
+
+        # Actualizar las redes locales con los resultados
+        self.l_local_networks = list(updated_networks)  # Convertimos la tupla a lista para mantener el formato original
+
+        # Procesar señales de acoplamiento
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
+        # Paso 2: Asignar índices globales a cada atractor
+        self._assign_global_indices_to_attractors()
+
+        # Paso 3: Generar el diccionario de atractores
+        self.generate_attractor_dictionary()
+
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
+
+    from dask import delayed, compute
+
+    from dask import delayed, compute
+    import random
+
+    def dask_find_local_attractors_weighted_balanced(self, num_workers):
+        """
+        Paraleliza el proceso de encontrar atractores locales utilizando Dask,
+        alocando las tareas según un peso definido como:
+
+             peso = (cantidad de variables) * 2^(número de señales de acoplamiento)
+
+        Luego, las tareas se agrupan en 'num_workers' buckets de forma que el peso
+        total de cada bucket sea lo más equilibrado posible. Finalmente, se computan
+        los buckets y se actualiza la estructura del CBN.
+        """
+        CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
+
+        # Función que se ejecutará para cada red local
+        def process_local_network(o_local_network):
+            # Genera las escenas locales usando el método (o función) estático de CBN
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            # Encuentra los atractores locales para la red (se asume que este método actualiza internamente el objeto)
+            updated_network = LocalNetwork.find_local_attractors(
+                o_local_network=o_local_network,
+                l_local_scenes=l_local_scenes
+            )
+            return updated_network
+
+        # Crear una lista de tareas junto con su peso
+        tasks_with_weight = []
+        for o_local_network in self.l_local_networks:
+            # Se asume que cada red local tiene:
+            #  - l_var_total: lista de variables (internas/externas/totales)
+            #  - l_input_signals: lista de señales de acoplamiento (o atributo similar)
+            num_vars = len(o_local_network.l_var_total) if hasattr(o_local_network, 'l_var_total') else 0
+            num_coupling = len(o_local_network.l_input_signals) if hasattr(o_local_network, 'l_input_signals') else 0
+            weight = num_vars * (2 ** num_coupling)
+            delayed_task = delayed(process_local_network)(o_local_network)
+            tasks_with_weight.append((weight, delayed_task))
+
+        # Ordenar las tareas por peso en orden descendente
+        tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
+
+        # Crear buckets (grupos) para cada worker
+        buckets = [{'total': 0, 'tasks': []} for _ in range(num_workers)]
+        for weight, task in tasks_with_weight:
+            # Asignar la tarea al bucket con menor peso acumulado
+            bucket = min(buckets, key=lambda b: b['total'])
+            bucket['tasks'].append(task)
+            bucket['total'] += weight
+
+        # Para depuración, podemos imprimir los pesos acumulados de cada bucket
+        for i, bucket in enumerate(buckets):
+            print(f"Bucket {i} total weight: {bucket['total']} with {len(bucket['tasks'])} tasks")
+
+        # Ejecutar las tareas en cada bucket de forma independiente
+        results = []
+        for bucket in buckets:
+            if bucket['tasks']:
+                # compute() se aplica sobre todas las tareas del bucket
+                bucket_results = compute(*bucket['tasks'])
+                results.extend(bucket_results)
+
+        # Actualizar la lista de redes locales con los resultados combinados
+        self.l_local_networks = list(results)
+
+        # Procesar señales de acoplamiento para cada red local (paso adicional en el flujo)
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
+        # Asignar índices globales a cada atractor (paso 2)
+        self._assign_global_indices_to_attractors()
+
+        # Generar el diccionario de atractores (paso 3)
+        self.generate_attractor_dictionary()
+
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
+
     def dask_find_compatible_pairs(self) -> None:
         """
         Paraleliza la generación de pares de atractores usando señales de salida.
@@ -413,180 +696,6 @@ class CBN:
         # print(f"Number of attractor pairs: {n_pairs}")
         CustomText.make_sub_sub_title("END FIND ATTRACTOR PAIRS")
 
-    def order_edges_by_compatibility(self):
-        """
-        Order the directed edges based on their compatibility.
-
-        The compatibility is determined if the input or output local network of one edge
-        matches with the input or output local network of any edge in the base group.
-        """
-
-        def is_compatible(l_group_base, o_group):
-            """
-            Check if the given edge group is compatible with any edge in the base group.
-
-            Args:
-                l_group_base (list): List of base edge groups.
-                o_group: Edge group to be checked for compatibility.
-
-            Returns:
-                bool: True if compatible, False otherwise.
-            """
-            for aux_par in l_group_base:
-                if (aux_par.input_local_network == o_group.input_local_network or
-                        aux_par.input_local_network == o_group.output_local_network):
-                    return True
-                elif (aux_par.output_local_network == o_group.output_local_network or
-                      aux_par.output_local_network == o_group.input_local_network):
-                    return True
-            return False
-
-        # Initialize the base list with the first edge group
-        l_base = [self.l_directed_edges[0]]
-        aux_l_rest_groups = self.l_directed_edges[1:]
-
-        # Process each remaining edge group
-        for v_group in aux_l_rest_groups:
-            if is_compatible(l_base, v_group):
-                l_base.append(v_group)
-            else:
-                # If not compatible, move it to the end of the list
-                aux_l_rest_groups.remove(v_group)
-                aux_l_rest_groups.append(v_group)
-
-        # Combine the base list with the rest of the groups
-        self.l_directed_edges = [self.l_directed_edges[0]] + aux_l_rest_groups
-        # print("Directed Edges ordered.")
-
-    def order_edges_by_grade(self):
-        """
-        Orders the directed edges based on the total degree of the networks they connect.
-
-        The total degree of an edge is the sum of the degrees of its input and output networks.
-        The edges are then reordered to keep adjacent edges (sharing networks) close together.
-        """
-
-        # Paso 1: Calcular el grado de cada red local
-        network_degrees = {net.index: 0 for net in self.l_local_networks}
-
-        for edge in self.l_directed_edges:
-            network_degrees[edge.input_local_network] += 1
-            network_degrees[edge.output_local_network] += 1
-
-        # Paso 2: Calcular el "grado total" de cada arista
-        def calculate_edge_grade(edge):
-            input_degree = network_degrees.get(edge.input_local_network, 0)
-            output_degree = network_degrees.get(edge.output_local_network, 0)
-            return input_degree + output_degree
-
-        # Paso 3: Ordenar aristas por el grado total en orden descendente
-        self.l_directed_edges.sort(key=calculate_edge_grade, reverse=True)
-
-        # Paso 4: Reordenar para mantener aristas adyacentes juntas
-        def is_adjacent(edge1, edge2):
-            return (edge1.input_local_network == edge2.input_local_network or
-                    edge1.input_local_network == edge2.output_local_network or
-                    edge1.output_local_network == edge2.input_local_network or
-                    edge1.output_local_network == edge2.output_local_network)
-
-        ordered_edges = [self.l_directed_edges.pop(0)]  # Comenzamos con la arista de mayor grado
-
-        while self.l_directed_edges:
-            for i, edge in enumerate(self.l_directed_edges):
-                if is_adjacent(ordered_edges[-1], edge):
-                    ordered_edges.append(self.l_directed_edges.pop(i))
-                    break
-            else:
-                # Si no encontramos adyacente, agregamos la siguiente disponible
-                ordered_edges.append(self.l_directed_edges.pop(0))
-
-        # Paso 5: Actualizar la lista de aristas
-        self.l_directed_edges = ordered_edges
-
-    def mount_stable_attractor_fields(self) -> None:
-        """
-        Assembles compatible attractor fields.
-
-        This function assembles fields of attractors that are compatible with each other.
-        """
-
-        def evaluate_pair(base_pairs: list, candidate_pair: tuple) -> bool:
-            """
-            Checks if a candidate attractor pair is compatible with a base attractor pair.
-
-            Args:
-                base_pairs (list): List of base attractor pairs.
-                candidate_pair (tuple): Candidate attractor pair.
-
-            Returns:
-                bool: True if the candidate pair is compatible with the base pairs, False otherwise.
-            """
-
-            # Extract the indices of local networks from each attractor pair
-            base_attractor_indices = {attractor for pair in base_pairs for attractor in pair}
-
-            # Generate the list of already visited networks
-            already_visited_networks = {self.d_local_attractors[idx][0] for idx in base_attractor_indices}
-
-            double_check = 0
-            for candidate_idx in candidate_pair:
-                if self.d_local_attractors[candidate_idx][0] in already_visited_networks:
-                    if candidate_idx in base_attractor_indices:
-                        double_check += 1
-                else:
-                    double_check += 1
-
-            return double_check == 2
-
-        def cartesian_product_mod(base_pairs: list, candidate_pairs: list) -> list:
-            """
-            Performs the modified Cartesian product of the attractor pairs lists.
-
-            Args:
-                base_pairs (list): List of base attractor pairs.
-                candidate_pairs (list): List of candidate attractor pairs.
-
-            Returns:
-                list: List of candidate attractor fields.
-            """
-            field_pair_list = []
-
-            for base_pair in base_pairs:
-                for candidate_pair in candidate_pairs:
-                    if isinstance(base_pair, tuple):
-                        base_pair = [base_pair]
-                    if evaluate_pair(base_pair, candidate_pair):
-                        new_pair = base_pair + [candidate_pair]
-                        field_pair_list.append(new_pair)
-
-            return field_pair_list
-
-        CustomText.make_title('FIND ATTRACTOR FIELDS')
-
-        # Order the edges by compatibility
-        self.order_edges_by_compatibility()
-
-        # Generate the base list of pairs made with 0 or 1 coupling signal
-        l_base_pairs = set(self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0] +
-                           self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
-
-        # Iterate over each edge to form unions with the base
-        for o_directed_edge in self.l_directed_edges[1:]:
-            l_candidate_pairs = o_directed_edge.d_comp_pairs_attractors_by_value[0] + \
-                                o_directed_edge.d_comp_pairs_attractors_by_value[1]
-            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
-
-            if not l_base_pairs:
-                break
-
-        # Generate a dictionary of attractor fields
-        self.d_attractor_fields = {}
-        for i, base_element in enumerate(l_base_pairs, start=1):
-            self.d_attractor_fields[i] = list({item for pair in base_element for item in pair})
-
-        # print("Number of attractor fields found:", len(l_base_pairs))
-        CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
-
 
 
     # SHOW FUNCTIONS
@@ -682,14 +791,14 @@ class CBN:
         print("Number of attractor fields:", self.get_n_attractor_fields())
         CustomText.print_simple_line()
 
-    # Método para mostrar el diccionario de atractores locales
     def show_local_attractors_dictionary(self) -> None:
+        # Método para mostrar el diccionario de atractores locales
         CustomText.make_title('Global Dictionary of local attractors')
         for key, value in self.d_local_attractors.items():
             print(key, '->', value)
 
-    # Método para mostrar campos de atractores estables de manera detallada
     def show_stable_attractor_fields_detailed(self) -> None:
+        # Método para mostrar campos de atractores estables de manera detallada
         CustomText.print_duplex_line()
         print("Show the list of attractor fields")
         print("Number Stable Attractor Fields:", len(self.d_attractor_fields))
@@ -702,55 +811,14 @@ class CBN:
                 if o_attractor:
                     o_attractor.show()
 
-    # Método para mostrar campos de atractores
     def show_attractors_fields(self) -> None:
+        # Método para mostrar campos de atractores
         CustomText.make_sub_title('List of attractor fields')
         for key, value in self.d_attractor_fields.items():
             print(key, "->", value)
         print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
 
-    # GET FUNCTIONS
-    def get_network_by_index(self, index: int) -> Optional[LocalNetwork]:
-        for o_local_network in self.l_local_networks:
-            if o_local_network.l_index == index:
-                return o_local_network
-        return None
-
-    def get_input_edges_by_network_index(self, index: int) -> List[DirectedEdge]:
-        return [o_directed_edge for o_directed_edge in self.l_directed_edges if
-                o_directed_edge.input_local_network == index]
-
-    def get_output_edges_by_network_index(self, index: int) -> List[DirectedEdge]:
-        return [o_directed_edge for o_directed_edge in self.l_directed_edges if
-                o_directed_edge.output_local_network == index]
-
-    def get_index_networks(self) -> List[int]:
-        return [i_network.l_index for i_network in self.l_local_networks]
-
-    def get_attractors_by_input_signal_value(self, index_variable_signal: int, signal_value: int) -> List[LocalAttractor]:
-        l_attractors = []
-        for o_local_network in self.l_local_networks:
-            for scene in o_local_network.l_local_scenes:
-                if scene.l_values is not None and index_variable_signal in scene.l_index_signals:
-                    pos = scene.l_index_signals.index(index_variable_signal)
-                    if scene.l_values[pos] == str(signal_value):
-                        l_attractors.extend(scene.l_attractors)
-        return l_attractors
-
-    def get_n_local_attractors(self) -> int:
-        return sum(len(o_scene.l_attractors) for o_local_network in self.l_local_networks for o_scene in
-                   o_local_network.l_local_scenes)
-
-    def get_n_pair_attractors(self) -> int:
-        return sum(len(o_directed_edge.d_comp_pairs_attractors_by_value[0]) + len(
-            o_directed_edge.d_comp_pairs_attractors_by_value[1]) for o_directed_edge in self.l_directed_edges)
-
-    def get_n_attractor_fields(self) -> int:
-        return len(self.d_attractor_fields)
-
-    def get_n_local_variables(self) -> int:
-        return len(self.l_local_networks[0].l_var_intern) if self.l_local_networks else 0
-
+    # GENERATE FUNCTIONS
     def generate_attractor_dictionary(self) -> None:
         """
         Generates a Dictionary of local attractors
@@ -768,30 +836,20 @@ class CBN:
 
         self.d_local_attractors = d_local_attractors
 
-    # Método para obtener un atractor local por su índice
-    def get_local_attractor_by_index(self, i_attractor: int) -> Optional[LocalAttractor]:
-        for o_local_network in self.l_local_networks:
-            for o_scene in o_local_network.l_local_scenes:
-                for o_attractor in o_scene.l_attractors:
-                    if o_attractor.g_index == i_attractor:
-                        return o_attractor
-        # print('ERROR: Attractor index not found')
-        return None
-
-    # Método para generar escenas globales
     def generate_global_scenes(self) -> None:
+        # Método para generar escenas globales
         CustomText.make_title('Generated Global Scenes')
         l_edges_indexes = [o_directed_edge.index_variable for o_directed_edge in self.l_directed_edges]
         binary_combinations = list(product([0, 1], repeat=len(l_edges_indexes)))
         self.l_global_scenes = [GlobalScene(l_edges_indexes, list(combination)) for combination in binary_combinations]
         CustomText.make_sub_title('Global Scenes generated')
 
-    # Método para graficar la topología
     def plot_topology(self, ax=None) -> None:
+        # Método para graficar la topología
         self.o_global_topology.plot_topology(ax=ax)
 
-    # Método para contar campos estables por escenas globales
     def count_fields_by_global_scenes(self):
+        # Método para contar campos estables por escenas globales
         # CustomText.make_sub_title('Counting the stable attractor fields by global scene')
         self.d_global_scenes_count: Dict[str, int] = {}
         for key, o_attractor_field in self.d_attractor_fields.items():
@@ -808,9 +866,6 @@ class CBN:
             else:
                 self.d_global_scenes_count[combination_key] = 1
         # return self.d_global_scenes_count
-
-    def get_global_scene_attractor_fields(self):
-        return self.d_global_scenes_count
 
     # NEW GENERATOR
     @staticmethod
@@ -865,10 +920,7 @@ class CBN:
         return o_cbn
 
     @staticmethod
-    def find_output_edges_by_network_index(
-            index: int,
-            l_directed_edges: List['DirectedEdge']
-    ) -> List['DirectedEdge']:
+    def find_output_edges_by_network_index(index: int, l_directed_edges: List['DirectedEdge'] ) -> List['DirectedEdge']:
         """
         Finds all output edges for a given network index.
 
@@ -1045,8 +1097,7 @@ class CBN:
         return l_local_networks_updated
 
     @staticmethod
-    def update_clause_from_template(o_template, l_local_networks, o_local_network,
-                                    i_local_variable, l_directed_edges):
+    def update_clause_from_template(o_template, l_local_networks, o_local_network,i_local_variable, l_directed_edges):
         """
         Updates the clauses from the template for a 5_specific variable in a local network.
 
@@ -1112,6 +1163,17 @@ class CBN:
 
         return l_clauses_node
 
+    # GETTERS FUNCTIONS
+    def get_local_attractor_by_index(self, i_attractor: int) -> Optional[LocalAttractor]:
+        # Método para obtener un atractor local por su índice
+        for o_local_network in self.l_local_networks:
+            for o_scene in o_local_network.l_local_scenes:
+                for o_attractor in o_scene.l_attractors:
+                    if o_attractor.g_index == i_attractor:
+                        return o_attractor
+        # print('ERROR: Attractor index not found')
+        return None
+
     def get_kind_topology(self):
         return self.o_global_topology.v_topology
 
@@ -1121,3 +1183,46 @@ class CBN:
     def get_n_output_variables(self):
         pass
         
+    def get_network_by_index(self, index: int) -> Optional[LocalNetwork]:
+        for o_local_network in self.l_local_networks:
+            if o_local_network.l_index == index:
+                return o_local_network
+        return None
+
+    def get_input_edges_by_network_index(self, index: int) -> List[DirectedEdge]:
+        return [o_directed_edge for o_directed_edge in self.l_directed_edges if
+                o_directed_edge.input_local_network == index]
+
+    def get_output_edges_by_network_index(self, index: int) -> List[DirectedEdge]:
+        return [o_directed_edge for o_directed_edge in self.l_directed_edges if
+                o_directed_edge.output_local_network == index]
+
+    def get_index_networks(self) -> List[int]:
+        return [i_network.l_index for i_network in self.l_local_networks]
+
+    def get_attractors_by_input_signal_value(self, index_variable_signal: int, signal_value: int) -> List[LocalAttractor]:
+        l_attractors = []
+        for o_local_network in self.l_local_networks:
+            for scene in o_local_network.l_local_scenes:
+                if scene.l_values is not None and index_variable_signal in scene.l_index_signals:
+                    pos = scene.l_index_signals.index(index_variable_signal)
+                    if scene.l_values[pos] == str(signal_value):
+                        l_attractors.extend(scene.l_attractors)
+        return l_attractors
+
+    def get_n_local_attractors(self) -> int:
+        return sum(len(o_scene.l_attractors) for o_local_network in self.l_local_networks for o_scene in
+                   o_local_network.l_local_scenes)
+
+    def get_n_pair_attractors(self) -> int:
+        return sum(len(o_directed_edge.d_comp_pairs_attractors_by_value[0]) + len(
+            o_directed_edge.d_comp_pairs_attractors_by_value[1]) for o_directed_edge in self.l_directed_edges)
+
+    def get_n_attractor_fields(self) -> int:
+        return len(self.d_attractor_fields)
+
+    def get_n_local_variables(self) -> int:
+        return len(self.l_local_networks[0].l_var_intern) if self.l_local_networks else 0
+
+    def get_global_scene_attractor_fields(self):
+        return self.d_global_scenes_count
