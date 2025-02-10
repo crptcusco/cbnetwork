@@ -517,10 +517,13 @@ class CBN:
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
 
-    from dask import delayed, compute
-
-    from dask import delayed, compute
-    import random
+    # from dask import delayed, compute
+    #
+    # from dask import delayed, compute
+    # import random
+    #
+    # from dask import delayed, compute
+    # import random
 
     def dask_find_local_attractors_weighted_balanced(self, num_workers):
         """
@@ -530,8 +533,9 @@ class CBN:
              peso = (cantidad de variables) * 2^(número de señales de acoplamiento)
 
         Luego, las tareas se agrupan en 'num_workers' buckets de forma que el peso
-        total de cada bucket sea lo más equilibrado posible. Finalmente, se computan
-        los buckets y se actualiza la estructura del CBN.
+        total de cada bucket sea lo más equilibrado posible. Finalmente, se programan
+        todas las tareas al mismo tiempo para que se ejecuten concurrentemente, y se
+        actualiza la estructura del CBN.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
 
@@ -561,7 +565,7 @@ class CBN:
         # Ordenar las tareas por peso en orden descendente
         tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
 
-        # Crear buckets (grupos) para cada worker
+        # Crear buckets (grupos) para cada worker, para balancear la carga
         buckets = [{'total': 0, 'tasks': []} for _ in range(num_workers)]
         for weight, task in tasks_with_weight:
             # Asignar la tarea al bucket con menor peso acumulado
@@ -569,17 +573,17 @@ class CBN:
             bucket['tasks'].append(task)
             bucket['total'] += weight
 
-        # Para depuración, podemos imprimir los pesos acumulados de cada bucket
+        # Para depuración, imprimir los pesos acumulados de cada bucket
         for i, bucket in enumerate(buckets):
             print(f"Bucket {i} total weight: {bucket['total']} with {len(bucket['tasks'])} tasks")
 
-        # Ejecutar las tareas en cada bucket de forma independiente
-        results = []
+        # En lugar de computar cada bucket secuencialmente, combinamos todas las tareas
+        all_tasks = []
         for bucket in buckets:
-            if bucket['tasks']:
-                # compute() se aplica sobre todas las tareas del bucket
-                bucket_results = compute(*bucket['tasks'])
-                results.extend(bucket_results)
+            all_tasks.extend(bucket['tasks'])
+
+        # Ejecutar todas las tareas al mismo tiempo
+        results = compute(*all_tasks)
 
         # Actualizar la lista de redes locales con los resultados combinados
         self.l_local_networks = list(results)
@@ -588,10 +592,10 @@ class CBN:
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Asignar índices globales a cada atractor (paso 2)
+        # Paso 2: Asignar índices globales a cada atractor
         self._assign_global_indices_to_attractors()
 
-        # Generar el diccionario de atractores (paso 3)
+        # Paso 3: Generar el diccionario de atractores
         self.generate_attractor_dictionary()
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
