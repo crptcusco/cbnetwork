@@ -187,7 +187,7 @@ class CBN:
         # Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
-        # print('Number of local attractors:', self._count_total_attractors())
+        print('Number of local attractors:', self._count_total_attractors())
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
 
     def find_local_attractors_parallel(self, num_cpus=None):
@@ -281,12 +281,13 @@ class CBN:
 
         self.l_local_networks = ordered_results  # Asignar en el orden correcto
 
-        # Procesar señales
+        # Procesar señales por red local
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Asignar índices y generar el diccionario
+        # Asignar índices globales a los attratores
         self._assign_global_indices_to_attractors()
+        # Generar el diccionario de attractores
         self.generate_attractor_dictionary()
 
         # Imprimir info final de los buckets
@@ -307,15 +308,22 @@ class CBN:
                     o_attractor.g_index = i_attractor
                     i_attractor += 1
 
-    def _count_total_attractors(self) -> int:
+    def generate_attractor_dictionary(self) -> None:
         """
-        Count the total number of attractors across all local networks.
+        Generates a Dictionary of local attractors
+        :return: a list of triples (a,b,c) where:
+         - 'a' is the network index
+         - 'b' is the scene index
+         - 'c' is the local attractor index
+        """
+        d_local_attractors = {}
+        for o_local_network in self.l_local_networks:
+            for o_scene in o_local_network.l_local_scenes:
+                for o_attractor in o_scene.l_attractors:
+                    t_triple = (o_local_network.index, o_scene.index, o_attractor.l_index)
+                    d_local_attractors[o_attractor.g_index] = t_triple
 
-        Returns:
-            int: The total number of attractors.
-        """
-        return sum(len(o_local_scene.l_attractors) for o_local_network in self.l_local_networks for o_local_scene in
-                   o_local_network.l_local_scenes)
+        self.d_local_attractors = d_local_attractors
 
     def process_kind_signal(self, o_local_network: LocalNetwork) -> None:
         """
@@ -371,6 +379,16 @@ class CBN:
             else:
                 o_output_signal.kind_signal = 4
                 # print("INFO: the scene signal is not stable. This CBN doesn't have stable Attractor Fields")
+
+    def _count_total_attractors(self) -> int:
+        """
+        Count the total number of attractors across all local networks.
+
+        Returns:
+            int: The total number of attractors.
+        """
+        return sum(len(o_local_scene.l_attractors) for o_local_network in self.l_local_networks for o_local_scene in
+                   o_local_network.l_local_scenes)
 
     def find_compatible_pairs(self) -> None:
         """
@@ -1094,23 +1112,6 @@ class CBN:
         print(f"Number of attractor fields found: {len(self.d_attractor_fields)}")
 
     # GENERATE FUNCTIONS
-    def generate_attractor_dictionary(self) -> None:
-        """
-        Generates a Dictionary of local attractors
-        :return: a list of triples (a,b,c) where:
-         - 'a' is the network index
-         - 'b' is the scene index
-         - 'c' is the local attractor index
-        """
-        d_local_attractors = {}
-        for o_local_network in self.l_local_networks:
-            for o_scene in o_local_network.l_local_scenes:
-                for o_attractor in o_scene.l_attractors:
-                    t_triple = (o_local_network.index, o_scene.index, o_attractor.l_index)
-                    d_local_attractors[o_attractor.g_index] = t_triple
-
-        self.d_local_attractors = d_local_attractors
-
     def generate_global_scenes(self) -> None:
         # Método para generar escenas globales
         CustomText.make_title('Generated Global Scenes')
