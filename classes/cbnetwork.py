@@ -17,23 +17,49 @@ from classes.localscene import LocalAttractor
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 
-# Esta función se define fuera de la clase para que sea picklable
 def process_local_network_mp(o_local_network):
     """
-    Procesa una red local:
-      - Genera sus escenas locales utilizando CBN._generate_local_scenes.
-      - Calcula los atractores locales con LocalNetwork.find_local_attractors.
-    Devuelve la red local actualizada.
+    Procesa una red local para encontrar sus atractores.
+    Si hay un error, se imprime un mensaje y se devuelve la red sin cambios.
     """
-    # Genera escenas locales (suponiendo que _generate_local_scenes es un método o función estática)
-    l_local_scenes = CBN._generate_local_scenes(o_local_network)
-    # Calcula los atractores locales para la red local
-    updated_network = LocalNetwork.find_local_attractors(
-        o_local_network=o_local_network,
-        l_local_scenes=l_local_scenes
-    )
-    return updated_network
+    try:
+        l_local_scenes = CBN._generate_local_scenes(o_local_network)
+        updated_network = LocalNetwork.find_local_attractors(
+            o_local_network=o_local_network,
+            l_local_scenes=l_local_scenes
+        )
+        return updated_network  # ✅ Siempre retorna la red local actualizada
+    except Exception as e:
+        print(f"❌ ERROR en la red {o_local_network.id}: {e}")  # 📢 Registro del error
+        return o_local_network  # ❗ Retorna la red sin cambios en caso de fallo
 
+def process_output_signal_mp(args):
+    """
+    Procesa una señal de salida para calcular los pares compatibles.
+
+    Args:
+        args: Una tupla con:
+              - signal_index: identificador de la señal.
+              - l_attractors_input_0: lista de índices de atractores (valor 0).
+              - l_attractors_input_1: lista de índices de atractores (valor 1).
+              - index_variable: variable de la señal usada para obtener atractores.
+              - get_attractors_func: función para obtener atractores (usualmente self.get_attractors_by_input_signal_value).
+
+    Returns:
+        Una tupla: (signal_index, d_comp_pairs_attractors_by_value, n_pairs)
+    """
+    signal_index, l_attractors_input_0, l_attractors_input_1, index_variable, get_attractors_func = args
+
+    def find_attractor_pairs(signal_value, index_variable, l_attractors_input):
+        l_attractors_output = [o_attractor.g_index for o_attractor in get_attractors_func(index_variable, signal_value)]
+        return list(itertools.product(l_attractors_input, l_attractors_output))
+
+    d_comp_pairs = {
+        0: find_attractor_pairs(0, index_variable, l_attractors_input_0),
+        1: find_attractor_pairs(1, index_variable, l_attractors_input_1)
+    }
+    n_pairs = len(d_comp_pairs[0]) + len(d_comp_pairs[1])
+    return signal_index, d_comp_pairs, n_pairs
 
 class CBN:
     """
@@ -164,7 +190,7 @@ class CBN:
         # print('Number of local attractors:', self._count_total_attractors())
         CustomText.make_sub_sub_title('END FIND LOCAL ATTRACTORS')
 
-    def find_local_attractors_parallel(self):
+    def find_local_attractors_parallel(self, num_cpus=None):
         """
         Paraleliza el proceso de encontrar atractores locales utilizando multiprocessing.
 
@@ -180,8 +206,11 @@ class CBN:
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS PARALLEL")
 
+        if num_cpus is None:
+            num_cpus = multiprocessing.cpu_count()
+
         # Crear un pool de procesos; se puede ajustar el número de procesos si es necesario
-        with multiprocessing.Pool() as pool:
+        with multiprocessing.Pool(processes=num_cpus) as pool:
             # map() enviará cada elemento de self.l_local_networks a la función process_local_network_mp
             updated_networks = pool.map(process_local_network_mp, self.l_local_networks)
 
@@ -200,74 +229,67 @@ class CBN:
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS PARALLEL")
 
-    def find_local_attractors_parallel_with_weigths(self, num_workers):
+    def find_local_attractors_parallel_with_weigths(self, num_cpus=None):
         """
-        Paraleliza el proceso de encontrar atractores locales utilizando multiprocessing,
-        alocando las tareas según un peso definido como:
-
-             peso = (# de variables) * 2^(# de señales de acoplamiento)
-
-        Luego, las tareas se agrupan en 'num_workers' buckets de forma que el peso
-        total de cada bucket sea lo más equilibrado posible. Se ejecutan todas las tareas
-        al mismo tiempo para que se programen concurrentemente y, al finalizar, se imprime
-        la información de cada bucket (número de tareas y peso total).
-
-        Finalmente, se actualiza la estructura del CBN (se procesan señales, se asignan
-        índices globales y se genera el diccionario de atractores).
+        Encuentra atractores locales en paralelo con multiprocessing, balanceando la carga
+        mediante un sistema de 'buckets' según el peso de cada tarea.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
 
-        # Crear una lista de tareas junto con su peso
+        # Crear lista de tareas con peso
         tasks_with_weight = []
         for o_local_network in self.l_local_networks:
-            # Se asume que cada red local tiene:
-            #  - l_var_total: lista de variables (internas/externas/totales)
-            #  - l_input_signals: lista de señales de acoplamiento (o atributo similar)
             num_vars = len(o_local_network.l_var_total) if hasattr(o_local_network, 'l_var_total') else 0
             num_coupling = len(o_local_network.l_input_signals) if hasattr(o_local_network, 'l_input_signals') else 0
             weight = num_vars * (2 ** num_coupling)
             tasks_with_weight.append((weight, o_local_network))
 
-        # Ordenar las tareas por peso en orden descendente
+        # Ordenar por peso descendente
         tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
 
-        # Crear buckets (grupos) para cada worker, para balancear la carga
-        buckets = [{'total': 0, 'tasks': []} for _ in range(num_workers)]
+        # Crear buckets balanceados
+        buckets = [{'total': 0, 'tasks': []} for _ in range(num_cpus)]
         for weight, task in tasks_with_weight:
-            # Asignar la tarea al bucket con menor peso acumulado
             bucket = min(buckets, key=lambda b: b['total'])
             bucket['tasks'].append(task)
             bucket['total'] += weight
 
-        # Imprimir la información de los buckets antes de ejecutar
-        print(f"\nNúmero de workers: {num_workers}")
+        # Imprimir info inicial
+        print(f"\nNúmero de workers: {num_cpus}")
         print("Distribución de tareas por bucket antes de la ejecución:")
         for i, bucket in enumerate(buckets):
             print(f"  Bucket {i}: {len(bucket['tasks'])} tasks, total weight: {bucket['total']}")
 
-        # Obtener todas las tareas a ejecutar en paralelo
-        all_tasks = []
-        for bucket in buckets:
-            all_tasks.extend(bucket['tasks'])
-
-        # Ejecutar todas las tareas en paralelo con multiprocessing
-        with Pool(processes=num_workers) as pool:
+        # Ejecutar en paralelo con multiprocessing
+        all_tasks = [task for bucket in buckets for task in bucket['tasks']]
+        with Pool(processes=num_cpus) as pool:
             results = pool.map(process_local_network_mp, all_tasks)
 
-        # Actualizar la lista de redes locales con los resultados combinados
-        self.l_local_networks = list(results)
+        # Verificar si alguna red desapareció
+        if len(results) != len(self.l_local_networks):
+            print(f"⚠️ ERROR: Se perdieron {len(self.l_local_networks) - len(results)} redes en el proceso!")
 
-        # Procesar señales de acoplamiento para cada red local (paso adicional en el flujo)
+        # Emparejar redes originales con los resultados usando índices
+        ordered_results = [None] * len(self.l_local_networks)
+        for original, processed in zip(all_tasks, results):
+            index = self.l_local_networks.index(original)  # Buscar la posición original
+            ordered_results[index] = processed
+
+        # Verificar si hubo algún None (indica error en la asignación)
+        if None in ordered_results:
+            print(f"⚠️ ERROR: Algunos resultados no se reasignaron correctamente!")
+
+        self.l_local_networks = ordered_results  # Asignar en el orden correcto
+
+        # Procesar señales
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Paso 2: Asignar índices globales a cada atractor
+        # Asignar índices y generar el diccionario
         self._assign_global_indices_to_attractors()
-
-        # Paso 3: Generar el diccionario de atractores
         self.generate_attractor_dictionary()
 
-        # Imprimir la información final de los buckets después de la ejecución
+        # Imprimir info final de los buckets
         print("\nInformación final de los buckets:")
         for i, bucket in enumerate(buckets):
             print(f"  Bucket {i}: {len(bucket['tasks'])} tasks, total weight: {bucket['total']}")
@@ -398,6 +420,138 @@ class CBN:
 
         # print(f'Number of attractor pairs: {n_pairs}')
         CustomText.make_sub_sub_title('END FIND ATTRACTOR PAIRS')
+
+    def find_compatible_pairs_parallel(self, num_cpus=None):
+        """
+        Paraleliza la generación de pares compatibles utilizando multiprocessing,
+        procesando cada señal de salida en un proceso independiente.
+
+        Para cada red local, se obtienen sus output edges y, para cada señal de salida:
+          - Se extraen las listas de atractores de entrada (para 0 y 1).
+          - Se procesa la señal para calcular los pares compatibles mediante la función auxiliar.
+
+        Al finalizar, se actualizan los objetos de señal con los diccionarios de pares y se
+        imprime el total de pares encontrados.
+
+        Actualiza el estado interno del objeto (self.l_local_networks) con las señales modificadas.
+        """
+        CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL)")
+
+        if num_cpus is None:
+            num_cpus = multiprocessing.cpu_count()
+
+        tasks = []
+        signal_map = {}
+        # Recorrer todas las redes locales
+        for o_local_network in self.l_local_networks:
+            l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
+            # Procesar cada output signal
+            for o_output_signal in l_output_edges:
+                signal_index = o_output_signal.index
+                signal_map[signal_index] = o_output_signal  # Guardar referencia para actualizar luego
+                l_attractors_input_0 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[0]]
+                l_attractors_input_1 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[1]]
+                task_args = (signal_index, l_attractors_input_0, l_attractors_input_1,
+                             o_output_signal.index_variable, self.get_attractors_by_input_signal_value)
+                tasks.append(task_args)
+
+        print(f"Tareas creadas: {len(tasks)}")
+
+        # Ejecutar las tareas en paralelo
+        with Pool(processes=num_cpus) as pool:
+            results = pool.map(process_output_signal_mp, tasks)
+
+        print(f"Resultados obtenidos: {len(results)}")
+        total_pairs = 0
+        # Actualizar los objetos de salida con los resultados obtenidos
+        for signal_index, d_comp_pairs, n_signal_pairs in results:
+            if signal_index not in signal_map:
+                print(f"Error: Índice de señal {signal_index} no encontrado en signal_map")
+                continue
+            o_output_signal = signal_map[signal_index]
+            o_output_signal.d_comp_pairs_attractors_by_value = d_comp_pairs
+            total_pairs += n_signal_pairs
+
+        CustomText.make_sub_sub_title(f"END FIND COMPATIBLE ATTRACTOR PAIRS (Total pairs: {total_pairs})")
+
+    def find_compatible_pairs_parallel_with_weights(self, num_cpus=None):
+        """
+        Paraleliza la generación de pares compatibles utilizando multiprocessing,
+        asignando las tareas (cada una correspondiente a una señal de acoplamiento)
+        a buckets balanceados por peso. El peso de cada tarea se calcula como:
+
+             weight = len(l_attractors_input_0) + len(l_attractors_input_1)
+
+        Luego, todas las tareas se ejecutan en paralelo y se actualizan los objetos originales.
+        """
+        CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL WITH WEIGHTS)")
+
+        if num_cpus is None:
+            num_cpus = multiprocessing.cpu_count()
+
+        tasks_with_weight = []
+        signal_map = {}
+
+        # Recorrer cada red local y sus señales de salida
+        for o_local_network in self.l_local_networks:
+            l_output_edges = self.get_output_edges_by_network_index(o_local_network.index)
+            for o_output_signal in l_output_edges:
+                signal_index = o_output_signal.index
+                # Guardar la referencia para actualizar luego
+                signal_map[signal_index] = o_output_signal
+                l_attractors_input_0 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[0]]
+                l_attractors_input_1 = [attr.g_index for attr in o_output_signal.d_out_value_to_attractor[1]]
+                # Definir el peso de la tarea (puedes ajustar esta fórmula si lo deseas)
+                weight = len(l_attractors_input_0) + len(l_attractors_input_1)
+                task_args = (signal_index, l_attractors_input_0, l_attractors_input_1,
+                             o_output_signal.index_variable, self.get_attractors_by_input_signal_value)
+                tasks_with_weight.append((weight, task_args))
+
+        # Ordenar las tareas por peso de mayor a menor
+        tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
+
+        # Crear buckets para balancear la carga entre los CPUs
+        buckets = [{'total': 0, 'tasks': []} for _ in range(num_cpus)]
+        for weight, task in tasks_with_weight:
+            bucket = min(buckets, key=lambda b: b['total'])
+            bucket['tasks'].append(task)
+            bucket['total'] += weight
+
+        # Imprimir información de los buckets antes de ejecutar
+        print(f"\nNúmero de CPUs: {num_cpus}")
+        print("Distribución de tareas por bucket antes de la ejecución:")
+        for i, bucket in enumerate(buckets):
+            print(f"  Bucket {i}: {len(bucket['tasks'])} tasks, total weight: {bucket['total']}")
+
+        # Combinar todas las tareas en una sola lista para la ejecución paralela
+        all_tasks = []
+        for bucket in buckets:
+            all_tasks.extend(bucket['tasks'])
+
+        # Ejecutar todas las tareas en paralelo utilizando multiprocessing
+        with Pool(processes=num_cpus) as pool:
+            results = pool.map(process_output_signal_mp, all_tasks)
+
+        print(f"\nNúmero de tareas procesadas: {len(results)}")
+
+        total_pairs = 0
+        # Actualizar los objetos de señal con los resultados
+        for signal_index, d_comp_pairs, n_signal_pairs in results:
+            if signal_index not in signal_map:
+                print(f"Error: Índice de señal {signal_index} no encontrado en signal_map")
+                continue
+            o_output_signal = signal_map[signal_index]
+            o_output_signal.d_comp_pairs_attractors_by_value = d_comp_pairs
+            total_pairs += n_signal_pairs
+
+        print(f"Total de pares de atractores: {total_pairs}")
+
+        # Imprimir la información final de los buckets (no se modifican en la ejecución, solo informativos)
+        print("\nInformación final de los buckets:")
+        for i, bucket in enumerate(buckets):
+            print(f"  Bucket {i}: {len(bucket['tasks'])} tasks, total weight: {bucket['total']}")
+
+        CustomText.make_sub_sub_title("END FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL WITH WEIGHTS)")
 
     def order_edges_by_compatibility(self):
         """
