@@ -6,6 +6,7 @@ from typing import List, Optional, Any, Dict
 from dask import delayed, compute   # Librarys to use Dask
 import multiprocessing  # Library to use paralaleis woth process
 from multiprocessing import Pool    # Library to generate a List of parallel
+from math import ceil
 
 # internal imports
 from classes.globalscene import GlobalScene
@@ -60,6 +61,61 @@ def process_output_signal_mp(args):
     }
     n_pairs = len(d_comp_pairs[0]) + len(d_comp_pairs[1])
     return signal_index, d_comp_pairs, n_pairs
+
+def evaluate_pair(base_pairs: list, candidate_pair: tuple, d_local_attractors) -> bool:
+    """
+    Comprueba si un par candidato es compatible con los pares base.
+
+    Aplanando recursivamente cada par para obtener índices individuales.
+    """
+
+    def flatten(x):
+        if isinstance(x, (list, tuple)):
+            for item in x:
+                yield from flatten(item)
+        else:
+            yield x
+
+    # Aplanamos la estructura de cada par base para obtener todos los índices individuales.
+    base_attractor_indices = {x for pair in base_pairs for x in flatten(pair)}
+
+    # Para cada índice obtenido, se extrae el primer elemento del valor correspondiente en d_local_attractors.
+    already_visited_networks = {d_local_attractors[idx][0] for idx in base_attractor_indices}
+
+    double_check = 0
+    # Aplanamos también el par candidato para iterar sobre cada índice individual.
+    for candidate_idx in flatten(candidate_pair):
+        if d_local_attractors[candidate_idx][0] in already_visited_networks:
+            if candidate_idx in base_attractor_indices:
+                double_check += 1
+        else:
+            double_check += 1
+
+    return double_check == 2
+
+def cartesian_product_mod(base_pairs: list, candidate_pairs: list, d_local_attractors) -> list:
+    """
+    Realiza el producto cartesiano modificado entre dos listas de pares, filtrando las combinaciones incompatibles.
+    """
+    field_pair_list = []
+    for base_pair in base_pairs:
+        for candidate_pair in candidate_pairs:
+            # Si base_pair es una tupla, lo convertimos a lista para concatenar
+            if isinstance(base_pair, tuple):
+                base_pair = list(base_pair)
+            if evaluate_pair(base_pair, candidate_pair, d_local_attractors):
+                new_pair = base_pair + [candidate_pair]
+                field_pair_list.append(new_pair)
+    return field_pair_list
+
+def _convert_to_tuple(x):
+    """
+    Convierte recursivamente listas en tuplas para que sean hashables.
+    """
+    if isinstance(x, list):
+        return tuple(_convert_to_tuple(item) for item in x)
+    return x
+
 
 class CBN:
     """
@@ -178,7 +234,9 @@ class CBN:
                 o_local_network=o_local_network,
                 l_local_scenes=l_local_scenes
             )
-            # Update the coupling signals to be analyzed
+
+        # Update the coupling signals to be analyzed
+        for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
         # Assign global indices to each attractor
@@ -216,10 +274,6 @@ class CBN:
 
         # Actualizar la lista de redes locales con los resultados obtenidos
         self.l_local_networks = list(updated_networks)
-
-        # Procesar señales de acoplamiento para cada red local
-        for o_local_network in self.l_local_networks:
-            self.process_kind_signal(o_local_network)
 
         # Asignar índices globales a cada atractor
         self._assign_global_indices_to_attractors()
@@ -400,6 +454,10 @@ class CBN:
 
         CustomText.make_title('FIND COMPATIBLE ATTRACTOR PAIRS')
 
+        # Procesar señales de acoplamiento para cada red local
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
         def find_attractor_pairs(signal_value, o_output_signal, l_attractors_input):
             """
             Find pairs of attractors based on the input signal value.
@@ -455,6 +513,10 @@ class CBN:
         """
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL)")
 
+        # Procesar señales de acoplamiento para cada red local
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
         if num_cpus is None:
             num_cpus = multiprocessing.cpu_count()
 
@@ -503,6 +565,10 @@ class CBN:
         Luego, todas las tareas se ejecutan en paralelo y se actualizan los objetos originales.
         """
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL WITH WEIGHTS)")
+
+        # Procesar señales de acoplamiento para cada red local
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
 
         if num_cpus is None:
             num_cpus = multiprocessing.cpu_count()
@@ -769,6 +835,83 @@ class CBN:
 
         # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
+
+    def mount_stable_attractor_fields_parallel_chunks(self, num_cpus=None):
+        """
+        Ensambla campos de atractores estables en paralelo utilizando multiprocessing.
+
+        El proceso es:
+          1. Se ordenan las aristas por compatibilidad.
+          2. Se genera la base inicial de pares a partir de la primera arista.
+          3. Para cada arista restante (a partir de la segunda):
+               - Se extraen los pares candidatos de esa señal de salida.
+               - Se divide la base actual en chunks de tamaño uniforme (según num_cpus).
+               - Se procesa en paralelo cada chunk mediante cartesian_product_mod,
+                 pasando como candidatos la lista extraída y el diccionario d_local_attractors.
+               - Se unen los resultados (por unión de conjuntos) para actualizar la base de pares.
+          4. Finalmente, se genera el diccionario de campos de atractores a partir de la base final.
+
+        Actualiza self.d_attractor_fields con los campos encontrados.
+        """
+        CustomText.make_title("MOUNT STABLE ATTRACTOR FIELDS (PARALLEL CHUNKS)")
+
+        if num_cpus is None:
+            num_cpus = multiprocessing.cpu_count()
+
+        # Paso 1: Ordenar las aristas por compatibilidad
+        self.order_edges_by_compatibility()
+
+        # Paso 2: Generar la base inicial de pares a partir de la primera arista
+        l_base_pairs = set(self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0] +
+                           self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
+
+        # Paso 3: Iterar sobre las aristas restantes para refinar la base de pares
+        for o_directed_edge in self.l_directed_edges[1:]:
+            # Extraer la lista de pares candidatos para la señal de salida actual
+            l_candidate_pairs = (o_directed_edge.d_comp_pairs_attractors_by_value[0] +
+                                 o_directed_edge.d_comp_pairs_attractors_by_value[1])
+
+            # Dividir la base actual en chunks de tamaño uniforme
+            l_base_pairs_list = list(l_base_pairs)
+            n = len(l_base_pairs_list)
+            if n == 0:
+                break
+            chunk_size = ceil(n / num_cpus)
+            chunks = [l_base_pairs_list[i:i + chunk_size] for i in range(0, n, chunk_size)]
+
+            print(f"\nProcesando arista {o_directed_edge.index} con {n} pares base; chunk size: {chunk_size}")
+            for i, chunk in enumerate(chunks):
+                print(f"  Chunk {i}: {len(chunk)} pares")
+
+            # Ejecutar en paralelo: para cada chunk, llamar a cartesian_product_mod
+            candidate_pairs = l_candidate_pairs  # Candidatos para esta iteración
+            with Pool(processes=num_cpus) as pool:
+                args = [(chunk, candidate_pairs, self.d_local_attractors) for chunk in chunks]
+                iter_results = pool.starmap(cartesian_product_mod, args)
+
+            # Unir los resultados: cada resultado es una lista de nuevos pares
+            new_base_pairs = set()
+            for r in iter_results:
+                # Convertir cada par (lista) a tupla para poder hacer la unión en el set
+                new_base_pairs = new_base_pairs.union({tuple(item) if isinstance(item, list) else item for item in r})
+            l_base_pairs = new_base_pairs
+
+            print(f"Base actualizada: {len(l_base_pairs)} pares")
+            if not l_base_pairs:
+                break
+
+        # Paso 4: Generar el diccionario de campos de atractores a partir de la base final
+        self.d_attractor_fields = {}
+        for i, base_element in enumerate(l_base_pairs, start=1):
+
+            if not isinstance(base_element, (list, tuple)):
+                raise TypeError(f"Esperado lista ou tupla, mas recebeu {type(base_element)}: {base_element}")
+
+            # Si base_element es una lista de pares, convertimos cada par a tupla y eliminamos duplicados
+            self.d_attractor_fields[i] = list(
+                {tuple(item) if isinstance(item, list) else item for pair in base_element for item in pair})
+
+        CustomText.make_sub_sub_title("END MOUNT STABLE ATTRACTOR FIELDS (PARALLEL CHUNKS)")
 
     # DASK FUNCTIONS
     def dask_find_local_attractors(self):
