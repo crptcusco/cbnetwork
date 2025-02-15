@@ -11,7 +11,7 @@ from classes.localtemplates import LocalNetworkTemplate
 NUM_CPUS = multiprocessing.cpu_count()
 
 # pass the parameters
-N_LOCAL_NETWORKS = 20
+N_LOCAL_NETWORKS = 10
 N_VARS_NETWORK = 20
 N_OUTPUT_VARS = 2
 N_INPUT_VARS = 2

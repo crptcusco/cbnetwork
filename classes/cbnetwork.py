@@ -116,20 +116,54 @@ def _convert_to_tuple(x):
         return tuple(_convert_to_tuple(item) for item in x)
     return x
 
+def evaluate_pair(base_pairs: list, candidate_pair: tuple, d_local_attractors) -> bool:
+    """
+    Comprueba si un par candidato es compatible con los pares base.
+
+    Se aplanan recursivamente las estructuras para extraer índices individuales.
+    """
+
+    def flatten(x):
+        if isinstance(x, (list, tuple)):
+            for item in x:
+                yield from flatten(item)
+        else:
+            yield x
+
+    # Aplanar cada par base para obtener índices individuales
+    base_attractor_indices = {x for pair in base_pairs for x in flatten(pair)}
+    # Obtener, para cada índice, el primer elemento del valor en d_local_attractors
+    already_visited_networks = {d_local_attractors[idx][0] for idx in base_attractor_indices}
+    double_check = 0
+    for candidate_idx in flatten(candidate_pair):
+        if d_local_attractors[candidate_idx][0] in already_visited_networks:
+            if candidate_idx in base_attractor_indices:
+                double_check += 1
+        else:
+            double_check += 1
+    return double_check == 2
+
+def cartesian_product_mod(base_pairs: list, candidate_pairs: list, d_local_attractors) -> list:
+    """
+    Realiza el producto cartesiano modificado entre la lista base y la lista de pares candidatos,
+    filtrando combinaciones incompatibles mediante evaluate_pair.
+    """
+    field_pair_list = []
+    for base_pair in base_pairs:
+        # Si base_pair es una tupla, lo convertimos a lista para poder concatenar
+        if isinstance(base_pair, tuple):
+            base_pair = list(base_pair)
+        for candidate_pair in candidate_pairs:
+            if evaluate_pair([base_pair], candidate_pair, d_local_attractors):
+                new_pair = base_pair + [candidate_pair]
+                field_pair_list.append(new_pair)
+    return field_pair_list
+
 def process_single_base_pair(base_pair, candidate_pairs, d_local_attractors):
     """
-    Procesa un único par base, aplicando el producto cartesiano modificado
-    entre [base_pair] y candidate_pairs, utilizando el diccionario d_local_attractors.
-
-    Args:
-        base_pair: Un único par base (puede ser una tupla o lista).
-        candidate_pairs (list): Lista de pares candidatos.
-        d_local_attractors: Diccionario de atractores locales.
-
-    Returns:
-        list: Lista de nuevos pares resultantes.
+    Procesa un único par base aplicando cartesian_product_mod sobre [base_pair]
+    y candidate_pairs, y retorna la lista de nuevos pares generados.
     """
-    # Llamamos a cartesian_product_mod pasando [base_pair] para que trabaje con un único elemento.
     return cartesian_product_mod([base_pair], candidate_pairs, d_local_attractors)
 
 
@@ -852,6 +886,9 @@ class CBN:
         # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
+    import multiprocessing
+    from multiprocessing import Pool
+    from math import ceil
 
     def mount_stable_attractor_fields_parallel(self, num_cpus=None):
         """
@@ -859,10 +896,14 @@ class CBN:
 
         El proceso es:
           1. Se ordenan las aristas por compatibilidad.
-          2. Se genera la base inicial de pares a partir de la primera arista.
-          3. Para cada arista restante (a partir de la segunda):
-                 - Se extrae la lista de pares candidatos de esa señal de salida.
-                 - Para cada elemento de la base actual (cada par base), se crea un proceso que aplica\n               cartesian_product_mod() con ese elemento y los pares candidatos.\n             - Se esperan todos los procesos y se unen los resultados (se convierten a tuplas para que sean hashables),\n               actualizando así la base de pares.\n      4. Finalmente, se genera el diccionario de campos de atractores a partir de la base final.\n\n    Actualiza self.d_attractor_fields con los campos encontrados.
+          2. Se genera la base inicial de pares a partir de la primera arista y se normaliza para que cada elemento sea un par (lista o tupla).
+          3. Para cada arista restante:
+                 - Se extrae la lista de pares candidatos de la señal de salida actual.
+                 - Para cada elemento de la base actual, se crea una tarea individual que aplica process_single_base_pair() con ese elemento y la lista de candidatos.
+                 - Se ejecutan todas las tareas en paralelo y se unen los resultados (convirtiendo cada nuevo par a tupla) para actualizar la base.
+          4. Se genera el diccionario de campos de atractores a partir de la base final.
+
+        Actualiza self.d_attractor_fields con los campos encontrados.
         """
         CustomText.make_title("MOUNT STABLE ATTRACTOR FIELDS (PARALLEL)")
 
@@ -872,37 +913,38 @@ class CBN:
         # Paso 1: Ordenar las aristas por compatibilidad
         self.order_edges_by_compatibility()
 
-        # Paso 2: Generar la base inicial de pares a partir de la primera arista
-        l_base_pairs = set(self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0] +
-                           self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1])
+        # Paso 2: Generar la base inicial de pares a partir de la primera arista y normalizarla
+        base0 = self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
+        base1 = self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1]
+        if base0 and not isinstance(base0[0], (list, tuple)):
+            base0 = [base0]
+        if base1 and not isinstance(base1[0], (list, tuple)):
+            base1 = [base1]
+        l_base_pairs = set(base0 + base1)
 
         # Paso 3: Iterar sobre las aristas restantes para refinar la base de pares
         for o_directed_edge in self.l_directed_edges[1:]:
-            # Extraer la lista de pares candidatos para la señal de salida actual
             l_candidate_pairs = (o_directed_edge.d_comp_pairs_attractors_by_value[0] +
                                  o_directed_edge.d_comp_pairs_attractors_by_value[1])
             print(f"\nProcesando arista {o_directed_edge.index} con {len(l_base_pairs)} pares base")
-
             if not l_base_pairs:
                 break
 
-            # Convertir la base actual en lista para iterar individualmente
             base_pairs_list = list(l_base_pairs)
-
-            # Preparar argumentos para cada tarea: cada base_pair se procesa individualmente
             tasks_args = [(bp, l_candidate_pairs, self.d_local_attractors) for bp in base_pairs_list]
 
             with Pool(processes=num_cpus) as pool:
                 results = pool.starmap(process_single_base_pair, tasks_args)
 
-            # Cada resultado es una lista (posiblemente vacía) de nuevos pares a partir de un base_pair.
-            # Unir todos los nuevos pares en un único conjunto (convertidos a tuplas para ser hashables).
             new_base_pairs = set()
             for r in results:
-                # r es una lista de nuevos pares; convertimos cada nuevo par a tupla (si no lo es) y lo agregamos al conjunto.
-                new_base_pairs.update({tuple(item) if isinstance(item, list) else item for item in r})
-
+                for item in r:
+                    if isinstance(item, list):
+                        new_base_pairs.add(tuple(item))
+                    else:
+                        new_base_pairs.add(item)
             l_base_pairs = new_base_pairs
+
             print(f"Base actualizada: {len(l_base_pairs)} pares")
             if not l_base_pairs:
                 break
@@ -910,12 +952,17 @@ class CBN:
         # Paso 4: Generar el diccionario de campos de atractores a partir de la base final
         self.d_attractor_fields = {}
         for i, base_element in enumerate(l_base_pairs, start=1):
-            # Aseguramos que cada base_element sea una estructura iterable (convertida a tupla si es necesario)
-            if not isinstance(base_element, (list, tuple)):
-                raise TypeError(f"Esperado lista o tupla, pero se recibió {type(base_element)}: {base_element}")
-            # Para cada campo, se extraen los elementos de cada par y se eliminan duplicados
-            self.d_attractor_fields[i] = list(
-                {tuple(item) if isinstance(item, list) else item for pair in base_element for item in pair})
+            field = set()
+            try:
+                for pair in base_element:
+                    try:
+                        for item in pair:
+                            field.add(tuple(item) if isinstance(item, list) else item)
+                    except TypeError:
+                        field.add(pair)
+            except TypeError:
+                field.add(base_element)
+            self.d_attractor_fields[i] = list(field)
 
         CustomText.make_sub_sub_title("END MOUNT STABLE ATTRACTOR FIELDS (PARALLEL)")
 
