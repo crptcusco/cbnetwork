@@ -45,4 +45,4 @@ o_cbn.find_local_attractors_parallel(num_cpus=NUM_CPUS)
 o_cbn.find_compatible_pairs_parallel(num_cpus=NUM_CPUS)
 
 # Mount the stable attractor fields
-o_cbn.mount_stable_attractor_fields_parallel_chunks(num_cpus=NUM_CPUS)
+o_cbn.mount_stable_attractor_fields_parallel(num_cpus=NUM_CPUS)
