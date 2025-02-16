@@ -1,12 +1,12 @@
-# external imports
-import itertools  # libraries to iterate
-import random
-from itertools import product  # generate combinations of numbers
-from typing import List, Optional, Any, Dict
-from dask import delayed, compute   # Librarys to use Dask
-import multiprocessing  # Library to use paralaleis woth process
-from multiprocessing import Pool    # Library to generate a List of parallel
-from math import ceil
+# External imports
+import itertools  # Provides functions for efficient looping and combination generation
+import random  # Library for generating random numbers and shuffling data
+from itertools import product  # Function to generate Cartesian product of input iterables
+from typing import List, Optional, Any, Dict  # Type hints for better code readability and type safety
+from dask import delayed, compute  # Library for parallel computing using task scheduling with Dask
+import multiprocessing  # Library for parallel execution using multiple processes
+from multiprocessing import Pool  # Class to manage parallel execution of a function across multiple processes
+from math import ceil  # Provides mathematical functions, including rounding up values
 
 # internal imports
 from classes.globalscene import GlobalScene
@@ -18,189 +18,253 @@ from classes.localscene import LocalAttractor
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
 
+
 def process_local_network_mp(o_local_network):
     """
-    Procesa una red local para encontrar sus atractores.
-    Si hay un error, se imprime un mensaje y se devuelve la red sin cambios.
+    Processes a local network to find its attractors.
+    If an error occurs, an error message is printed, and the network is returned unchanged.
+
+    Args:
+        o_local_network: The local network object to be processed.
+
+    Returns:
+        The updated local network with its attractors found, or the original network if an error occurs.
     """
     try:
+        # Generate local scenes from the given local network
         l_local_scenes = CBN._generate_local_scenes(o_local_network)
+
+        # Find and update the local network's attractors
         updated_network = LocalNetwork.find_local_attractors(
             o_local_network=o_local_network,
             l_local_scenes=l_local_scenes
         )
-        return updated_network  # ✅ Siempre retorna la red local actualizada
+
+        # Return the updated network
+        return updated_network
+
     except Exception as e:
-        print(f"❌ ERROR en la red {o_local_network.id}: {e}")  # 📢 Registro del error
-        return o_local_network  # ❗ Retorna la red sin cambios en caso de fallo
+        # Print an error message if an exception occurs
+        print(f"Error in network {o_local_network.id}: {e}")
+
+        # Return the original network without modifications in case of failure
+        return o_local_network
 
 def process_output_signal_mp(args):
     """
-    Procesa una señal de salida para calcular los pares compatibles.
+    Processes an output signal to compute compatible attractor pairs.
 
     Args:
-        args: Una tupla con:
-              - signal_index: identificador de la señal.
-              - l_attractors_input_0: lista de índices de atractores (valor 0).
-              - l_attractors_input_1: lista de índices de atractores (valor 1).
-              - index_variable: variable de la señal usada para obtener atractores.
-              - get_attractors_func: función para obtener atractores (usualmente self.get_attractors_by_input_signal_value).
+        args (tuple): Contains the following elements:
+            - signal_index (int): Identifier of the signal.
+            - l_attractors_input_0 (list): List of attractor indices for input value 0.
+            - l_attractors_input_1 (list): List of attractor indices for input value 1.
+            - index_variable (Any): The signal variable used to retrieve attractors.
+            - get_attractors_func (Callable): Function to retrieve attractors,
+              typically self.get_attractors_by_input_signal_value.
 
     Returns:
-        Una tupla: (signal_index, d_comp_pairs_attractors_by_value, n_pairs)
+        tuple: (signal_index, d_comp_pairs_attractors_by_value, n_pairs)
+            - signal_index (int): The identifier of the processed signal.
+            - d_comp_pairs_attractors_by_value (dict): Dictionary with keys {0,1},
+              where each value is a list of compatible attractor pairs.
+            - n_pairs (int): The total number of attractor pairs found.
     """
+    # Unpack input arguments
     signal_index, l_attractors_input_0, l_attractors_input_1, index_variable, get_attractors_func = args
 
-    def find_attractor_pairs(signal_value, index_variable, l_attractors_input):
+    def find_attractor_pairs(signal_value: int, index_variable: Any, l_attractors_input: list):
+        """
+        Finds compatible attractor pairs for a given signal value.
+
+        Args:
+            signal_value (int): The value of the signal (0 or 1).
+            index_variable (Any): The variable used to retrieve attractors.
+            l_attractors_input (list): List of input attractor indices.
+
+        Returns:
+            list: A list of compatible attractor pairs as tuples.
+        """
+        # Retrieve the output attractors corresponding to the given signal value
         l_attractors_output = [o_attractor.g_index for o_attractor in get_attractors_func(index_variable, signal_value)]
+
+        # Generate all possible pairs between input and output attractors
         return list(itertools.product(l_attractors_input, l_attractors_output))
 
+    # Compute compatible pairs for both signal values (0 and 1)
     d_comp_pairs = {
         0: find_attractor_pairs(0, index_variable, l_attractors_input_0),
         1: find_attractor_pairs(1, index_variable, l_attractors_input_1)
     }
+
+    # Count the total number of attractor pairs
     n_pairs = len(d_comp_pairs[0]) + len(d_comp_pairs[1])
+
+    # Return the signal index, computed pairs, and the total count
     return signal_index, d_comp_pairs, n_pairs
 
 def evaluate_pair(base_pairs: list, candidate_pair: tuple, d_local_attractors) -> bool:
     """
-    Comprueba si un par candidato es compatible con los pares base.
+    Checks whether a candidate pair is compatible with the base pairs.
 
-    Aplanando recursivamente cada par para obtener índices individuales.
+    The function recursively flattens each pair to extract individual indices and
+    verifies whether the candidate pair maintains the compatibility conditions.
+
+    Args:
+        base_pairs (list): List of existing base pairs of attractors.
+        candidate_pair (tuple): The new pair to evaluate.
+        d_local_attractors (dict): A dictionary mapping attractor indices to their corresponding local networks.
+
+    Returns:
+        bool: True if the candidate pair is compatible, False otherwise.
     """
 
     def flatten(x):
+        """
+        Recursively flattens nested lists or tuples into a single sequence of elements.
+
+        Args:
+            x (Any): A nested list, tuple, or single element.
+
+        Yields:
+            Elements in a fully flattened form.
+        """
         if isinstance(x, (list, tuple)):
             for item in x:
-                yield from flatten(item)
+                yield from flatten(item)  # Recursively flatten nested elements
         else:
-            yield x
+            yield x  # Base case: yield individual elements
 
-    # Aplanamos la estructura de cada par base para obtener todos los índices individuales.
+    # Flatten all base pairs to extract individual attractor indices.
     base_attractor_indices = {x for pair in base_pairs for x in flatten(pair)}
 
-    # Para cada índice obtenido, se extrae el primer elemento del valor correspondiente en d_local_attractors.
+    # Extract the set of networks already visited based on base attractors.
     already_visited_networks = {d_local_attractors[idx][0] for idx in base_attractor_indices}
 
     double_check = 0
-    # Aplanamos también el par candidato para iterar sobre cada índice individual.
+    # Flatten the candidate pair and check its compatibility.
     for candidate_idx in flatten(candidate_pair):
         if d_local_attractors[candidate_idx][0] in already_visited_networks:
             if candidate_idx in base_attractor_indices:
-                double_check += 1
+                double_check += 1  # Candidate already exists in base pairs
         else:
-            double_check += 1
+            double_check += 1  # Candidate belongs to a new network
 
+    # A valid pair must introduce exactly two new elements to the set
     return double_check == 2
 
 def cartesian_product_mod(base_pairs: list, candidate_pairs: list, d_local_attractors) -> list:
     """
-    Realiza el producto cartesiano modificado entre dos listas de pares, filtrando las combinaciones incompatibles.
+    Performs a modified Cartesian product between two lists of pairs, filtering out incompatible combinations.
+
+    This function iterates through all possible combinations of `base_pairs` and `candidate_pairs`,
+    checks their compatibility using `evaluate_pair`, and appends valid pairs to the result list.
+
+    Args:
+        base_pairs (list): A list of base attractor pairs.
+        candidate_pairs (list): A list of new candidate attractor pairs.
+        d_local_attractors (dict): A dictionary mapping attractor indices to their corresponding local networks.
+
+    Returns:
+        list: A list of new combined pairs that are considered compatible.
     """
-    field_pair_list = []
+    field_pair_list = []  # Stores the valid combinations of base and candidate pairs.
+
     for base_pair in base_pairs:
         for candidate_pair in candidate_pairs:
-            # Si base_pair es una tupla, lo convertimos a lista para concatenar
+            # Convert base_pair to a list if it's a tuple to allow concatenation.
             if isinstance(base_pair, tuple):
                 base_pair = list(base_pair)
+
+            # Check if the new pair is compatible before adding it.
             if evaluate_pair(base_pair, candidate_pair, d_local_attractors):
-                new_pair = base_pair + [candidate_pair]
+                new_pair = base_pair + [candidate_pair]  # Merge base and candidate pairs.
                 field_pair_list.append(new_pair)
+
     return field_pair_list
 
 def _convert_to_tuple(x):
     """
-    Convierte recursivamente listas en tuplas para que sean hashables.
+    Recursively converts lists into tuples to make them hashable.
+
+    This function ensures that nested lists are transformed into immutable tuples,
+    which allows them to be used as dictionary keys or stored in sets.
+
+    Args:
+        x (Any): A value that could be a list or any other data type.
+
+    Returns:
+        Any: A tuple if the input was a list, otherwise the original value.
     """
     if isinstance(x, list):
-        return tuple(_convert_to_tuple(item) for item in x)
-    return x
-
-def evaluate_pair(base_pairs: list, candidate_pair: tuple, d_local_attractors) -> bool:
-    """
-    Comprueba si un par candidato es compatible con los pares base.
-
-    Se aplanan recursivamente las estructuras para extraer índices individuales.
-    """
-
-    def flatten(x):
-        if isinstance(x, (list, tuple)):
-            for item in x:
-                yield from flatten(item)
-        else:
-            yield x
-
-    # Aplanar cada par base para obtener índices individuales
-    base_attractor_indices = {x for pair in base_pairs for x in flatten(pair)}
-    # Obtener, para cada índice, el primer elemento del valor en d_local_attractors
-    already_visited_networks = {d_local_attractors[idx][0] for idx in base_attractor_indices}
-    double_check = 0
-    for candidate_idx in flatten(candidate_pair):
-        if d_local_attractors[candidate_idx][0] in already_visited_networks:
-            if candidate_idx in base_attractor_indices:
-                double_check += 1
-        else:
-            double_check += 1
-    return double_check == 2
-
-def cartesian_product_mod(base_pairs: list, candidate_pairs: list, d_local_attractors) -> list:
-    """
-    Realiza el producto cartesiano modificado entre la lista base y la lista de pares candidatos,
-    filtrando combinaciones incompatibles mediante evaluate_pair.
-    """
-    field_pair_list = []
-    for base_pair in base_pairs:
-        # Si base_pair es una tupla, lo convertimos a lista para poder concatenar
-        if isinstance(base_pair, tuple):
-            base_pair = list(base_pair)
-        for candidate_pair in candidate_pairs:
-            if evaluate_pair([base_pair], candidate_pair, d_local_attractors):
-                new_pair = base_pair + [candidate_pair]
-                field_pair_list.append(new_pair)
-    return field_pair_list
+        return tuple(_convert_to_tuple(item) for item in x)  # Recursively convert nested lists to tuples.
+    return x  # Return unchanged if it's not a list.
 
 def process_single_base_pair(base_pair, candidate_pairs, d_local_attractors):
     """
-    Procesa un único par base aplicando cartesian_product_mod sobre [base_pair]
-    y candidate_pairs, y retorna la lista de nuevos pares generados.
+    Processes a single base pair by applying `cartesian_product_mod` to generate new compatible pairs.
+
+    This function wraps the `cartesian_product_mod` function, ensuring that the given
+    base pair is processed individually by converting it into a single-element list.
+
+    Args:
+        base_pair (Any): A single base pair to be combined with candidate pairs.
+        candidate_pairs (list): A list of candidate pairs to be tested for compatibility.
+        d_local_attractors (dict): A dictionary mapping attractor indices to network information.
+
+    Returns:
+        list: A list of new pairs generated after applying the Cartesian product modification.
     """
     return cartesian_product_mod([base_pair], candidate_pairs, d_local_attractors)
 
-
 class CBN:
     """
-    Class representing a Complex Boolean Network (CBN).
+    Represents a Complex Boolean Network (CBN).
+
+    A CBN consists of multiple interconnected local Boolean networks,
+    where each network can have its own set of attractors and dynamic behavior.
 
     Attributes:
-        l_local_networks (list[LocalNetwork]): List of local networks in the CBN.
-        l_directed_edges (list[DirectedEdge]): List of directed edges in the CBN.
-        d_local_attractors (dict): Dictionary of local attractors.
-        d_attractor_pair (dict): Dictionary of attractor pairs.
-        d_attractor_fields (dict): Dictionary of attractor fields.
-        l_global_scenes (list[GlobalScene]): List of global scenes.
-        o_global_topology (GlobalTopology): Global topology object.
+        l_local_networks (list[LocalNetwork]):
+            A list of local Boolean networks within the CBN.
+        l_directed_edges (list[DirectedEdge]):
+            A list of directed edges representing the interactions between local networks.
+        d_local_attractors (dict):
+            A dictionary mapping local networks to their respective attractors.
+        d_attractor_pair (dict):
+            A dictionary storing compatible attractor pairs for network transitions.
+        d_attractor_fields (dict):
+            A dictionary representing attractor fields, which define stable attractor configurations.
+        l_global_scenes (list[GlobalScene]):
+            A list of global scenes, representing different global configurations of the CBN.
+        d_global_scenes_count (dict):
+            A dictionary keeping track of the number of occurrences of each global scene.
+        o_global_topology (GlobalTopology or None):
+            An object representing the global topology of the network, initially set to None.
     """
 
     def __init__(self, l_local_networks: list, l_directed_edges: list):
         """
-        Initializes the Complex Boolean Network with local networks and directed edges.
+        Initializes a Complex Boolean Network with a set of local networks and directed edges.
 
         Args:
-            l_local_networks (list): List of local networks in the CBN.
-            l_directed_edges (list): List of directed edges in the CBN.
+            l_local_networks (list[LocalNetwork]):
+                The list of local networks that form the CBN.
+            l_directed_edges (list[DirectedEdge]):
+                The list of directed edges defining connections between local networks.
         """
-        # Initial attributes
+        # Stores the provided local networks and edges
         self.l_local_networks = l_local_networks
         self.l_directed_edges = l_directed_edges
 
-        # Calculated attributes
-        self.d_local_attractors = {}
-        self.d_attractor_pair = {}
-        self.d_attractor_fields = {}
-        self.l_global_scenes = []
-        self.d_global_scenes_count ={}
+        # Data structures for attractor and field calculations
+        self.d_local_attractors = {}  # Stores attractors for each local network
+        self.d_attractor_pair = {}  # Stores compatible attractor pairs
+        self.d_attractor_fields = {}  # Stores attractor field mappings
+        self.l_global_scenes = []  # Stores global network states
+        self.d_global_scenes_count = {}  # Tracks frequency of global scenes
 
-        # Graphs
+        # Placeholder for the global topology (to be initialized later)
         self.o_global_topology = None
 
     # PRINCIPAL FUNCTIONS
