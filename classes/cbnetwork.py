@@ -950,10 +950,6 @@ class CBN:
         # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
-    import multiprocessing
-    from multiprocessing import Pool
-    from math import ceil
-
     def mount_stable_attractor_fields_parallel(self, num_cpus=None):
         """
         Ensambla campos de atractores estables en paralelo utilizando multiprocessing.
