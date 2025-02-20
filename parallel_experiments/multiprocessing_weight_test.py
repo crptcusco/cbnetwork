@@ -54,5 +54,5 @@ o_cbn.show_local_attractors()
 o_cbn.show_attractor_pairs()
 
 # Show the attractors fields
-o_cbn.show_attractors_fields()
+o_cbn.show_attractor_fields()
 
