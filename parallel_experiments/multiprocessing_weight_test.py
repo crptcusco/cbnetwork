@@ -11,7 +11,7 @@ from classes.localtemplates import LocalNetworkTemplate
 NUM_CPUS = multiprocessing.cpu_count()
 
 # pass the parameters
-N_LOCAL_NETWORKS = 10
+N_LOCAL_NETWORKS = 6
 N_VARS_NETWORK = 20
 N_OUTPUT_VARS = 2
 N_INPUT_VARS = 2
@@ -47,9 +47,12 @@ o_cbn.find_compatible_pairs_parallel_with_weights(num_cpus=NUM_CPUS)
 # Mount the stable attractor fields
 o_cbn.mount_stable_attractor_fields_parallel_chunks(num_cpus=NUM_CPUS)
 
-# Show the attractors fields
-o_cbn.show_attractors_fields()
+# Show local attractors
+o_cbn.show_local_attractors()
 
 # Show the attractors pairs
 o_cbn.show_attractor_pairs()
+
+# Show the attractors fields
+o_cbn.show_attractors_fields()
 
