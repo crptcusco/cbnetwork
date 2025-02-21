@@ -381,7 +381,7 @@ class CBN:
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS PARALLEL")
 
-        if num_cpus is None:
+        if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
         # Crear un pool de procesos; se puede ajustar el número de procesos si es necesario
@@ -406,6 +406,9 @@ class CBN:
         mediante un sistema de 'buckets' según el peso de cada tarea.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
+
+        if num_cpus is None or num_cpus <= 0:
+            num_cpus = multiprocessing.cpu_count()
 
         # Crear lista de tareas con peso
         tasks_with_weight = []
@@ -637,7 +640,7 @@ class CBN:
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        if num_cpus is None:
+        if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
         tasks = []
@@ -690,7 +693,7 @@ class CBN:
         for local_network in self.l_local_networks:
             self.process_kind_signal(local_network)
 
-        if num_cpus is None:
+        if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
         tasks_with_weight = []
@@ -980,7 +983,7 @@ class CBN:
         """
         CustomText.make_title("MOUNT STABLE ATTRACTOR FIELDS (PARALLEL)")
 
-        if num_cpus is None:
+        if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
         # Paso 1: Ordenar las aristas por compatibilidad
@@ -1063,7 +1066,7 @@ class CBN:
         """
         CustomText.make_title("MOUNT STABLE ATTRACTOR FIELDS (PARALLEL CHUNKS)")
 
-        if num_cpus is None:
+        if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
         # Step 1: Order the edges by compatibility
