@@ -250,11 +250,3 @@ class DirectedEdge:
             print("Output signal Value -", signal_value, "- Attractors:")
             for o_attractor in l_attractors:
                 o_attractor.show()
-
-    # def show_d_comp_pairs_attractors_by_value(self, value):
-    #     """
-    #     Display compatible pairs of attractors by their output signal value.
-    #
-    #     This method is commented out. It could be implemented to show pairs of attractors based on the given value.
-    #     """
-    #     self.d_comp_pairs_attractors_by_value()

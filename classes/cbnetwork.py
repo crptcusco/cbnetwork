@@ -703,13 +703,18 @@ class CBN:
         for local_network in self.l_local_networks:
             output_edges = self.get_output_edges_by_network_index(local_network.index)
             for output_signal in output_edges:
+
+                # Get the number of attractors in the input network
+                input_network = self.get_network_by_index(output_signal.input_local_network)
+                n_local_attractors = input_network.count_attractor
+
                 signal_index = output_signal.index
                 # Save the reference for later update
                 signal_map[signal_index] = output_signal
                 l_attractors_input_0 = [attr.g_index for attr in output_signal.d_out_value_to_attractor[0]]
                 l_attractors_input_1 = [attr.g_index for attr in output_signal.d_out_value_to_attractor[1]]
                 # Define the task's weight (you can adjust this formula if needed)
-                weight = len(l_attractors_input_0) + len(l_attractors_input_1)
+                weight = (len(l_attractors_input_0) + len(l_attractors_input_1)) * n_local_attractors
                 task_args = (signal_index, l_attractors_input_0, l_attractors_input_1,
                              output_signal.index_variable, self.get_attractors_by_input_signal_value)
                 tasks_with_weight.append((weight, task_args))
@@ -1890,7 +1895,7 @@ class CBN:
         
     def get_network_by_index(self, index: int) -> Optional[LocalNetwork]:
         for o_local_network in self.l_local_networks:
-            if o_local_network.l_index == index:
+            if o_local_network.index == index:
                 return o_local_network
         return None
 
