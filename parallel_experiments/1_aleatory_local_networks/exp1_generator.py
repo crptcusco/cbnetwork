@@ -13,7 +13,7 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # Experiment parameters
-N_SAMPLES = 10
+N_SAMPLES = 500
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 10
 N_VARS_NETWORK = 5
@@ -132,26 +132,27 @@ for i_sample in range(1, N_SAMPLES + 1):
                 except Exception as e:
                     execution_time = None
                     print(f"Error in {method_name}: {e}")
-                    # Collect results for this step and variant
-                    data_samples.append({
-                        "i_sample": i_sample,
-                        "n_local_networks": n_local_networks,
-                        "n_var_network": N_VARS_NETWORK,
-                        "v_topology": V_TOPOLOGY,
-                        "n_output_variables": N_OUTPUT_VARS,
-                        "n_clauses_function": N_MAX_CLAUSES,
-                        "n_edges": n_local_networks,
-                        "step": step_index,  # 1: local attractors, 2: pair attractors, 3: attractor fields
-                        "method": variant,  # 1: sequential, 2: parallel, 3: weighted parallel\n
-                        "execution_time": execution_time,
-                        "n_local_attractors": instance.get_n_local_attractors() if step_index == 1 else None,
-                        "n_pair_attractors": instance.get_n_pair_attractors() if step_index == 2 else None,
-                        "n_attractor_fields": instance.get_n_attractor_fields() if step_index == 3 else None
-                        })
-                        #Note: Each variant's instance is updated sequentially through the steps.
+                # Collect results regardless of whether an error occurred.
+                data_samples.append({
+                    "i_sample": i_sample,
+                    "n_local_networks": n_local_networks,
+                    "n_var_network": N_VARS_NETWORK,
+                    "v_topology": V_TOPOLOGY,
+                    "n_output_variables": N_OUTPUT_VARS,
+                    "n_clauses_function": N_MAX_CLAUSES,
+                    "n_edges": n_local_networks,
+                    "step": step_index,  # 1: local attractors, 2: pair attractors, 3: attractor fields
+                    "method": variant,  # 1: sequential, 2: parallel, 3: weighted parallel
+                    "execution_time": execution_time,
+                    "n_local_attractors": instance.get_n_local_attractors() if step_index == 1 else None,
+                    "n_pair_attractors": instance.get_n_pair_attractors() if step_index == 2 else None,
+                    "n_attractor_fields": instance.get_n_attractor_fields() if step_index == 3 else None
+                })
 
         # Save results to CSV
+        print("Data samples collected:", data_samples)
         df_results = pd.DataFrame(data_samples)
+
         mode = 'a' if os.path.exists(file_path) else 'w'
         header = not os.path.exists(file_path)
         df_results.to_csv(file_path, mode=mode, header=header, index=False)
