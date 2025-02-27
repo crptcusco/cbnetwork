@@ -48,4 +48,6 @@ o_cbn.find_compatible_pairs_parallel(num_cpus=NUM_CPUS)
 o_cbn.mount_stable_attractor_fields_parallel(num_cpus=NUM_CPUS)
 
 # Show the attractors fields
-o_cbn.show_attractors_fields()
+o_cbn.show_attractor_fields()
+
+print(o_cbn.get_n_attractor_fields())

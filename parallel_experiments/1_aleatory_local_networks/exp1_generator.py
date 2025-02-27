@@ -13,7 +13,7 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # Experiment parameters
-N_SAMPLES = 500
+N_SAMPLES = 10
 N_LOCAL_NETWORKS_MIN = 3
 N_LOCAL_NETWORKS_MAX = 10
 N_VARS_NETWORK = 5
@@ -39,22 +39,23 @@ if os.path.exists(file_path):
     print(f"Existing file deleted: {file_path}")
 
 # Method groups for each step
+# Variant 1: sequential; Variant 2: parallel; Variant 3: weighted parallel (with chunks)
 methods = {
-    "find_local_attractors": [
-        "find_local_attractors_sequential",
-        "find_local_attractors_parallel",
-        "find_local_attractors_parallel_with_weigths"
-    ],
-    "find_compatible_pairs": [
-        "find_compatible_pairs",
-        "find_compatible_pairs_parallel",
-        "find_compatible_pairs_parallel_with_weights"
-    ],
-    "mount_stable_attractor_fields": [
-        "mount_stable_attractor_fields",
-        "mount_stable_attractor_fields_parallel",
-        "mount_stable_attractor_fields_parallel_chunks"
-    ]
+    "find_local_attractors": {
+        1: "find_local_attractors_sequential",
+        2: "find_local_attractors_parallel",
+        3: "find_local_attractors_parallel_with_weigths"
+    },
+    "find_compatible_pairs": {
+        1: "find_compatible_pairs",
+        2: "find_compatible_pairs_parallel",
+        3: "find_compatible_pairs_parallel_with_weights"
+    },
+    "mount_stable_attractor_fields": {
+        1: "mount_stable_attractor_fields",
+        2: "mount_stable_attractor_fields_parallel",
+        3: "mount_stable_attractor_fields_parallel_chunks"
+    }
 }
 
 # Begin experiment
@@ -89,51 +90,79 @@ for i_sample in range(1, N_SAMPLES + 1):
 
         data_samples = []
 
-        for step_index, (step, method_list) in enumerate(methods.items(), start=1):
-            for method_index, method_name in enumerate(method_list, start=1):
-                cbn_instance = copy.deepcopy(base_cbn)  # Ensure each method runs independently
+        # Create three copies for the three variants:
+        sequential_instance = copy.deepcopy(base_cbn)
+        parallel_instance = copy.deepcopy(base_cbn)
+        weighted_instance = copy.deepcopy(base_cbn)
 
+        # Map each variant (1: sequential, 2: parallel, 3: weighted) to its instance and corresponding method names.
+        variants = {
+            1: (sequential_instance, {
+                "find_local_attractors": methods["find_local_attractors"][1],
+                "find_compatible_pairs": methods["find_compatible_pairs"][1],
+                "mount_stable_attractor_fields": methods["mount_stable_attractor_fields"][1]
+            }),
+            2: (parallel_instance, {
+                "find_local_attractors": methods["find_local_attractors"][2],
+                "find_compatible_pairs": methods["find_compatible_pairs"][2],
+                "mount_stable_attractor_fields": methods["mount_stable_attractor_fields"][2]
+            }),
+            3: (weighted_instance, {
+                "find_local_attractors": methods["find_local_attractors"][3],
+                "find_compatible_pairs": methods["find_compatible_pairs"][3],
+                "mount_stable_attractor_fields": methods["mount_stable_attractor_fields"][3]
+            })
+        }
+
+        # Define the sequence of steps
+        step_names = ["find_local_attractors", "find_compatible_pairs", "mount_stable_attractor_fields"]
+
+        # For each step and for each variant, execute the corresponding method and record the result.
+        for step_index, step in enumerate(step_names, start=1):
+            for variant in [1, 2, 3]:
+                instance, method_mapping = variants[variant]
+                method_name = method_mapping[step]
                 try:
-                    print(f"Executing {method_name}...")
+                    print(f"Executing {method_name} for step {step} (variant {variant})...")
                     start_time = time.perf_counter()
-                    getattr(cbn_instance, method_name)()
+                    getattr(instance, method_name)()
                     end_time = time.perf_counter()
                     execution_time = end_time - start_time
                     print(f"{method_name} execution time: {execution_time:.6f} seconds")
                 except Exception as e:
-                    execution_time = None  # Indica que hubo un error
+                    execution_time = None
                     print(f"Error in {method_name}: {e}")
-
-
-                # Collect results
-                data_samples.append({
-                    "i_sample": i_sample,
-                    "n_local_networks": n_local_networks,
-                    "n_var_network": N_VARS_NETWORK,
-                    "v_topology": V_TOPOLOGY,
-                    "n_output_variables": N_OUTPUT_VARS,
-                    "n_clauses_function": N_MAX_CLAUSES,
-                    "n_edges": n_local_networks,
-                    "step": step_index,
-                    "method": method_index,
-                    "execution_time": execution_time,
-                    "n_local_attractors": cbn_instance.get_n_local_attractors() if step_index == 1 else None,
-                    "n_pair_attractors": cbn_instance.get_n_pair_attractors() if step_index == 2 else None,
-                    "n_attractor_fields": cbn_instance.get_n_attractor_fields() if step_index == 3 else None
-                })
+                    # Collect results for this step and variant
+                    data_samples.append({
+                        "i_sample": i_sample,
+                        "n_local_networks": n_local_networks,
+                        "n_var_network": N_VARS_NETWORK,
+                        "v_topology": V_TOPOLOGY,
+                        "n_output_variables": N_OUTPUT_VARS,
+                        "n_clauses_function": N_MAX_CLAUSES,
+                        "n_edges": n_local_networks,
+                        "step": step_index,  # 1: local attractors, 2: pair attractors, 3: attractor fields
+                        "method": variant,  # 1: sequential, 2: parallel, 3: weighted parallel\n
+                        "execution_time": execution_time,
+                        "n_local_attractors": instance.get_n_local_attractors() if step_index == 1 else None,
+                        "n_pair_attractors": instance.get_n_pair_attractors() if step_index == 2 else None,
+                        "n_attractor_fields": instance.get_n_attractor_fields() if step_index == 3 else None
+                        })
+                        #Note: Each variant's instance is updated sequentially through the steps.
 
         # Save results to CSV
         df_results = pd.DataFrame(data_samples)
         mode = 'a' if os.path.exists(file_path) else 'w'
         header = not os.path.exists(file_path)
         df_results.to_csv(file_path, mode=mode, header=header, index=False)
-
         print(f"Experiment data saved in: {file_path}")
+
+        # Save the original base instance to a pickle file (for reference)
         pickle_path = os.path.join(DIRECTORY_PKL, f'cbn_{i_sample}_{n_local_networks}.pkl')
         with open(pickle_path, 'wb') as file:
             pickle.dump(base_cbn, file)
-
         print(f"Pickle object saved in: {pickle_path}")
+
         o_global_topology.add_node()
 
     CustomText.print_stars()
