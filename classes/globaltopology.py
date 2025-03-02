@@ -208,26 +208,52 @@ class AleatoryFixedDigraph(GlobalTopology):
 
     def generate_edges(self):
         """
-        Generates edges for the random directed graph.
+        Generates edges for the random directed graph, ensuring that:
+        1. The number of edges does not exceed twice the number of nodes.
+        2. The graph remains connected.
         """
-        G = nx.DiGraph()
-        G.add_nodes_from(self.l_nodes)
 
-        for i in range(1, self.n_nodes):
-            u = random.randint(0, i - 1)
-            G.add_edge(u, i)
+        # Adjust the number of edges if it exceeds 2 * number of nodes
+        max_edges = 2 * self.n_nodes
+        if self.n_edges > max_edges:
+            print(f"Warning: n_edges ({self.n_edges}) exceeds 2 * n_nodes. Setting n_edges = {max_edges}.")
+            self.n_edges = max_edges
 
-        while G.number_of_edges() < self.n_edges:
-            u, v = random.sample(range(self.n_nodes), 2)
-            if G.in_degree(v) < 2 and not G.has_edge(u, v):
-                G.add_edge(u, v)
+        while True:  # Repeat until the graph is connected
+            G = nx.DiGraph()
+            G.add_nodes_from(self.l_nodes)
 
-        # update the nodes labels
-        mapping = {node: node + 1 for node in G.nodes()}
-        G = nx.relabel_nodes(G, mapping)
+            # Ensure each node (except the first) has at least one incoming edge
+            for i in range(1, self.n_nodes):
+                u = random.randint(0, i - 1)
+                G.add_edge(u, i)
 
-        # update the list of edges
+            # Add additional edges while avoiding infinite loops
+            attempts = 0
+            max_attempts = self.n_nodes * 10  # Prevent excessive retries
+
+            while G.number_of_edges() < self.n_edges and attempts < max_attempts:
+                u, v = random.sample(range(self.n_nodes), 2)
+                if G.in_degree(v) < 2 and not G.has_edge(u, v):
+                    G.add_edge(u, v)
+                attempts += 1
+
+            if G.number_of_edges() < self.n_edges:
+                print("Warning: Could not reach the desired number of edges.")
+
+            # Ensure the graph is connected
+            if nx.is_strongly_connected(G):
+                break  # Exit the loop if the graph is connected
+
+        # Relabel nodes (only if they are numeric)
+        if all(isinstance(node, int) for node in G.nodes()):
+            mapping = {node: node + 1 for node in G.nodes()}
+            G = nx.relabel_nodes(G, mapping)
+
+        # Update edge list
         self.l_edges = list(G.edges())
+
+        return G  # Return the graph for further use
 
     def add_edge(self):
         """
