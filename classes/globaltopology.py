@@ -218,6 +218,9 @@ class AleatoryFixedDigraph(GlobalTopology):
         # import networkx as nx
         # import random
 
+        # check minimum edges!!!
+        # minimun: bn - 1
+
         # Limit the number of edges if it exceeds 2 * number of nodes
         max_edges = 2 * self.n_nodes
         if self.n_edges > max_edges:

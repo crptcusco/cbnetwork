@@ -15,8 +15,8 @@ from classes.cbnetwork import CBN
 
 # Parámetros del experimento
 N_SAMPLES = 1000
-N_LOCAL_NETWORKS = 6  # Fijo en 6
-VARS_NETWORK_LIST = [5, 10, 15, 20]  # Número de variables por red
+N_LOCAL_NETWORKS = 8
+VARS_NETWORK_LIST = [4, 8, 12, 16, 20, 24]  # Número de variables por red
 N_OUTPUT_VARS = 2
 N_INPUT_VARS = 2
 V_TOPOLOGY = 2
