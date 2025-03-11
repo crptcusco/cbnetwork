@@ -15,8 +15,8 @@ from classes.cbnetwork import CBN
 
 # Parámetros del experimento
 N_SAMPLES = 10
-N_LOCAL_NETWORKS = 8
-GLOBAL_EDGES_LIST = list(range(7, 13))  # Se probará con 7, 8, 9, 10, 11 y 12 arestas globales
+N_LOCAL_NETWORKS = 7
+GLOBAL_EDGES_LIST = list(range(6, 12))  # Se probará con 7, 8, 9, 10, 11 y 12 arestas globales
 N_VARS_NETWORK = 5  # Número fijo de variables por red
 N_OUTPUT_VARS = 2
 N_INPUT_VARS = 2
