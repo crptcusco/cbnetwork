@@ -1,5 +1,6 @@
 # External imports
 import itertools  # Provides functions for efficient looping and combination generation
+import os
 import random  # Library for generating random numbers and shuffling data
 from itertools import product  # Function to generate Cartesian product of input iterables
 from typing import List, Optional, Any, Dict  # Type hints for better code readability and type safety
@@ -334,13 +335,18 @@ class CBN:
         """
         return CBN.cartesian_product_mod([base_pair], candidate_pairs, d_local_attractors)
 
-    def find_local_attractors_sequential(self) -> None:
+    def find_local_attractors_sequential(self, n_cores: int = 2):
         """
         Finds local attractors sequentially and updates the list of local attractors in the object.
 
         This method calculates the local attractors for each local network, updates the coupling signals,
         assigns global indices to each attractor, and generates the attractor dictionary.
         """
+
+        if n_cores:
+            os.environ["OMP_NUM_THREADS"] = str(n_cores)
+            os.environ["MKL_NUM_THREADS"] = str(n_cores)
+
         CustomText.make_title('FIND LOCAL ATTRACTORS')
 
         for o_local_network in self.l_local_networks:
