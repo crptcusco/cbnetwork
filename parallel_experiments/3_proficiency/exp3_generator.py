@@ -13,9 +13,9 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # Parámetros del experimento
-N_SAMPLES = 10  # Número de muestras
+N_SAMPLES = 1000  # Número de muestras
 START_EXPONENT = 3  # Comienza con 2^3 = 8 redes locales
-MAX_EXPONENT = 5  # Máximo exponente: 2^6 = 64 redes locales
+MAX_EXPONENT = 10  # Máximo exponente: 2^6 = 64 redes locales
 N_VARS_NETWORK = 5
 N_OUTPUT_VARS = 2
 N_INPUT_VARS = 2
