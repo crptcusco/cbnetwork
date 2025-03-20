@@ -14,7 +14,7 @@ from classes.globaltopology import GlobalTopology
 from classes.cbnetwork import CBN
 
 # Parámetros del experimento
-N_SAMPLES = 5
+N_SAMPLES = 1000
 N_LOCAL_NETWORKS = 8
 VARS_NETWORK = 5  # Número de variables por red local
 N_OUTPUT_VARS = 2
