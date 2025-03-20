@@ -335,7 +335,7 @@ class CBN:
         """
         return CBN.cartesian_product_mod([base_pair], candidate_pairs, d_local_attractors)
 
-    def find_local_attractors_sequential(self, n_cores: int = 2):
+    def find_local_attractors_sequential(self, num_cpus: int = 2):
         """
         Finds local attractors sequentially and updates the list of local attractors in the object.
 
@@ -343,9 +343,9 @@ class CBN:
         assigns global indices to each attractor, and generates the attractor dictionary.
         """
 
-        if n_cores:
-            os.environ["OMP_NUM_THREADS"] = str(n_cores)
-            os.environ["MKL_NUM_THREADS"] = str(n_cores)
+        if num_cpus:
+            os.environ["OMP_NUM_THREADS"] = str(num_cpus)
+            os.environ["MKL_NUM_THREADS"] = str(num_cpus)
 
         CustomText.make_title('FIND LOCAL ATTRACTORS')
 
@@ -570,13 +570,17 @@ class CBN:
         return sum(len(o_local_scene.l_attractors) for o_local_network in self.l_local_networks for o_local_scene in
                    o_local_network.l_local_scenes)
 
-    def find_compatible_pairs(self) -> None:
+    def find_compatible_pairs(self, num_cpus: int = 2) -> None:
         """
         Generate pairs of attractors using the output signal.
 
         Returns:
             None: Updates the dictionary of compatible attractor pairs in the object.
         """
+
+        if num_cpus:
+            os.environ["OMP_NUM_THREADS"] = str(num_cpus)
+            os.environ["MKL_NUM_THREADS"] = str(num_cpus)
 
         CustomText.make_title('FIND COMPATIBLE ATTRACTOR PAIRS')
 
@@ -893,7 +897,7 @@ class CBN:
                     self.l_directed_edges[1]
                     break
 
-    def mount_stable_attractor_fields(self) -> None:
+    def mount_stable_attractor_fields(self, n_cpus: int = 2) -> None:
         """
         Assembles compatible attractor fields.
 
@@ -992,6 +996,11 @@ class CBN:
 
         Actualiza self.d_attractor_fields con los campos encontrados.
         """
+
+        if num_cpus:
+            os.environ["OMP_NUM_THREADS"] = str(num_cpus)
+            os.environ["MKL_NUM_THREADS"] = str(num_cpus)
+
         CustomText.make_title("MOUNT STABLE ATTRACTOR FIELDS (PARALLEL)")
 
         if num_cpus is None or num_cpus <= 0:
