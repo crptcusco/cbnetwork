@@ -1,9 +1,9 @@
 # local imports
+import time
+
 from classes.cbnetwork import CBN
 from classes.globaltopology import GlobalTopology
 from classes.localtemplates import LocalNetworkTemplate
-
-import time
 
 # TEST THE DIFFERENT NUMBER OF VARIABLES WITH ALEATORY TEMPLATE
 
@@ -21,20 +21,28 @@ n_vars_network = 45
 
 # Create the CBN Object
 # Generate the global topology object
-o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY,
-                                                            n_nodes=N_LOCAL_NETWORKS)
+o_global_topology = GlobalTopology.generate_sample_topology(
+    v_topology=V_TOPOLOGY, n_nodes=N_LOCAL_NETWORKS
+)
 
 for n_vars_network in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX):
-    o_template = LocalNetworkTemplate(n_vars_network=n_vars_network, n_input_variables=N_INPUT_VARIABLES,
-                                      n_output_variables=N_OUTPUT_VARIABLES, n_max_of_clauses=N_CLAUSES_FUNCTION,
-                                      n_max_of_literals=N_LITERALS, v_topology=V_TOPOLOGY)
+    o_template = LocalNetworkTemplate(
+        n_vars_network=n_vars_network,
+        n_input_variables=N_INPUT_VARIABLES,
+        n_output_variables=N_OUTPUT_VARIABLES,
+        n_max_of_clauses=N_CLAUSES_FUNCTION,
+        n_max_of_literals=N_LITERALS,
+        v_topology=V_TOPOLOGY,
+    )
 
     # Generate the CBN with the topology and template
-    o_cbn = CBN.generate_cbn_from_template(v_topology=V_TOPOLOGY,
-                                           n_local_networks=N_LOCAL_NETWORKS,
-                                           n_vars_network=n_vars_network,
-                                           o_template=o_template,
-                                           l_global_edges=o_global_topology.l_edges)
+    o_cbn = CBN.generate_cbn_from_template(
+        v_topology=V_TOPOLOGY,
+        n_local_networks=N_LOCAL_NETWORKS,
+        n_vars_network=n_vars_network,
+        o_template=o_template,
+        l_global_edges=o_global_topology.l_edges,
+    )
 
     o_cbn.show_description()
     # Find attractors

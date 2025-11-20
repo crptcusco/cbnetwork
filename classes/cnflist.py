@@ -16,7 +16,9 @@ class CNFList:
         Returns:
             list: List of clauses in CNF format.
         """
-        num_clauses = random.randint(1, max_clauses)  # Ensure at least one clause is generated
+        num_clauses = random.randint(
+            1, max_clauses
+        )  # Ensure at least one clause is generated
         l_cnf = []
 
         # Generate the clause for external signals
@@ -98,4 +100,3 @@ class CNFList:
         unique_clauses = set(tuple(sorted(clause)) for clause in l_cnf)
         # Convert the unique tuples back to lists
         return [list(clause) for clause in unique_clauses]
-

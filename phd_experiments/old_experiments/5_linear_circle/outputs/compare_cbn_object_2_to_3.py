@@ -1,4 +1,5 @@
 import pickle
+
 from classes.cbnetwork import CBN
 from classes.directededge import DirectedEdge
 from classes.localnetwork import LocalNetwork

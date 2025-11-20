@@ -20,10 +20,13 @@ n_var_net = 5
 n_total_var = n_local_nets * n_var_net
 
 # generate the 5 variables per network in sequence
-d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in range(1, n_local_nets + 1)}
+d_network_variables = {
+    i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1))
+    for i in range(1, n_local_nets + 1)
+}
 
 # generate the edges of the 1_linear_aleatory CBN
-l_edges = [(i, i+1) for i in range(1, 10)]
+l_edges = [(i, i + 1) for i in range(1, 10)]
 
 # generate the networks
 for i_local_net in d_network_variables.keys():
@@ -42,12 +45,14 @@ for t_edge in l_edges:
     # generate coupling function
     coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
     # generate the Directed Edge object
-    o_directed_edge = DirectedEdge(index=index_signal,
-                                   index_variable_signal=index_variable_signal,
-                                   input_local_network=t_edge[1],
-                                   output_local_network=t_edge[0],
-                                   l_output_variables=l_output_variables,
-                                   coupling_function=coupling_function)
+    o_directed_edge = DirectedEdge(
+        index=index_signal,
+        index_variable_signal=index_variable_signal,
+        input_local_network=t_edge[1],
+        output_local_network=t_edge[0],
+        l_output_variables=l_output_variables,
+        coupling_function=coupling_function,
+    )
     # add the directed object to list
     l_directed_edges.append(o_directed_edge)
     # updating the count of variables
@@ -63,14 +68,22 @@ count_network = 1
 count_var = 0
 for o_local_network in l_local_networks:
     d_var_cnf_func[count_var + 1] = [[count_var + 2, -(count_var + 3), count_var + 4]]
-    d_var_cnf_func[count_var + 2] = [[count_var + 1, -(count_var + 3), -(count_var + 5)]]
-    d_var_cnf_func[count_var + 3] = [[-(count_var + 2), -(count_var + 4), count_var + 5]]
+    d_var_cnf_func[count_var + 2] = [
+        [count_var + 1, -(count_var + 3), -(count_var + 5)]
+    ]
+    d_var_cnf_func[count_var + 3] = [
+        [-(count_var + 2), -(count_var + 4), count_var + 5]
+    ]
     if o_local_network.index == 1:
         d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5]]
         d_var_cnf_func[count_var + 5] = [[count_var + 1, count_var + 2]]
     else:
-        d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5, n_total_var + o_local_network.index - 1]]
-        d_var_cnf_func[count_var + 5] = [[-(count_var + 1), count_var + 2, n_total_var + o_local_network.index - 1]]
+        d_var_cnf_func[count_var + 4] = [
+            [count_var + 3, count_var + 5, n_total_var + o_local_network.index - 1]
+        ]
+        d_var_cnf_func[count_var + 5] = [
+            [-(count_var + 1), count_var + 2, n_total_var + o_local_network.index - 1]
+        ]
     count_var += 5
     count_network += 1
 
@@ -80,10 +93,14 @@ for key, value in d_var_cnf_func.items():
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    l_input_signals = CBN.find_input_edges_by_network_index(o_local_network.index, l_directed_edges)
+    l_input_signals = CBN.find_input_edges_by_network_index(
+        o_local_network.index, l_directed_edges
+    )
     o_local_network.process_input_signals(l_input_signals)
     for i_local_variable in o_local_network.l_var_intern:
-        o_variable_model = InternalVariable(i_local_variable, d_var_cnf_func[i_local_variable])
+        o_variable_model = InternalVariable(
+            i_local_variable, d_var_cnf_func[i_local_variable]
+        )
         o_local_network.des_funct_variables.append(o_variable_model)
 
 # generating the CBN network
@@ -97,9 +114,18 @@ o_cbn.show_directed_edges()
 
 # show the kind of every coupled signal
 for o_directed_edge in o_cbn.l_directed_edges:
-    print("SIGNAL:", o_directed_edge.index_variable,
-          "RELATION:", o_directed_edge.output_local_network, "->", o_directed_edge.input_local_network,
-          "KIND:", o_directed_edge.kind_signal, "-", o_directed_edge.d_kind_signal[o_directed_edge.kind_signal])
+    print(
+        "SIGNAL:",
+        o_directed_edge.index_variable,
+        "RELATION:",
+        o_directed_edge.output_local_network,
+        "->",
+        o_directed_edge.input_local_network,
+        "KIND:",
+        o_directed_edge.kind_signal,
+        "-",
+        o_directed_edge.d_kind_signal[o_directed_edge.kind_signal],
+    )
 
 # show attractors
 o_cbn.show_local_attractors()
@@ -124,4 +150,3 @@ o_cbn.show_global_scenes()
 # Count the attractor fields by global scene
 CustomText.make_sub_title("Count Fields by global scenes")
 print(o_cbn.count_fields_by_global_scenes())
-

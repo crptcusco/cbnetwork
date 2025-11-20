@@ -1,10 +1,16 @@
 # External imports
+import logging
+
 from satispy import Variable  # Library to solve SAT problems
 from satispy.solver import Minisat  # SAT solver library
 
 # Internal imports
-from classes.localscene import LocalScene, LocalAttractor, LocalState
+from classes.localscene import LocalAttractor, LocalScene, LocalState
 from classes.utils.customtext import CustomText
+from classes.utils.logging_config import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 
 class LocalNetwork:
@@ -41,14 +47,10 @@ class LocalNetwork:
         # Print the subtitle for the local network
         CustomText.make_sub_sub_title(f"Local Network: {self.index}")
 
-        # Print the internal variables
-        print('Internal Variables: ', self.l_var_intern)
-
-        # Print the external variables
-        print('External Variables: ', self.l_var_exterm)
-
-        # Print the total variables
-        print('Total Variables: ', self.l_var_total)
+        logger = logging.getLogger(__name__)
+        logger.info("Internal Variables: %s", self.l_var_intern)
+        logger.info("External Variables: %s", self.l_var_exterm)
+        logger.info("Total Variables: %s", self.l_var_total)
 
         # Print the description of each function variable
         for o_internal_variable in self.des_funct_variables:
@@ -107,12 +109,15 @@ class LocalNetwork:
         """
         # Print the title for finding attractors
         CustomText.print_simple_line()
-        print("FIND ATTRACTORS FOR NETWORK:", o_local_network.index)
+        logging.getLogger(__name__).info(
+            "FIND ATTRACTORS FOR NETWORK: %s", o_local_network.index
+        )
 
         if l_local_scenes is None:
             o_local_scene = LocalScene(index=1)
-            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
-                                                                                  scene=None)
+            o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(
+                o_local_network=o_local_network, scene=None
+            )
             o_local_network.l_local_scenes.append(o_local_scene)
 
             o_local_network.count_attractor = len(o_local_scene.l_attractors)
@@ -121,10 +126,13 @@ class LocalNetwork:
             v_scene_index = 1
             network_attractor_count = 0
             for scene in l_local_scenes:
-                o_local_scene = LocalScene(v_scene_index, scene, o_local_network.l_var_exterm)
-                s_scene = ''.join(scene)
-                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(o_local_network=o_local_network,
-                                                                                      scene=s_scene)
+                o_local_scene = LocalScene(
+                    v_scene_index, scene, o_local_network.l_var_exterm
+                )
+                s_scene = "".join(scene)
+                o_local_scene.l_attractors = LocalNetwork.find_local_scene_attractors(
+                    o_local_network=o_local_network, scene=s_scene
+                )
                 o_local_network.l_local_scenes.append(o_local_scene)
 
                 # update the scenes index
@@ -139,7 +147,9 @@ class LocalNetwork:
         return o_local_network
 
     @staticmethod
-    def gen_boolean_formulation(o_local_network, n_transitions, l_attractors_clauses, scene):
+    def gen_boolean_formulation(
+        o_local_network, n_transitions, l_attractors_clauses, scene
+    ):
         """
         Generate the boolean formulation for the given local network. This formulation includes:
         - CNF variable creation
@@ -157,7 +167,9 @@ class LocalNetwork:
         # Create dictionary of CNF variables for each transition
         for variable in o_local_network.l_var_total:
             for transition_c in range(0, n_transitions):
-                o_local_network.dic_var_cnf[f"{variable}_{transition_c}"] = Variable(f"{variable}_{transition_c}")
+                o_local_network.dic_var_cnf[f"{variable}_{transition_c}"] = Variable(
+                    f"{variable}_{transition_c}"
+                )
 
         cont_transition = 0
         boolean_function = Variable("0_0")
@@ -178,15 +190,28 @@ class LocalNetwork:
                         term_aux = abs(int(term))
                         if cont_term == 0:
                             if str(term)[0] != "-":
-                                boolean_expression_clause = o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
+                                boolean_expression_clause = o_local_network.dic_var_cnf[
+                                    f"{term_aux}_{transition - 1}"
+                                ]
                             else:
-                                boolean_expression_clause = -o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
+                                boolean_expression_clause = (
+                                    -o_local_network.dic_var_cnf[
+                                        f"{term_aux}_{transition - 1}"
+                                    ]
+                                )
                         else:
                             if str(term)[0] != "-":
-                                boolean_expression_clause |= o_local_network.dic_var_cnf[f"{term_aux}_{transition - 1}"]
+                                boolean_expression_clause |= (
+                                    o_local_network.dic_var_cnf[
+                                        f"{term_aux}_{transition - 1}"
+                                    ]
+                                )
                             else:
-                                boolean_expression_clause |= -o_local_network.dic_var_cnf[
-                                    f"{term_aux}_{transition - 1}"]
+                                boolean_expression_clause |= (
+                                    -o_local_network.dic_var_cnf[
+                                        f"{term_aux}_{transition - 1}"
+                                    ]
+                                )
 
                         cont_term += 1
 
@@ -198,20 +223,42 @@ class LocalNetwork:
                     cont_clause += 1
 
                 if cont_clause_global == 0:
-                    boolean_expression_equivalence = o_local_network.dic_var_cnf[
-                                                         f"{o_variable_model.index}_{transition}"] >> boolean_expression_clause_global
-                    boolean_expression_equivalence &= boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        f"{o_variable_model.index}_{transition}"]
+                    boolean_expression_equivalence = (
+                        o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                        >> boolean_expression_clause_global
+                    )
+                    boolean_expression_equivalence &= (
+                        boolean_expression_clause_global
+                        >> o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                    )
                 else:
-                    boolean_expression_equivalence &= o_local_network.dic_var_cnf[
-                                                          f"{o_variable_model.index}_{transition}"] >> boolean_expression_clause_global
-                    boolean_expression_equivalence &= boolean_expression_clause_global >> o_local_network.dic_var_cnf[
-                        f"{o_variable_model.index}_{transition}"]
+                    boolean_expression_equivalence &= (
+                        o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                        >> boolean_expression_clause_global
+                    )
+                    boolean_expression_equivalence &= (
+                        boolean_expression_clause_global
+                        >> o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                    )
 
                 if not o_variable_model.cnf_function:
-                    print("ENTER ATYPICAL CASE!!!")
-                    boolean_function &= (o_local_network.dic_var_cnf[f"{o_variable_model.index}_{transition}"] | -
-                    o_local_network.dic_var_cnf[f"{o_variable_model.index}_{transition}"])
+                    logging.getLogger(__name__).warning("ENTER ATYPICAL CASE!!!")
+                    boolean_function &= (
+                        o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                        | -o_local_network.dic_var_cnf[
+                            f"{o_variable_model.index}_{transition}"
+                        ]
+                    )
 
                 cont_clause_global += 1
 
@@ -228,9 +275,13 @@ class LocalNetwork:
             for element in o_local_network.l_var_exterm:
                 for v_transition in range(0, n_transitions):
                     if scene[cont_permutation] == "0":
-                        boolean_function &= -o_local_network.dic_var_cnf[f"{element}_{v_transition}"]
+                        boolean_function &= -o_local_network.dic_var_cnf[
+                            f"{element}_{v_transition}"
+                        ]
                     else:
-                        boolean_function &= o_local_network.dic_var_cnf[f"{element}_{v_transition}"]
+                        boolean_function &= o_local_network.dic_var_cnf[
+                            f"{element}_{v_transition}"
+                        ]
 
                 cont_permutation += 1
 
@@ -247,17 +298,22 @@ class LocalNetwork:
                     term_aux = abs(int(term))
                     if cont_term == 0:
                         if term[0] != "-":
-                            bool_expr_clause_attractors = o_local_network.dic_var_cnf[f"{term_aux}_{n_transitions - 1}"]
+                            bool_expr_clause_attractors = o_local_network.dic_var_cnf[
+                                f"{term_aux}_{n_transitions - 1}"
+                            ]
                         else:
                             bool_expr_clause_attractors = -o_local_network.dic_var_cnf[
-                                f"{term_aux}_{n_transitions - 1}"]
+                                f"{term_aux}_{n_transitions - 1}"
+                            ]
                     else:
                         if term[0] != "-":
                             bool_expr_clause_attractors &= o_local_network.dic_var_cnf[
-                                f"{term_aux}_{n_transitions - 1}"]
+                                f"{term_aux}_{n_transitions - 1}"
+                            ]
                         else:
                             bool_expr_clause_attractors &= -o_local_network.dic_var_cnf[
-                                f"{term_aux}_{n_transitions - 1}"]
+                                f"{term_aux}_{n_transitions - 1}"
+                            ]
 
                     cont_term += 1
 
@@ -273,7 +329,9 @@ class LocalNetwork:
         # Ensure all variables are included in the boolean function
         for variable in o_local_network.l_var_total:
             boolean_function &= (
-                    o_local_network.dic_var_cnf[f"{variable}_0"] | -o_local_network.dic_var_cnf[f"{variable}_0"])
+                o_local_network.dic_var_cnf[f"{variable}_0"]
+                | -o_local_network.dic_var_cnf[f"{variable}_0"]
+            )
 
         return boolean_function
 
@@ -288,7 +346,7 @@ class LocalNetwork:
             return number_of_times
 
         CustomText.print_simple_line()
-        print("Network:", o_local_network.index, " Local Scene:", scene)
+        logger.info("Network: %s  Local Scene: %s", o_local_network.index, scene)
 
         # First obligatory execution
         set_of_attractors = []
@@ -297,10 +355,12 @@ class LocalNetwork:
         l_attractors_clauses = []
 
         # create boolean expression initial with 3 transitions
-        v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network=o_local_network,
-                                                                        n_transitions=v_num_transitions,
-                                                                        l_attractors_clauses=l_attractors_clauses,
-                                                                        scene=scene)
+        v_boolean_formulation = o_local_network.gen_boolean_formulation(
+            o_local_network=o_local_network,
+            n_transitions=v_num_transitions,
+            l_attractors_clauses=l_attractors_clauses,
+            scene=scene,
+        )
         m_response_sat = []
         # Solve with SAT the boolean formulation
         o_solver = Minisat()
@@ -310,7 +370,9 @@ class LocalNetwork:
             for j in range(0, v_num_transitions):
                 m_response_sat.append([])
                 for i in o_local_network.l_var_total:
-                    m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
+                    m_response_sat[j].append(
+                        o_solution[o_local_network.dic_var_cnf[f"{i}_{j}"]]
+                    )
 
         m_aux_sat = []
         if len(m_response_sat) != 0:
@@ -341,7 +403,9 @@ class LocalNetwork:
                 if v_state_count > 1:
                     attractor_begin = path_solution.index(v_state) + 1
                     attractor_end = path_solution[attractor_begin:].index(v_state)
-                    l_news_estates_attractor = path_solution[attractor_begin - 1:(attractor_begin + attractor_end)]
+                    l_news_estates_attractor = path_solution[
+                        attractor_begin - 1:(attractor_begin + attractor_end)
+                    ]
                     l_attractors = l_attractors + l_news_estates_attractor
                     # add attractors like list of list
                     set_of_attractors.append(l_news_estates_attractor)
@@ -358,18 +422,24 @@ class LocalNetwork:
                 cont_variable = 0
                 for estate_attractor in clause_attractor:
                     if estate_attractor == "0":
-                        clause_variable.append("-" + str(o_local_network.l_var_total[cont_variable]))
+                        clause_variable.append(
+                            "-" + str(o_local_network.l_var_total[cont_variable])
+                        )
                     else:
-                        clause_variable.append(str(o_local_network.l_var_total[cont_variable]))
+                        clause_variable.append(
+                            str(o_local_network.l_var_total[cont_variable])
+                        )
                     cont_variable = cont_variable + 1
                 l_attractors_clauses.append(clause_variable)
 
             # print l_attractors_clauses
             # REPEAT CODE
-            v_boolean_formulation = o_local_network.gen_boolean_formulation(o_local_network=o_local_network,
-                                                                            n_transitions=v_num_transitions,
-                                                                            l_attractors_clauses=l_attractors_clauses,
-                                                                            scene=scene)
+            v_boolean_formulation = o_local_network.gen_boolean_formulation(
+                o_local_network=o_local_network,
+                n_transitions=v_num_transitions,
+                l_attractors_clauses=l_attractors_clauses,
+                scene=scene,
+            )
             m_response_sat = []
             o_solver = Minisat()
             o_solution = o_solver.solve(v_boolean_formulation)
@@ -378,7 +448,9 @@ class LocalNetwork:
                 for j in range(0, v_num_transitions):
                     m_response_sat.append([])
                     for i in o_local_network.l_var_total:
-                        m_response_sat[j].append(o_solution[o_local_network.dic_var_cnf[f'{i}_{j}']])
+                        m_response_sat[j].append(
+                            o_solution[o_local_network.dic_var_cnf[f"{i}_{j}"]]
+                        )
             # else:
             #     # print(" ")
             #     print("The expression cannot be satisfied")
@@ -408,16 +480,18 @@ class LocalNetwork:
             for o_state in o_attractor:
                 o_local_state = LocalState(o_state)
                 l_local_states.append(o_local_state)
-            o_local_attractor = LocalAttractor(g_index=None,
-                                               l_index=v_index,
-                                               l_states=l_local_states,
-                                               network_index=o_local_network.index,
-                                               relation_index=o_local_network.l_var_exterm,
-                                               local_scene=scene)
+            o_local_attractor = LocalAttractor(
+                g_index=None,
+                l_index=v_index,
+                l_states=l_local_states,
+                network_index=o_local_network.index,
+                relation_index=o_local_network.l_var_exterm,
+                local_scene=scene,
+            )
 
             l_scene_attractors.append(o_local_attractor)
             # update the attractors index locally
             v_index += 1
 
-        print("end find attractors")
+        logging.getLogger(__name__).info("end find attractors")
         return l_scene_attractors

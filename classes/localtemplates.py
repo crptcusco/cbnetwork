@@ -1,13 +1,24 @@
 # external imports
+import logging
 import random
 
 # local imports
 from classes.cnflist import CNFList
+from classes.utils.logging_config import setup_logging
+
+setup_logging()
 
 
 class LocalNetworkTemplate:
-    def __init__(self, n_vars_network, n_input_variables, n_output_variables,
-                 n_max_of_clauses=None, n_max_of_literals=None, v_topology=1):
+    def __init__(
+        self,
+        n_vars_network,
+        n_input_variables,
+        n_output_variables,
+        n_max_of_clauses=None,
+        n_max_of_literals=None,
+        v_topology=1,
+    ):
         """
         Initialize a LocalNetworkTemplate object.
 
@@ -37,13 +48,17 @@ class LocalNetworkTemplate:
         Generate CNF functions and output variable indexes dynamically.
         """
         # Internal variables indices
-        l_internal_var_indexes = list(range(self.n_vars_network + 1, (self.n_vars_network * 2) + 1))
+        l_internal_var_indexes = list(
+            range(self.n_vars_network + 1, (self.n_vars_network * 2) + 1)
+        )
 
         # Indices for input coupling signals
         l_input_coupling_signal_indexes = [self.n_vars_network * 2 + 1]
 
         # Generate CNF function for each internal variable
-        l_input_variables = random.sample(l_internal_var_indexes, self.n_input_variables)
+        l_input_variables = random.sample(
+            l_internal_var_indexes, self.n_input_variables
+        )
 
         for i_variable in l_internal_var_indexes:
             input_coup_sig_index = None
@@ -55,22 +70,27 @@ class LocalNetworkTemplate:
                 l_inter_vars=l_internal_var_indexes,
                 input_coup_sig_index=input_coup_sig_index,
                 max_clauses=self.n_max_of_clauses,
-                max_literals=self.n_max_of_literals
+                max_literals=self.n_max_of_literals,
             )
 
         # Generate output variable indexes
-        self.l_output_var_indexes = random.sample(range(1, self.n_vars_network + 1), self.n_output_variables)
+        self.l_output_var_indexes = random.sample(
+            range(1, self.n_vars_network + 1), self.n_output_variables
+        )
 
     def show(self):
         """
         Display information about the LocalNetworkTemplate.
         """
-        print("Local Network Template")
-        print("-" * 50)
-        print("Local dynamic:")
+        logger = logging.getLogger(__name__)
+        logger.info("Local Network Template")
+        logger.info("%s", "-" * 50)
+        logger.info("Local dynamic:")
         for key, value in self.d_variable_cnf_function.items():
-            print(key, ":", value)
-        print("Output variables for coupling signal:", self.l_output_var_indexes)
+            logger.info("%s : %s", key, value)
+        logger.info(
+            "Output variables for coupling signal: %s", self.l_output_var_indexes
+        )
 
     def get_output_variables_from_template(self, i_local_network, l_local_networks):
         """

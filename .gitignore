@@ -1,0 +1,87 @@
+####################################
+# Entornos virtuales
+####################################
+.venv/
+venv/
+env/
+
+####################################
+# Cache y artefactos de Python
+####################################
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de Cython compilados
+*.c
+*.cpp
+*.so
+*.pyd
+*.pyx.c
+*.pyx.cpp
+
+# Carpetas generadas por distutils/setuptools
+build/
+dist/
+*.egg-info/
+.eggs/
+
+####################################
+# Archivos temporales de Jupyter
+####################################
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+####################################
+# Logs, temporales y dumps
+####################################
+*.log
+*.out
+*.err
+*.dump
+*.tmp
+
+####################################
+# VS Code
+####################################
+.vscode/
+.history/
+*.code-workspace
+
+####################################
+# Archivos de configuración innecesarios
+####################################
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+####################################
+# Paquetes grandes o generados por experimentos
+####################################
+parallel_experiments/**/outputs/
+phd_experiments/**/outputs/
+profiler_analysis/cprofile_stats/
+profiler_analysis/analysis_output.txt
+
+####################################
+# Archivos HPC (opcional)
+####################################
+*.o
+*.e
+slurm-*.out
+slurm-*.err
+
+####################################
+# Modelos o datos grandes (opcional)
+####################################
+datasets/
+results/
+figures/*.png
+
+# Test, mypy caches and pickles
+.pytest_cache/
+.mypy_cache/
+*.pkl
+

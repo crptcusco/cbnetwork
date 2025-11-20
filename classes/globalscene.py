@@ -17,6 +17,11 @@ class GlobalScene:
 
         Prints the list of indexes and values stored in the object.
         """
-        print(self.l_indexes)
-        print(self.values)
+        import logging
 
+        from classes.utils.logging_config import setup_logging
+
+        setup_logging()
+        logger = logging.getLogger(__name__)
+        logger.info("Indexes: %s", self.l_indexes)
+        logger.info("Values: %s", self.values)

@@ -1,8 +1,10 @@
 # external libraries
-from itertools import product
+import logging
 
 # internal libraries
-from classes.utils.customtext import CustomText
+from classes.utils.logging_config import setup_logging
+
+setup_logging()
 
 
 class GlobalNetwork:
@@ -19,14 +21,13 @@ class GlobalNetwork:
         """
 
         l_variables = []
-        d_functions = {}
         for o_local_network in o_cbn.l_local_networks:
             for o_variable in o_local_network.l_variables:
                 # Save the variables
                 l_variables.append(o_variable)
                 # Save the relations
                 # Future Work
-        print(l_variables)
+        logging.getLogger(__name__).info("%s", l_variables)
 
     @classmethod
     def transform_attractor_fields_to_global_states(cls, l_attractor_fields):
@@ -38,9 +39,13 @@ class GlobalNetwork:
         b_flag = True
         for o_attractor_field in o_cbn.d_attractor_fields:
             if o_attractor_field.test_global_dynamic():
-                print("Attractor Field", o_attractor_field.l_index, ": Passed")
+                logging.getLogger(__name__).info(
+                    "Attractor Field %s : Passed", o_attractor_field.l_index
+                )
             else:
-                print("Attractor Field", o_attractor_field.l_index, ": Failed")
+                logging.getLogger(__name__).warning(
+                    "Attractor Field %s : Failed", o_attractor_field.l_index
+                )
         return b_flag
 
     @staticmethod
@@ -66,8 +71,9 @@ class GlobalState:
 
 
 class GlobalAttractor:
-    def __init__(self,l_global_states):
+    def __init__(self, l_global_states):
         self.l_global_states = l_global_states
+
 
 #
 # class AttractorField:
@@ -82,5 +88,3 @@ class GlobalAttractor:
 #     def show(self):
 #         print("Attractor Field Index: ", self.index)
 #         print(self.l_attractor_indexes)
-
-

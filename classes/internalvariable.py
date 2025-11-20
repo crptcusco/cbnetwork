@@ -16,6 +16,10 @@ class InternalVariable:
 
         Prints the index of the variable and its CNF function.
         """
-        print("Variable Index: " + str(self.index) + " -> CNF :" + str(self.cnf_function))
+        import logging
 
+        from classes.utils.logging_config import setup_logging
 
+        setup_logging()
+        logger = logging.getLogger(__name__)
+        logger.info("Variable Index: %s -> CNF : %s", self.index, self.cnf_function)

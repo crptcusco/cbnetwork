@@ -16,7 +16,15 @@ class LocalScene:
 
 
 class LocalAttractor:
-    def __init__(self, g_index, l_index, l_states, network_index, relation_index=None, local_scene=None):
+    def __init__(
+        self,
+        g_index,
+        l_index,
+        l_states,
+        network_index,
+        relation_index=None,
+        local_scene=None,
+    ):
         """
         Initialize a LocalAttractor object.
 
@@ -41,14 +49,26 @@ class LocalAttractor:
 
         Prints the network index, input signal index, local scene, global index, local index, and states.
         """
-        print("Network Index:", self.network_index, ", Input Signal Index:", self.relation_index,
-              ", Scene:", self.local_scene, ", Global Index:", self.g_index, ", Local Index:", self.l_index, ", States:", end="")
+        import logging
+
+        from classes.utils.logging_config import setup_logging
+
+        setup_logging()
+        logger = logging.getLogger(__name__)
+        states_str = []
         for o_state in self.l_states:
-            print(end='[')
-            for variable in o_state.l_variable_values:
-                print(variable, end=",")
-            print(end=']')
-        print()
+            states_str.append(
+                "[" + ",".join(str(v) for v in o_state.l_variable_values) + "]"
+            )
+        logger.info(
+            "Network Index: %s, Input Signal Index: %s, Scene: %s, Global Index: %s, Local Index: %s, States: %s",
+            self.network_index,
+            self.relation_index,
+            self.local_scene,
+            self.g_index,
+            self.l_index,
+            "".join(states_str),
+        )
 
     def show_short(self):
         """
@@ -56,13 +76,22 @@ class LocalAttractor:
 
         Prints the network index, attractor index, and states.
         """
-        print("Net. Index:", self.network_index, ", Attrac. Index:", self.l_index, ", States:", end="")
-        for o_state in self.l_states:
-            print(end='[')
-            for variable in o_state.l_variable_values:
-                print(variable, end=",")
-            print(end=']')
-        print()
+        import logging
+
+        from classes.utils.logging_config import setup_logging
+
+        setup_logging()
+        logger = logging.getLogger(__name__)
+        states_str = [
+            "[" + ",".join(str(v) for v in o_state.l_variable_values) + "]"
+            for o_state in self.l_states
+        ]
+        logger.info(
+            "Net. Index: %s, Attrac. Index: %s, States: %s",
+            self.network_index,
+            self.l_index,
+            "".join(states_str),
+        )
 
 
 class LocalState:

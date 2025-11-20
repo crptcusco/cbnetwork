@@ -33,8 +33,12 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
     for i_sample in range(1, N_SAMPLES + 1):
         print("Experiment", i_sample, "of", N_SAMPLES)
         # generate a Coupled Boolean Network with the parameters
-        o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=N_VAR_NETWORK,
-                                                      v_topology=V_TOPOLOGY, n_output_variables=N_OUTPUT_VARIABLES)
+        o_cbn = CBN.generate_aleatory_cbn_by_topology(
+            n_local_networks=n_local_networks,
+            n_var_network=N_VAR_NETWORK,
+            v_topology=V_TOPOLOGY,
+            n_output_variables=N_OUTPUT_VARIABLES,
+        )
 
         # Find attractors
         v_begin_find_attractors = time.time()
@@ -70,7 +74,7 @@ for n_local_networks in range(N_LOCAL_NETWORKS_MIN, N_LOCAL_NETWORKS_MAX):
             # calculate parameters
             "n_local_attractors": o_cbn.get_n_local_attractors(),
             "n_pair_attractors": o_cbn.get_n_pair_attractors(),
-            "n_attractor_fields": o_cbn.get_n_attractor_fields()
+            "n_attractor_fields": o_cbn.get_n_attractor_fields(),
         }
         l_data_sample.append(d_collect_indicators)
         # show the important outputs

@@ -15,8 +15,12 @@ n_output_variables = 2
 n_clauses_function = 2
 v_topology = 4  # path
 
-o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=n_local_networks, n_var_network=n_var_network,
-                                              v_topology=v_topology, n_output_variables=n_output_variables)
+o_cbn = CBN.generate_aleatory_cbn_by_topology(
+    n_local_networks=n_local_networks,
+    n_var_network=n_var_network,
+    v_topology=v_topology,
+    n_output_variables=n_output_variables,
+)
 # o_cbn.show_cbn_graph()
 
 o_cbn.find_local_attractors_sequential()

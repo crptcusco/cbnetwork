@@ -1,16 +1,17 @@
+import copy
 import os
+import pickle
 import sys
 import time
+
 import pandas as pd
-import pickle
-import copy
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from classes.cbnetwork import CBN
+from classes.globaltopology import GlobalTopology
 from classes.localtemplates import LocalNetworkTemplate
 from classes.utils.customtext import CustomText
-from classes.globaltopology import GlobalTopology
-from classes.cbnetwork import CBN
 
 # Parámetros del experimento
 N_SAMPLES = 1000  # Número de muestras
@@ -24,14 +25,17 @@ N_MAX_CLAUSES = 2
 N_MAX_LITERALS = 2
 
 # Creación de directorios de salida
-OUTPUT_FOLDER = 'outputs'
+OUTPUT_FOLDER = "outputs"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 EXPERIMENT_NAME = "exp1_data_modified"
-DIRECTORY_PATH = os.path.join(OUTPUT_FOLDER, f"{EXPERIMENT_NAME}_{2 ** START_EXPONENT}_{2 ** MAX_EXPONENT}_{N_SAMPLES}")
+DIRECTORY_PATH = os.path.join(
+    OUTPUT_FOLDER,
+    f"{EXPERIMENT_NAME}_{2 ** START_EXPONENT}_{2 ** MAX_EXPONENT}_{N_SAMPLES}",
+)
 os.makedirs(DIRECTORY_PATH, exist_ok=True)
 DIRECTORY_PKL = os.path.join(DIRECTORY_PATH, "pkl_cbn")
 os.makedirs(DIRECTORY_PKL, exist_ok=True)
-file_path = os.path.join(DIRECTORY_PATH, 'data.csv')
+file_path = os.path.join(DIRECTORY_PATH, "data.csv")
 
 if os.path.exists(file_path):
     os.remove(file_path)
@@ -42,13 +46,13 @@ methods = {
     "find_local_attractors": {
         1: "find_local_attractors_sequential",
         2: "find_local_attractors_parallel",
-        3: "find_local_attractors_parallel_with_weigths"
+        3: "find_local_attractors_parallel_with_weigths",
     },
     "find_compatible_pairs": {
         1: "find_compatible_pairs",
         2: "find_compatible_pairs_parallel",
-        3: "find_compatible_pairs_parallel_with_weights"
-    }
+        3: "find_compatible_pairs_parallel_with_weights",
+    },
 }
 
 # Inicio del experimento
@@ -63,19 +67,23 @@ for i_sample in range(1, N_SAMPLES + 1):
         n_output_variables=N_OUTPUT_VARS,
         n_max_of_clauses=N_MAX_CLAUSES,
         n_max_of_literals=N_MAX_LITERALS,
-        v_topology=V_TOPOLOGY
+        v_topology=V_TOPOLOGY,
     )
 
     # Crear topología global inicial con 2^START_EXPONENT nodos
-    initial_nodes = 2 ** START_EXPONENT
-    o_global_topology = GlobalTopology.generate_sample_topology(v_topology=V_TOPOLOGY, n_nodes=initial_nodes)
+    initial_nodes = 2**START_EXPONENT
+    o_global_topology = GlobalTopology.generate_sample_topology(
+        v_topology=V_TOPOLOGY, n_nodes=initial_nodes
+    )
     print("Generated Global Topology with", initial_nodes, "nodes")
 
     # Lista de tamaños de redes: potencias de 2 desde 2^START_EXPONENT hasta 2^MAX_EXPONENT
-    network_sizes = [2 ** exp for exp in range(START_EXPONENT, MAX_EXPONENT + 1)]
+    network_sizes = [2**exp for exp in range(START_EXPONENT, MAX_EXPONENT + 1)]
 
     for n_local_networks in network_sizes:
-        print(f"Experiment {i_sample} - Networks: {n_local_networks}, Variables: {N_VARS_NETWORK}")
+        print(
+            f"Experiment {i_sample} - Networks: {n_local_networks}, Variables: {N_VARS_NETWORK}"
+        )
 
         # Generar el objeto base CBN a partir de la plantilla
         base_cbn = CBN.generate_cbn_from_template(
@@ -83,7 +91,7 @@ for i_sample in range(1, N_SAMPLES + 1):
             n_local_networks=n_local_networks,
             n_vars_network=N_VARS_NETWORK,
             o_template=o_template,
-            l_global_edges=o_global_topology.l_edges
+            l_global_edges=o_global_topology.l_edges,
         )
 
         data_samples = []
@@ -95,18 +103,27 @@ for i_sample in range(1, N_SAMPLES + 1):
 
         # Mapeo de cada variante (1: secuencial, 2: paralelo, 3: paralelo con pesos) a su instancia y método correspondiente.
         variants = {
-            1: (sequential_instance, {
-                "find_local_attractors": methods["find_local_attractors"][1],
-                "find_compatible_pairs": methods["find_compatible_pairs"][1]
-            }),
-            2: (parallel_instance, {
-                "find_local_attractors": methods["find_local_attractors"][2],
-                "find_compatible_pairs": methods["find_compatible_pairs"][2]
-            }),
-            3: (weighted_instance, {
-                "find_local_attractors": methods["find_local_attractors"][3],
-                "find_compatible_pairs": methods["find_compatible_pairs"][3]
-            })
+            1: (
+                sequential_instance,
+                {
+                    "find_local_attractors": methods["find_local_attractors"][1],
+                    "find_compatible_pairs": methods["find_compatible_pairs"][1],
+                },
+            ),
+            2: (
+                parallel_instance,
+                {
+                    "find_local_attractors": methods["find_local_attractors"][2],
+                    "find_compatible_pairs": methods["find_compatible_pairs"][2],
+                },
+            ),
+            3: (
+                weighted_instance,
+                {
+                    "find_local_attractors": methods["find_local_attractors"][3],
+                    "find_compatible_pairs": methods["find_compatible_pairs"][3],
+                },
+            ),
         }
 
         # Secuencia de pasos: solo se ejecutan los pasos 1 y 2
@@ -118,7 +135,9 @@ for i_sample in range(1, N_SAMPLES + 1):
                 instance, method_mapping = variants[variant]
                 method_name = method_mapping[step]
                 try:
-                    print(f"Executing {method_name} for step {step} (variant {variant})...")
+                    print(
+                        f"Executing {method_name} for step {step} (variant {variant})..."
+                    )
                     start_time = time.perf_counter()
                     getattr(instance, method_name)()
                     end_time = time.perf_counter()
@@ -141,7 +160,9 @@ for i_sample in range(1, N_SAMPLES + 1):
                     "execution_time": execution_time,
                 }
                 if step_index == 1:
-                    sample_data["n_local_attractors"] = instance.get_n_local_attractors()
+                    sample_data["n_local_attractors"] = (
+                        instance.get_n_local_attractors()
+                    )
                 elif step_index == 2:
                     sample_data["n_pair_attractors"] = instance.get_n_pair_attractors()
 
@@ -151,14 +172,16 @@ for i_sample in range(1, N_SAMPLES + 1):
         print("Data samples collected:", data_samples)
         df_results = pd.DataFrame(data_samples)
 
-        mode = 'a' if os.path.exists(file_path) else 'w'
+        mode = "a" if os.path.exists(file_path) else "w"
         header = not os.path.exists(file_path)
         df_results.to_csv(file_path, mode=mode, header=header, index=False)
         print(f"Experiment data saved in: {file_path}")
 
         # Guardar el objeto base CBN en un archivo pickle (para referencia)
-        pickle_path = os.path.join(DIRECTORY_PKL, f'cbn_{i_sample}_{n_local_networks}.pkl')
-        with open(pickle_path, 'wb') as file:
+        pickle_path = os.path.join(
+            DIRECTORY_PKL, f"cbn_{i_sample}_{n_local_networks}.pkl"
+        )
+        with open(pickle_path, "wb") as file:
             pickle.dump(base_cbn, file)
         print(f"Pickle object saved in: {pickle_path}")
 
@@ -169,7 +192,9 @@ for i_sample in range(1, N_SAMPLES + 1):
             nodes_to_add = next_size - n_local_networks
             for _ in range(nodes_to_add):
                 o_global_topology.add_node()
-            print(f"Added {nodes_to_add} nodes to global topology. New node count: {next_size}")
+            print(
+                f"Added {nodes_to_add} nodes to global topology. New node count: {next_size}"
+            )
 
     CustomText.print_stars()
 CustomText.print_dollars()

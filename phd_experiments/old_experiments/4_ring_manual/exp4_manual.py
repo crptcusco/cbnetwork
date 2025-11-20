@@ -44,8 +44,10 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         n_total_var = n_local_nets * n_var_net
 
         # generate the 5 variables per network in sequence
-        d_network_variables = {i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1)) for i in
-                               range(1, n_local_nets + 1)}
+        d_network_variables = {
+            i: list(range(n_var_net * (i - 1) + 1, n_var_net * i + 1))
+            for i in range(1, n_local_nets + 1)
+        }
 
         # generate the edges of the 1_linear_aleatory CBN
         l_edges = [(i, i + 1) for i in range(1, n_local_networks)]
@@ -53,7 +55,9 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         # generate the networks
         for i_local_net in d_network_variables.keys():
             # generate the Local network
-            o_local_network = LocalNetwork(i_local_net, d_network_variables[i_local_net])
+            o_local_network = LocalNetwork(
+                i_local_net, d_network_variables[i_local_net]
+            )
             l_local_networks.append(o_local_network)
             # Show the local network
             o_local_network.show()
@@ -66,8 +70,13 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
             # generate coupling function
             coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
             # generate the directed-edge object
-            o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables,
-                                           coupling_function)
+            o_directed_edge = DirectedEdge(
+                index_variable_signal,
+                t_edge[1],
+                t_edge[0],
+                l_output_variables,
+                coupling_function,
+            )
             # add the directed object to list
             l_directed_edges.append(o_directed_edge)
             # updating the count of variables
@@ -79,10 +88,18 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         # generate the last edge between the last network and the first
         l_edges.append((n_local_networks, 1))
         t_edge = (n_local_networks, 1)
-        l_output_variables = [((n_local_nets - 1) * n_var_net) + 3, ((n_local_nets - 1) * n_var_net) + 4]
+        l_output_variables = [
+            ((n_local_nets - 1) * n_var_net) + 3,
+            ((n_local_nets - 1) * n_var_net) + 4,
+        ]
         coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
-        o_directed_edge = DirectedEdge(index_variable_signal, t_edge[1], t_edge[0], l_output_variables,
-                                       coupling_function)
+        o_directed_edge = DirectedEdge(
+            index_variable_signal,
+            t_edge[1],
+            t_edge[0],
+            l_output_variables,
+            coupling_function,
+        )
         l_directed_edges.append(o_directed_edge)
 
         # Update the first network
@@ -97,26 +114,52 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
         count_network = 1
         count_var = 0
         for o_local_network in l_local_networks:
-            d_var_cnf_func[count_var + 1] = [[count_var + 2, -(count_var + 3), count_var + 4]]
-            d_var_cnf_func[count_var + 2] = [[count_var + 2, -(count_var + 3), -(count_var + 4)], [count_var + 5]]
-            d_var_cnf_func[count_var + 3] = [[-(count_var + 2), -(count_var + 4), count_var + 4], [count_var + 5]]
+            d_var_cnf_func[count_var + 1] = [
+                [count_var + 2, -(count_var + 3), count_var + 4]
+            ]
+            d_var_cnf_func[count_var + 2] = [
+                [count_var + 2, -(count_var + 3), -(count_var + 4)],
+                [count_var + 5],
+            ]
+            d_var_cnf_func[count_var + 3] = [
+                [-(count_var + 2), -(count_var + 4), count_var + 4],
+                [count_var + 5],
+            ]
             if o_local_network.index == 1:
-                d_var_cnf_func[count_var + 4] = [[count_var + 3, count_var + 5, index_variable_signal]]
-                d_var_cnf_func[count_var + 5] = [[count_var + 1, count_var + 2, index_variable_signal]]
+                d_var_cnf_func[count_var + 4] = [
+                    [count_var + 3, count_var + 5, index_variable_signal]
+                ]
+                d_var_cnf_func[count_var + 5] = [
+                    [count_var + 1, count_var + 2, index_variable_signal]
+                ]
             else:
                 d_var_cnf_func[count_var + 4] = [
-                    [count_var + 1, count_var + 2, n_total_var + o_local_network.index - 1]]
+                    [
+                        count_var + 1,
+                        count_var + 2,
+                        n_total_var + o_local_network.index - 1,
+                    ]
+                ]
                 d_var_cnf_func[count_var + 5] = [
-                    [-(count_var + 1), count_var + 2, n_total_var + o_local_network.index - 1]]
+                    [
+                        -(count_var + 1),
+                        count_var + 2,
+                        n_total_var + o_local_network.index - 1,
+                    ]
+                ]
             count_var += 5
             count_network += 1
 
         # generating the local network dynamic
         for o_local_network in l_local_networks:
-            l_input_signals = DirectedEdge.find_input_edges_by_network_index(o_local_network.l_index, l_directed_edges)
+            l_input_signals = DirectedEdge.find_input_edges_by_network_index(
+                o_local_network.l_index, l_directed_edges
+            )
             o_local_network.process_input_signals(l_input_signals)
             for i_local_variable in o_local_network.l_var_intern:
-                o_variable_model = InternalVariable(i_local_variable, d_var_cnf_func[i_local_variable])
+                o_variable_model = InternalVariable(
+                    i_local_variable, d_var_cnf_func[i_local_variable]
+                )
                 o_local_network.des_funct_variables.append(o_variable_model)
 
         # generating the CBN network object
@@ -141,7 +184,7 @@ for n_local_networks in range(n_local_networks_min, n_local_networks_max):
             # calculate parameters
             "n_local_attractors": o_cbn.get_n_local_attractors(),
             "n_pair_attractors": o_cbn.get_n_pair_attractors(),
-            "n_attractor_fields": o_cbn.get_n_attractor_fields()
+            "n_attractor_fields": o_cbn.get_n_attractor_fields(),
         }
         l_data_sample.append(d_collect_indicators)
         # show the important outputs

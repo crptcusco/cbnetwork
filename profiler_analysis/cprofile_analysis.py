@@ -1,10 +1,10 @@
 # local imports
-from classes.localtemplates import PathCircleTemplate
-
 # libraries imports
 import cProfile
-import pstats
 import pickle
+import pstats
+
+from classes.localtemplates import PathCircleTemplate
 
 # Experiment parameters
 N_LOCAL_NETWORKS = 10
@@ -24,9 +24,9 @@ V_TOPOLOGY = 4
 
 # path_cbn = '5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/cbn_9_3.pkl'
 # path_cbn = '../phd_experiments/structural/5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_5_3.pkl'
-path_cbn = '../phd_experiments/old_experiments/5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_10_3.pkl'
+path_cbn = "../phd_experiments/old_experiments/5_linear_circle/outputs/exp5_aleatory_linear_circle_8_8_10/pkl_cbn/cbn_10_3.pkl"
 
-with open(path_cbn, 'rb') as file:
+with open(path_cbn, "rb") as file:
     o_cbn = pickle.load(file)
 
 # Show the object
@@ -46,16 +46,14 @@ o_cbn.show_attractor_pairs()
 # Find stable attractor fields
 # o_cbn.find_stable_attractor_fields()
 # Run the profiler on the function
-cProfile.run('o_cbn.find_stable_attractor_fields()',
-             'cprofile_stats')
+cProfile.run("o_cbn.find_stable_attractor_fields()", "cprofile_stats")
 o_cbn.show_stable_attractor_fields()
 
 # Load the profile statistics
-stats = pstats.Stats('cprofile_stats')
+stats = pstats.Stats("cprofile_stats")
 # Print the statistics
 stats.print_stats()
 print("Fin")
 
 
 print("END OF EXPERIMENT")
-

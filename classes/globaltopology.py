@@ -1,12 +1,17 @@
 # Internal imports
-import time
+import logging
 import random
+import time
 
+import matplotlib.colors as mco
+import matplotlib.pyplot as plt
 # External imports
 import networkx as nx
-import matplotlib.pyplot as plt
-import matplotlib.colors as mco
+
 from classes.utils.customtext import CustomText
+from classes.utils.logging_config import setup_logging
+
+setup_logging()
 
 
 class GlobalTopology:
@@ -20,7 +25,7 @@ class GlobalTopology:
         7: "dorogovtsev_mendes",
         8: "small_world",
         9: "scale_free",
-        10: "random"
+        10: "random",
     }
 
     def __init__(self, v_topology, l_edges):
@@ -40,8 +45,9 @@ class GlobalTopology:
         Displays the allowed topologies for Directed Graphs.
         """
         CustomText.make_sub_title("List of allowed topologies of Directed Graphs")
+        logger = logging.getLogger(__name__)
         for key, value in cls.allowed_topologies.items():
-            print(f"{key} - {value}")
+            logger.info("%s - %s", key, value)
 
     @classmethod
     def generate_sample_topology(cls, v_topology, n_nodes, n_edges=None):
@@ -53,10 +59,12 @@ class GlobalTopology:
         :return: Instance of the 5_specific topology class.
         """
         if v_topology not in cls.allowed_topologies:
-            print('ERROR: Not permitted option')
+            logging.getLogger(__name__).error("ERROR: Not permitted option")
             return None
         if n_nodes <= 1:
-            print('ERROR: Number of nodes must be greater than 1')
+            logging.getLogger(__name__).error(
+                "ERROR: Number of nodes must be greater than 1"
+            )
             return None
 
         if v_topology == 1:
@@ -74,11 +82,11 @@ class GlobalTopology:
         elif v_topology == 7:
             return DorogovtsevMendesDigraph(n_nodes=n_nodes)
         elif v_topology == 8:
-            return SmallWorldGraph(n_nodes=n_nodes,k_neighbors=3,p_rewire=0.5)
+            return SmallWorldGraph(n_nodes=n_nodes, k_neighbors=3, p_rewire=0.5)
         elif v_topology == 9:
-            return ScaleFreeGraph(n_nodes=n_nodes,m_edges=2)
+            return ScaleFreeGraph(n_nodes=n_nodes, m_edges=2)
         elif v_topology == 10:
-            return RandomGraph(n_nodes=n_nodes,p_edge=0.5)
+            return RandomGraph(n_nodes=n_nodes, p_edge=0.5)
         return None
 
     def generate_local_nets_colors(self):
@@ -98,10 +106,20 @@ class GlobalTopology:
         if ax is None:
             ax = plt.gca()
 
-        pos = nx.random_layout(self.o_graph) if self.v_topology == 1 else nx.circular_layout(self.o_graph)
-        node_colors = [self.d_network_color.get(node, 'skyblue') for node in self.o_graph.nodes()]
-        nx.draw_networkx_nodes(self.o_graph, pos, node_color=node_colors, node_size=500, ax=ax)
-        nx.draw_networkx_labels(self.o_graph, pos, font_size=12, font_color='black', ax=ax)
+        pos = (
+            nx.random_layout(self.o_graph)
+            if self.v_topology == 1
+            else nx.circular_layout(self.o_graph)
+        )
+        node_colors = [
+            self.d_network_color.get(node, "skyblue") for node in self.o_graph.nodes()
+        ]
+        nx.draw_networkx_nodes(
+            self.o_graph, pos, node_color=node_colors, node_size=500, ax=ax
+        )
+        nx.draw_networkx_labels(
+            self.o_graph, pos, font_size=12, font_color="black", ax=ax
+        )
         nx.draw_networkx_edges(self.o_graph, pos, arrows=True, ax=ax, width=3)
 
         # ax.set_title("CBN Topology")
@@ -224,7 +242,11 @@ class AleatoryFixedDigraph(GlobalTopology):
         # Limit the number of edges if it exceeds 2 * number of nodes
         max_edges = 2 * self.n_nodes
         if self.n_edges > max_edges:
-            print(f"Warning: n_edges ({self.n_edges}) exceeds 2 * n_nodes. Setting n_edges = {max_edges}.")
+            logging.getLogger(__name__).warning(
+                "Warning: n_edges (%d) exceeds 2 * n_nodes. Setting n_edges = %d.",
+                self.n_edges,
+                max_edges,
+            )
             self.n_edges = max_edges
 
         # Use nodes as numbers 0 to n_nodes - 1
@@ -250,13 +272,17 @@ class AleatoryFixedDigraph(GlobalTopology):
                 attempts += 1
 
             if G.number_of_edges() < self.n_edges:
-                print("Warning: Could not reach the desired number of edges.")
+                logging.getLogger(__name__).warning(
+                    "Warning: Could not reach the desired number of edges."
+                )
 
             # Check connectivity on the undirected version of the graph.
             if nx.is_weakly_connected(G):
                 break
             else:
-                print("Graph is not connected, retrying...")
+                logging.getLogger(__name__).warning(
+                    "Graph is not connected, retrying..."
+                )
 
         # Optionally, relabel nodes if they are numeric (e.g., start numbering at 1)
         if all(isinstance(node, int) for node in G.nodes()):
@@ -298,19 +324,21 @@ class AleatoryFixedDigraph(GlobalTopology):
         new_node = max(self.l_nodes) + 1
         self.l_nodes.append(new_node)
         G.add_node(new_node)
-        print(f"Adding new node: {new_node}")
+        logging.getLogger(__name__).info("Adding new node: %s", new_node)
 
         edge_to_remove = random.choice(list(G.edges))
         G.remove_edge(*edge_to_remove)
         self.l_edges.remove(edge_to_remove)
-        print(f"Removed edge: {edge_to_remove}")
+        logging.getLogger(__name__).info("Removed edge: %s", edge_to_remove)
 
         while True:
             u = random.choice(self.l_nodes[:-1])
             if not G.has_edge(u, new_node):
                 G.add_edge(u, new_node)
                 self.l_edges.append((u, new_node))
-                print(f"Added edge from {u} to {new_node}")
+                logging.getLogger(__name__).info(
+                    "Added edge from %s to %s", u, new_node
+                )
                 break
 
         while True:
@@ -318,7 +346,9 @@ class AleatoryFixedDigraph(GlobalTopology):
             if G.in_degree(v) < 2 and not G.has_edge(new_node, v):
                 G.add_edge(new_node, v)
                 self.l_edges.append((new_node, v))
-                print(f"Added edge from {new_node} to {v}")
+                logging.getLogger(__name__).info(
+                    "Added edge from %s to %s", new_node, v
+                )
                 break
 
         for node in self.l_nodes:
@@ -326,14 +356,18 @@ class AleatoryFixedDigraph(GlobalTopology):
                 u = random.choice([n for n in self.l_nodes if n != node])
                 G.add_edge(u, node)
                 self.l_edges.append((u, node))
-                print(f"Ensured connectivity by adding edge from {u} to {node}")
+                logging.getLogger(__name__).info(
+                    "Ensured connectivity by adding edge from %s to %s", u, node
+                )
 
         self.n_nodes += 1
         self.n_edges = len(self.l_edges)
         self.update_parent_graph()
 
         end_time = time.time()
-        print(f"Node {new_node} added in {end_time - start_time} seconds")
+        logging.getLogger(__name__).info(
+            "Node %s added in %s seconds", new_node, end_time - start_time
+        )
 
     def update_parent_graph(self):
         """
@@ -396,7 +430,9 @@ class DorogovtsevMendesDigraph(GlobalTopology):
         Agrega una nueva arista al grafo dirigido Dorogovtsev-Mendes mientras mantiene sus propiedades estructurales.
         """
         if len(self.l_edges) >= (self.n_nodes - 1) * 2:
-            raise ValueError("No se pueden agregar más aristas manteniendo la estructura de Dorogovtsev-Mendes.")
+            raise ValueError(
+                "No se pueden agregar más aristas manteniendo la estructura de Dorogovtsev-Mendes."
+            )
 
         # Seleccionar una arista existente aleatoriamente
         u, v = random.choice(self.l_edges)
@@ -455,12 +491,16 @@ class SmallWorldGraph(GlobalTopology):
 
     def add_node(self):
         """Añade un nuevo nodo y lo conecta a k vecinos al azar manteniendo la estructura Small-World."""
-        new_node = max(self.l_nodes) + 1 if self.l_nodes else 1  # Si está vacío, empieza en 1
+        new_node = (
+            max(self.l_nodes) + 1 if self.l_nodes else 1
+        )  # Si está vacío, empieza en 1
         self.graph.add_node(new_node)
         self.l_nodes.append(new_node)
 
         # Conectar con `k_neighbors` nodos existentes
-        neighbors = random.sample(self.l_nodes[:-1], min(self.k_neighbors, len(self.l_nodes) - 1))
+        neighbors = random.sample(
+            self.l_nodes[:-1], min(self.k_neighbors, len(self.l_nodes) - 1)
+        )
         for neighbor in neighbors:
             self.add_edge(new_node, neighbor)
 
@@ -552,7 +592,9 @@ class ScaleFreeGraph(GlobalTopology):
             targets = random.sample(existing_nodes, self.m_edges)
         else:
             probabilities = [degrees[node] / total_degree for node in existing_nodes]
-            targets = random.choices(existing_nodes, weights=probabilities, k=self.m_edges)
+            targets = random.choices(
+                existing_nodes, weights=probabilities, k=self.m_edges
+            )
 
         for target in targets:
             self.add_edge(new_node, target)

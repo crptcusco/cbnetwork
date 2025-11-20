@@ -1,16 +1,28 @@
 # external imports
-import re
+import logging
 import operator
-from string import ascii_lowercase, ascii_uppercase
-from itertools import product
+import re
 from collections import namedtuple
+from itertools import product
+from string import ascii_lowercase, ascii_uppercase
 
 # local imports
 from classes.utils.customtext import CustomText
+from classes.utils.logging_config import setup_logging
+
+setup_logging()
+
 
 class DirectedEdge:
-    def __init__(self, index, index_variable_signal, input_local_network, output_local_network, l_output_variables,
-                 coupling_function):
+    def __init__(
+        self,
+        index,
+        index_variable_signal,
+        input_local_network,
+        output_local_network,
+        l_output_variables,
+        coupling_function,
+    ):
         """
         Initialize a DirectedEdge instance.
 
@@ -37,20 +49,14 @@ class DirectedEdge:
             1: "RESTRICTED",
             2: "NOT COMPUTE",
             3: "STABLE",
-            4: "NOT STABLE"
+            4: "NOT STABLE",
         }
         # Define the initial kind for every coupling signal
         self.kind_signal = 2
         # Dictionary for grouping attractors by their output signal value
-        self.d_out_value_to_attractor = {
-            1: [],
-            0: []
-        }
+        self.d_out_value_to_attractor = {1: [], 0: []}
         # List of compatible pair attractors
-        self.d_comp_pairs_attractors_by_value = {
-            0: [],
-            1: []
-        }
+        self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
 
     def show(self):
         """
@@ -61,21 +67,31 @@ class DirectedEdge:
         the truth table, and the kind of signal.
         """
         # Print the header with detailed information about the edge
-        CustomText.make_sub_sub_title(f"Index Edge: {self.index} - "
-                                      f"Relation: {self.output_local_network} -> {self.input_local_network} - "
-                                      f"Variable: {self.index_variable}")
+        CustomText.make_sub_sub_title(
+            f"Index Edge: {self.index} - "
+            f"Relation: {self.output_local_network} -> {self.input_local_network} - "
+            f"Variable: {self.index_variable}"
+        )
 
         # Print the list of output variables and the coupling function
-        print("Variables:", self.l_output_variables, ", Coupling Function:", self.coupling_function)
+        logger = logging.getLogger(__name__)
+        logger.info(
+            "Variables: %s , Coupling Function: %s",
+            self.l_output_variables,
+            self.coupling_function,
+        )
 
-        # Print the truth table of the coupling function
-        print("Truth table:", self.true_table)
-
-        # Print the kind of signal and its description
-        print("Kind signal:", self.kind_signal, "-", self.d_kind_signal[self.kind_signal])
+        logger.info("Truth table: %s", self.true_table)
+        logger.info(
+            "Kind signal: %s - %s",
+            self.kind_signal,
+            self.d_kind_signal[self.kind_signal],
+        )
 
     def show_short(self):
-        print(self.output_local_network, ",", self.input_local_network)
+        logging.getLogger(__name__).info(
+            "%s , %s", self.output_local_network, self.input_local_network
+        )
 
     def get_edge(self):
         return self.output_local_network, self.input_local_network
@@ -91,8 +107,8 @@ class DirectedEdge:
 
         # Tokenization
         # Regular expression to match tokens in the Boolean formula
-        TOKEN_RE = re.compile(r'\s*(?:([A-Za-z01()~∧∨→↔])|(\S))')
-        TOKEN_END = '<end of input>'  # Special token indicating the end of input
+        TOKEN_RE = re.compile(r"\s*(?:([A-Za-z01()~∧∨→↔])|(\S))")
+        TOKEN_END = "<end of input>"  # Special token indicating the end of input
 
         def tokenize(s):
             """Generate tokens from the string s, followed by TOKEN_END."""
@@ -106,26 +122,26 @@ class DirectedEdge:
 
         # Parsing
         # Define structures for the parse tree
-        Constant = namedtuple('Constant', 'value')
-        Variable = namedtuple('Variable', 'name')
-        UnaryOp = namedtuple('UnaryOp', 'op operand')
-        BinaryOp = namedtuple('BinaryOp', 'left op right')
+        Constant = namedtuple("Constant", "value")
+        Variable = namedtuple("Variable", "name")
+        UnaryOp = namedtuple("UnaryOp", "op operand")
+        BinaryOp = namedtuple("BinaryOp", "left op right")
 
         # Tokens representing Boolean constants (0=False, 1=True).
-        CONSTANTS = '01'
+        CONSTANTS = "01"
 
         # Tokens representing variables.
         VARIABLES = set(ascii_lowercase) | set(ascii_uppercase)
 
         # Unary and binary operators
         UNARY_OPERATORS = {
-            '~': operator.not_,
+            "~": operator.not_,
         }
         BINARY_OPERATORS = {
-            '∧': operator.and_,
-            '∨': operator.or_,
-            '→': lambda a, b: not a or b,
-            '↔': operator.eq,
+            "∧": operator.and_,
+            "∨": operator.or_,
+            "→": lambda a, b: not a or b,
+            "↔": operator.eq,
         }
 
         def parse(s):
@@ -149,10 +165,10 @@ class DirectedEdge:
                 if match(VARIABLES):
                     return Variable(name=t)
                 elif match(CONSTANTS):
-                    return Constant(value=(t == '1'))
-                elif match('('):
+                    return Constant(value=(t == "1"))
+                elif match("("):
                     tree = disjunction()
-                    if match(')'):
+                    if match(")"):
                         return tree
                     else:
                         error("')'")
@@ -161,7 +177,7 @@ class DirectedEdge:
 
             def unary_expr():
                 t = token
-                if match('~'):
+                if match("~"):
                     operand = unary_expr()
                     return UnaryOp(op=UNARY_OPERATORS[t], operand=operand)
                 else:
@@ -177,13 +193,13 @@ class DirectedEdge:
                     return left
 
             def implication():
-                return binary_expr(unary_expr, '→↔', implication)
+                return binary_expr(unary_expr, "→↔", implication)
 
             def conjunction():
-                return binary_expr(implication, '∧', conjunction)
+                return binary_expr(implication, "∧", conjunction)
 
             def disjunction():
-                return binary_expr(conjunction, '∨', disjunction)
+                return binary_expr(conjunction, "∨", disjunction)
 
             tree = disjunction()
             if token != TOKEN_END:
@@ -191,7 +207,10 @@ class DirectedEdge:
             return tree
 
         def evaluate(tree, env):
-            """Evaluate the expression in the parse tree in the context of an environment mapping variable names to their values."""
+            """Evaluate the expression in the parse tree.
+
+            The environment maps variable names to their values.
+            """
             if isinstance(tree, Constant):
                 return tree.value
             elif isinstance(tree, Variable):
@@ -201,28 +220,33 @@ class DirectedEdge:
             elif isinstance(tree, BinaryOp):
                 return tree.op(evaluate(tree.left, env), evaluate(tree.right, env))
             else:
-                raise TypeError("Expected tree, found {!r}".format(type(tree)))
+                raise TypeError(f"Expected tree, found {type(tree)!r}")
 
         # Create a dictionary for each variable in the output set
         l_abecedario = list(ascii_uppercase)
         dict_aux_var_saida = {}
         cont_aux_abecedario = 0
         for variable_saida in self.l_output_variables:
-            dict_aux_var_saida[" " + str(variable_saida) + " "] = l_abecedario[cont_aux_abecedario]
+            dict_aux_var_saida[" " + str(variable_saida) + " "] = l_abecedario[
+                cont_aux_abecedario
+            ]
             cont_aux_abecedario += 1
 
         # Generate all permutations of the output signals
-        l_permutations = list(product([True, False], repeat=len(self.l_output_variables)))
+        l_permutations = list(
+            product([True, False], repeat=len(self.l_output_variables))
+        )
 
         # Process each permutation to evaluate the Boolean formula
         for c_permutation in l_permutations:
             aux_dictionary = dict(zip(dict_aux_var_saida.values(), c_permutation))
             aux_coupling_function = self.coupling_function
             for aux_element in dict_aux_var_saida.keys():
-                aux_coupling_function = aux_coupling_function.replace(str(aux_element),
-                                                                      str(dict_aux_var_saida[aux_element]))
+                aux_coupling_function = aux_coupling_function.replace(
+                    str(aux_element), str(dict_aux_var_saida[aux_element])
+                )
             # Create the key for the truth table
-            aux_key = ''.join("1" if v else "0" for v in c_permutation)
+            aux_key = "".join("1" if v else "0" for v in c_permutation)
             if evaluate(parse(aux_coupling_function), aux_dictionary):
                 r_true_table[aux_key] = "1"
             else:
@@ -236,8 +260,9 @@ class DirectedEdge:
 
         This method prints each output signal value and the corresponding list of attractors from the dictionary.
         """
+        logger = logging.getLogger(__name__)
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print(signal_value, "-", l_attractors)
+            logger.info("%s - %s", signal_value, l_attractors)
 
     def show_v_output_signal_attractor(self):
         """
@@ -246,7 +271,8 @@ class DirectedEdge:
         This method prints each output signal value followed by a detailed list of attractors.
         For each attractor, it calls its `show` method to display its details.
         """
+        logger = logging.getLogger(__name__)
         for signal_value, l_attractors in self.d_out_value_to_attractor.items():
-            print("Output signal Value -", signal_value, "- Attractors:")
+            logger.info("Output signal Value - %s - Attractors:", signal_value)
             for o_attractor in l_attractors:
                 o_attractor.show()

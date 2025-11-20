@@ -2,7 +2,7 @@ from multiprocessing import Process
 
 
 def squared(x):
-    print(x ** 2)
+    print(x**2)
 
 
 # create parallel processes

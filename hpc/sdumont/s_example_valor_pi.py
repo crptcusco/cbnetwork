@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import random
+
 import parsl
 from parsl.app.app import python_app
-import random
 
 # Configure Parsl
 parsl.load()
@@ -17,7 +18,7 @@ def monte_carlo_pi(num_samples):
         y = random.uniform(0, 1)
 
         # Check if the point is inside the unit circle
-        if x ** 2 + y ** 2 <= 1:
+        if x**2 + y**2 <= 1:
             count_inside_circle += 1
 
     return count_inside_circle

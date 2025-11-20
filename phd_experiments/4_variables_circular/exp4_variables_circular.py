@@ -1,8 +1,9 @@
 # external imports
 import os
-import time
-import pandas as pd
 import pickle
+import time
+
+import pandas as pd
 
 # local imports
 from classes.cbnetwork import CBN
@@ -28,7 +29,7 @@ SHOW_MESSAGES = True
 
 # Begin the Experiment
 print("BEGIN THE EXPERIMENT")
-print("="*80)
+print("=" * 80)
 
 # Capture the time for all the experiment
 v_begin_exp = time.time()
@@ -37,14 +38,21 @@ v_begin_exp = time.time()
 EXPERIMENT_NAME = "exp4_variables_circular"
 
 # Create the 'outputs' directory if it doesn't exist
-OUTPUT_FOLDER = 'outputs'
+OUTPUT_FOLDER = "outputs"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # create an experiment directory by parameters
-DIRECTORY_PATH = (OUTPUT_FOLDER + "/" + EXPERIMENT_NAME + "_"
-                  + str(N_VARIABLE_NET_MIN) + "_"
-                  + str(N_VARIABLE_NET_MAX)
-                  + "_" + str(N_SAMPLES))
+DIRECTORY_PATH = (
+    OUTPUT_FOLDER
+    + "/"
+    + EXPERIMENT_NAME
+    + "_"
+    + str(N_VARIABLE_NET_MIN)
+    + "_"
+    + str(N_VARIABLE_NET_MAX)
+    + "_"
+    + str(N_SAMPLES)
+)
 os.makedirs(DIRECTORY_PATH, exist_ok=True)
 
 # create a directory to save the pkl files
@@ -52,7 +60,7 @@ DIRECTORY_PKL = DIRECTORY_PATH + "/pkl_cbn"
 os.makedirs(DIRECTORY_PKL, exist_ok=True)
 
 # generate the experiment data file in csv
-file_path = DIRECTORY_PATH + '/data.csv'
+file_path = DIRECTORY_PATH + "/data.csv"
 
 # Erase the file if exists
 if os.path.exists(file_path):
@@ -61,14 +69,20 @@ if os.path.exists(file_path):
 
 # Begin the process
 for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
-    for N_VAR_NETWORK in [i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)]:  # 3-9
+    for N_VAR_NETWORK in [
+        i for i in range(N_VARIABLE_NET_MIN, N_VARIABLE_NET_MAX + 1, 5)
+    ]:  # 3-9
 
         l_data_sample = []
         print("Experiment", i_sample, "of", N_SAMPLES, " TOPOLOGY:", V_TOPOLOGY)
 
         # generate aleatory CBN by topology
-        o_cbn = CBN.generate_aleatory_cbn_by_topology(n_local_networks=N_LOCAL_NETWORKS, n_var_network=N_VAR_NETWORK,
-                                                      v_topology=V_TOPOLOGY, n_output_variables=N_OUTPUT_VARIABLES)
+        o_cbn = CBN.generate_aleatory_cbn_by_topology(
+            n_local_networks=N_LOCAL_NETWORKS,
+            n_var_network=N_VAR_NETWORK,
+            v_topology=V_TOPOLOGY,
+            n_output_variables=N_OUTPUT_VARIABLES,
+        )
 
         # find attractors
         v_begin_find_attractors = time.time()
@@ -104,7 +118,7 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
             # time parameters
             "n_time_find_attractors": n_time_find_attractors,
             "n_time_find_pairs": n_time_find_pairs,
-            "n_time_find_fields": n_time_find_fields
+            "n_time_find_fields": n_time_find_fields,
         }
         l_data_sample.append(d_collect_indicators)
 
@@ -113,9 +127,9 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
         pf_res.reset_index(drop=True, inplace=True)
 
         # if the file exists, open it in 'a' mode (append), else create a new file
-        mode = 'a' if os.path.exists(file_path) else 'w'
+        mode = "a" if os.path.exists(file_path) else "w"
         # Add the header only if it's a new file
-        header = False if mode == 'a' else True
+        header = False if mode == "a" else True
         # save the data to the CSV file only if there is data in pf_res
         if not pf_res.empty:
             pf_res.to_csv(file_path, mode=mode, header=header, index=False)
@@ -124,9 +138,17 @@ for i_sample in range(1, N_SAMPLES + 1):  # 1 - 100
             print("No data to save in:", file_path)
 
         # Open a file in binary write mode (wb)
-        pickle_path = (DIRECTORY_PKL + '/cbn_' + str(i_sample) + '_'
-                       + str(V_TOPOLOGY) + '_' + str(N_LOCAL_NETWORKS) + ".pkl")
-        with open(pickle_path, 'wb') as file:
+        pickle_path = (
+            DIRECTORY_PKL
+            + "/cbn_"
+            + str(i_sample)
+            + "_"
+            + str(V_TOPOLOGY)
+            + "_"
+            + str(N_LOCAL_NETWORKS)
+            + ".pkl"
+        )
+        with open(pickle_path, "wb") as file:
             # Use pickle.dump to save the object to the file
             pickle.dump(o_cbn, file)
 
@@ -143,6 +165,5 @@ v_end_exp = time.time()
 v_time_exp = v_end_exp - v_begin_exp
 print("Time experiment (in seconds): ", v_time_exp)
 
-print("="*80)
+print("=" * 80)
 print("END EXPERIMENT")
-
