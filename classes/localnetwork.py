@@ -62,6 +62,7 @@ class LocalNetwork:
 
         :param input_signals: List of input signal objects.
         """
+        self.input_signals = input_signals
         # Process the input signals and append their indices to the external variables list
         for signal in input_signals:
             self.external_variables.append(signal.index_variable)
@@ -83,7 +84,7 @@ class LocalNetwork:
         :return: The internal variable object if found, otherwise None.
         """
         for internal_variable in self.descriptive_function_variables:
-            if internal_variable.l_index == variable_index:
+            if internal_variable.index == variable_index:
                 return internal_variable
         return None  # Return None if the variable is not found
 
@@ -94,9 +95,191 @@ class LocalNetwork:
         :param internal_variable_to_update: The internal variable object with updated values.
         """
         for i, internal_variable in enumerate(self.descriptive_function_variables):
-            if internal_variable.l_index == internal_variable_to_update.l_index:
+            if internal_variable.index == internal_variable_to_update.index:
                 self.descriptive_function_variables[i] = internal_variable_to_update
-                return  # Exit after updating the variable
+                return True  # Exit after updating the variable
+        return False
+
+    @staticmethod
+    def evaluate_boolean_function(cnf_function, state, external_values):
+        """
+        Evaluate a boolean function given the current state and external values.
+
+        :param cnf_function: The boolean function as a string expression (e.g., "(1 and 2) or 3").
+                             Variables are represented by their integer indices.
+        :param state: Dictionary mapping internal variable indices to their boolean values (0 or 1).
+        :param external_values: Dictionary mapping external variable indices to their values.
+        :return: The result of the function (0 or 1).
+        """
+        if not isinstance(cnf_function, str):
+            # If it's not a string, we assume it's a CNF list (list of clauses)
+            # Example: [[1, -2], [3]] means (1 or not 2) and (3)
+            # This is a standard CNF representation where negative numbers mean NOT.
+            if isinstance(cnf_function, list):
+                # Evaluate CNF
+                for clause in cnf_function:
+                    clause_satisfied = False
+                    for literal in clause:
+                        var_index = abs(literal)
+                        is_negated = literal < 0
+
+                        # Get value from state or external values
+                        if var_index in state:
+                            val = state[var_index]
+                        elif var_index in external_values:
+                            val = external_values[var_index]
+                        else:
+                            # Default to 0 if not found (should not happen in well-formed networks)
+                            val = 0
+
+                        if is_negated:
+                            val = 1 - val
+
+                        if val == 1:
+                            clause_satisfied = True
+                            break
+
+                    if not clause_satisfied:
+                        return 0 # One clause false -> entire CNF false
+                return 1 # All clauses satisfied
+            return 0
+
+        # String evaluation (simple replacement)
+        # We need to replace variable indices with their values.
+        # To avoid replacing "1" in "10", we should use regex or tokenization.
+        # For simplicity in this proof-of-concept, we'll assume variables are tokens.
+
+        expression = cnf_function
+        # Replace operators if needed (assuming python syntax for now: and, or, not)
+        # If the string uses symbols like ∧, ∨, ~, we need to replace them.
+        expression = expression.replace("∧", " and ").replace("∨", " or ").replace("~", " not ")
+
+        # Replace variables
+        # We iterate through all known variables (internal + external)
+        all_vars = {**state, **external_values}
+
+        # Sort keys by length descending to avoid partial replacement (e.g. replacing 1 in 10)
+        # But better is to use regex word boundaries.
+        import re
+
+        for var_index, val in all_vars.items():
+            # Replace whole word var_index with val
+            pattern = r'\b' + str(var_index) + r'\b'
+            expression = re.sub(pattern, str(val), expression)
+
+        try:
+            result = eval(expression)
+            return 1 if result else 0
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Error evaluating expression '{expression}': {e}")
+            return 0
+
+    @staticmethod
+    def find_local_attractors_brute_force(local_network, local_scenes=None):
+        """
+        Find attractors using a brute-force approach by iterating over all possible states.
+
+        :param local_network: The local network object.
+        :param local_scenes: List of local scenes (fixed external variable configurations).
+        :return: The local network object with updated attractors.
+        """
+        CustomText.print_simple_line()
+        logging.getLogger(__name__).info(
+            "FIND ATTRACTORS (BRUTE FORCE) FOR NETWORK: %s", local_network.index
+        )
+
+        if local_scenes is None:
+            # If no scenes, assume all external variables are 0 (or handle as one empty scene)
+            # But usually scenes are required if there are external variables.
+            # If no external variables, one 'empty' scene.
+            scenes_to_process = [[]]
+        else:
+            scenes_to_process = local_scenes
+
+        scene_index = 1
+        network_attractor_count = 0
+
+        for scene in scenes_to_process:
+            # 1. Set up external variables for this scene
+            external_values = {}
+            if scene:
+                for i, val in enumerate(scene):
+                    if i < len(local_network.external_variables):
+                        ext_var_index = local_network.external_variables[i]
+                        external_values[ext_var_index] = int(val)
+
+            # 2. Build State Transition Graph (STG)
+            # Iterate over all 2^N states
+            num_internal_vars = len(local_network.internal_variables)
+            state_map = {} # Map state (tuple) to next state (tuple)
+
+            for i in range(2**num_internal_vars):
+                # Convert integer i to binary list representing state
+                current_state_vals = [(i >> bit) & 1 for bit in range(num_internal_vars)]
+                # Map internal variable indices to values
+                current_state_dict = {
+                    var: val for var, val in zip(local_network.internal_variables, current_state_vals)
+                }
+
+                # Calculate next state
+                next_state_vals = []
+                for internal_var in local_network.descriptive_function_variables:
+                    # Evaluate function for this variable
+                    next_val = LocalNetwork.evaluate_boolean_function(
+                        internal_var.cnf_function, current_state_dict, external_values
+                    )
+                    next_state_vals.append(next_val)
+
+                state_map[tuple(current_state_vals)] = tuple(next_state_vals)
+
+            # 3. Detect Cycles (Attractors)
+            visited = set()
+            scene_attractors = []
+
+            for start_node in state_map:
+                if start_node in visited:
+                    continue
+
+                path = []
+                curr = start_node
+                path_set = set()
+
+                while curr not in visited:
+                    visited.add(curr)
+                    path_set.add(curr)
+                    path.append(curr)
+                    curr = state_map[curr]
+
+                    if curr in path_set:
+                        # Cycle detected
+                        cycle_start_index = path.index(curr)
+                        cycle = path[cycle_start_index:]
+
+                        # Create LocalAttractor object
+                        # We need to convert tuples back to LocalState objects
+                        l_states = [LocalState(list(state)) for state in cycle]
+                        attractor = LocalAttractor(
+                            g_index=0, # Placeholder
+                            l_index=len(scene_attractors) + 1,
+                            l_states=l_states,
+                            network_index=local_network.index,
+                            local_scene="".join(scene)
+                        )
+                        scene_attractors.append(attractor)
+                        break
+
+            # 4. Store Attractors
+            local_scene_obj = LocalScene(
+                scene_index, scene, local_network.external_variables
+            )
+            local_scene_obj.l_attractors = scene_attractors
+            local_network.local_scenes.append(local_scene_obj)
+
+            scene_index += 1
+            network_attractor_count += len(scene_attractors)
+
+        local_network.attractor_count = network_attractor_count
+        return local_network
 
     @staticmethod
     def find_local_attractors(local_network, local_scenes=None):

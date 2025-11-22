@@ -89,6 +89,9 @@ class CBN:
         # Placeholder for the global topology (to be initialized later)
         self.o_global_topology = None
 
+        # Update output signals for local networks
+        self.process_output_signals()
+
     # PRINCIPAL FUNCTIONS
     def process_output_signals(self) -> None:
         """
@@ -101,16 +104,16 @@ class CBN:
         """
         # Create a dictionary for quick lookup of output signals
         local_network_dict = {
-            network.l_index: network for network in self.l_local_networks
+            network.index: network for network in self.l_local_networks
         }
 
         # Update output signals for each local network
         for edge in self.l_directed_edges:
-            source, destination = edge
-            if destination in local_network_dict:
-                o_local_network = local_network_dict[destination]
+            # The network that outputs the signal is edge.output_local_network
+            source_network_index = edge.output_local_network
+            if source_network_index in local_network_dict:
+                o_local_network = local_network_dict[source_network_index]
                 o_local_network.output_signals.append(edge)
-                # print(edge)
 
     def update_network_by_index(self, o_local_network_update) -> bool:
         """
@@ -166,24 +169,15 @@ class CBN:
             The updated local network with its attractors found, or the original network if an error occurs.
         """
         try:
-            # Generate local scenes from the given local network
-            local_scenes = CBN._generate_local_scenes(o_local_network)
-
-            # Find and update the local network's attractors
-            updated_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network, local_scenes=local_scenes
+            # Generate local scenes based on external variables
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            # Find local attractors using the generated scenes
+            o_local_network = LocalNetwork.find_local_attractors(
+                o_local_network, l_local_scenes
             )
-
-            # Return the updated network
-            return updated_network
-
+            return o_local_network
         except Exception as e:
-            logger = logging.getLogger(__name__)
-            logger.exception(
-                "Error processing network %s: %s",
-                getattr(o_local_network, "id", "<unknown>"),
-                e,
-            )
+            print(f"Error processing network {o_local_network.index}: {e}")
             return o_local_network
 
     @staticmethod
@@ -421,52 +415,86 @@ class CBN:
 
     def find_local_attractors_parallel(self, num_cpus=None):
         """
-        Paraleliza el proceso de encontrar atractores locales utilizando multiprocessing.
+        Parallelizes the process of finding local attractors using multiprocessing.
 
-        Para cada red local en self.l_local_networks se:
-          1. Generan sus escenas locales.
-          2. Se calculan sus atractores locales.
+        For each local network in self.l_local_networks:
+          1. Generate its local scenes.
+          2. Calculate its local attractors.
 
-        Luego, en el proceso principal se actualiza cada red con su respectivo procesamiento
-        de señales, se asignan los índices globales a cada atractor y se genera el diccionario de atractores.
+        Then, in the main process, each network is updated with its respective signal processing,
+        global indices are assigned to each attractor, and the attractor dictionary is generated.
 
-        Esta función es equivalente a la versión secuencial, pero distribuye el cálculo de cada
-        red local en procesos independientes.
+        This function is equivalent to the sequential version but distributes the calculation of each
+        local network into independent processes.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS PARALLEL")
 
         if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
-        # Crear un pool de procesos; se puede ajustar el número de procesos si es necesario
+        # Create a process pool; the number of processes can be adjusted if necessary
         with multiprocessing.Pool(processes=num_cpus) as pool:
-            # map() enviará cada elemento de self.l_local_networks a la función process_local_network_mp
+            # map() will send each element of self.l_local_networks to the process_local_network_mp function
             updated_networks = pool.map(
                 CBN.process_local_network_mp, self.l_local_networks
             )
 
-        # Actualizar la lista de redes locales con los resultados obtenidos
+        # Update the list of local networks with the obtained results
         self.l_local_networks = list(updated_networks)
 
-        # Asignar índices globales a cada atractor
+        # Assign global indices to each attractor
         self._assign_global_indices_to_attractors()
 
-        # Generar el diccionario de atractores
+        # Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS PARALLEL")
 
+    def find_local_attractors_brute_force_parallel(self, num_cpus=None):
+        """
+        Parallelizes the process of finding local attractors using brute force.
+
+        For each local network in self.l_local_networks:
+          1. Generate its local scenes.
+          2. Calculate its local attractors using brute force.
+
+        Then, in the main process, each network is updated with its respective signal processing,
+        global indices are assigned to each attractor, and the attractor dictionary is generated.
+        """
+        CustomText.make_title("FIND LOCAL ATTRACTORS BRUTE FORCE PARALLEL")
+
+        if num_cpus is None or num_cpus <= 0:
+            num_cpus = multiprocessing.cpu_count()
+
+        # Create a process pool; the number of processes can be adjusted if necessary
+        with multiprocessing.Pool(processes=num_cpus) as pool:
+            # map() will send each element of self.l_local_networks to the process_local_network_brute_force_mp function
+            updated_networks = pool.map(
+                CBN.process_local_network_brute_force_mp, self.l_local_networks
+            )
+
+        # Update the list of local networks with the obtained results
+        self.l_local_networks = list(updated_networks)
+
+        # Assign global indices to each attractor
+        self._assign_global_indices_to_attractors()
+
+        # Generate the attractor dictionary
+        self.generate_attractor_dictionary()
+
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS BRUTE FORCE PARALLEL")
+
     def find_local_attractors_parallel_with_weigths(self, num_cpus=None):
         """
-        Encuentra atractores locales en paralelo con multiprocessing, balanceando la carga
-        mediante un sistema de 'buckets' según el peso de cada tarea.
+        Finds local attractors in parallel with multiprocessing, balancing the load
+        using a 'bucket' system based on the weight of each task.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
 
         if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
-        # Crear lista de tareas con peso
+        # Create list of tasks with weight
         tasks_with_weight = []
         for o_local_network in self.l_local_networks:
             num_vars = (
@@ -482,20 +510,20 @@ class CBN:
             weight = num_vars * (2**num_coupling)
             tasks_with_weight.append((weight, o_local_network))
 
-        # Ordenar por peso descendente
+        # Sort by weight descending
         tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
 
-        # Crear buckets balanceados
+        # Create balanced buckets
         buckets = [{"total": 0, "tasks": []} for _ in range(num_cpus)]
         for weight, task in tasks_with_weight:
             bucket = min(buckets, key=lambda b: b["total"])
             bucket["tasks"].append(task)
             bucket["total"] += weight
 
-        # Imprimir info inicial
+        # Print initial info
         logger = logging.getLogger(__name__)
-        logger.info("Número de workers: %d", num_cpus)
-        logger.info("Distribución de tareas por bucket antes de la ejecución:")
+        logger.info("Number of workers: %d", num_cpus)
+        logger.info("Task distribution by bucket before execution:")
         for i, bucket in enumerate(buckets):
             logger.info(
                 "  Bucket %d: %d tasks, total weight: %d",
@@ -504,41 +532,41 @@ class CBN:
                 bucket["total"],
             )
 
-        # Ejecutar en paralelo con multiprocessing
+        # Execute in parallel with multiprocessing
         all_tasks = [task for bucket in buckets for task in bucket["tasks"]]
         with Pool(processes=num_cpus) as pool:
             results = pool.map(CBN.process_local_network_mp, all_tasks)
 
-        # Verificar si alguna red desapareció
+        # Check if any network disappeared
         if len(results) != len(self.l_local_networks):
             logger.warning(
-                "Se perdieron %d redes en el proceso!",
+                "Lost %d networks in the process!",
                 len(self.l_local_networks) - len(results),
             )
 
-        # Emparejar redes originales con los resultados usando índices
+        # Match original networks with results using indices
         ordered_results = [None] * len(self.l_local_networks)
         for original, processed in zip(all_tasks, results):
-            index = self.l_local_networks.index(original)  # Buscar la posición original
+            index = self.l_local_networks.index(original)  # Find original position
             ordered_results[index] = processed
 
-        # Verificar si hubo algún None (indica error en la asignación)
+        # Check if there was any None (indicates error in assignment)
         if None in ordered_results:
-            logger.warning("Algunos resultados no se reasignaron correctamente!")
+            logger.warning("Some results were not reassigned correctly!")
 
-        self.l_local_networks = ordered_results  # Asignar en el orden correcto
+        self.l_local_networks = ordered_results  # Assign in correct order
 
-        # Procesar señales por red local
+        # Process signals by local network
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Asignar índices globales a los attratores
+        # Assign global indices to attractors
         self._assign_global_indices_to_attractors()
-        # Generar el diccionario de attractores
+        # Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
-        # Imprimir info final de los buckets
-        logger.info("Información final de los buckets:")
+        # Print final bucket info
+        logger.info("Final bucket information:")
         for i, bucket in enumerate(buckets):
             logger.info(
                 "  Bucket %d: %d tasks, total weight: %d",
@@ -669,7 +697,7 @@ class CBN:
 
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS")
 
-        # Procesar señales de acoplamiento para cada red local
+        # Process coupling signals for each local network
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
@@ -692,7 +720,7 @@ class CBN:
                 )
             ]
 
-            # Usamos un conjunto para evitar pares duplicados
+            # Use a set to avoid duplicate pairs
             unique_pairs = set(
                 itertools.product(l_attractors_input, l_attractors_output)
             )
@@ -735,21 +763,21 @@ class CBN:
 
     def find_compatible_pairs_parallel(self, num_cpus=None):
         """
-        Paraleliza la generación de pares compatibles utilizando multiprocessing,
-        procesando cada señal de salida en un proceso independiente.
+        Parallelizes the generation of compatible pairs using multiprocessing,
+        processing each output signal in an independent process.
 
-        Para cada red local, se obtienen sus output edges y, para cada señal de salida:
-          - Se extraen las listas de atractores de entrada (para 0 y 1).
-          - Se procesa la señal para calcular los pares compatibles mediante la función auxiliar.
+        For each local network, its output edges are obtained and, for each output signal:
+          - Input attractor lists (for 0 and 1) are extracted.
+          - The signal is processed to compute compatible pairs using the helper function.
 
-        Al finalizar, se actualizan los objetos de señal con los diccionarios de pares y se
-        imprime el total de pares encontrados.
+        Upon completion, the signal objects are updated with the pair dictionaries and
+        the total number of pairs found is printed.
 
-        Actualiza el estado interno del objeto (self.l_local_networks) con las señales modificadas.
+        Updates the internal state of the object (self.l_local_networks) with the modified signals.
         """
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL)")
 
-        # Procesar señales de acoplamiento para cada red local
+        # Process coupling signals for each local network
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
@@ -758,16 +786,16 @@ class CBN:
 
         tasks = []
         signal_map = {}
-        # Recorrer todas las redes locales
+        # Iterate over all local networks
         for o_local_network in self.l_local_networks:
             l_output_edges = self.get_output_edges_by_network_index(
                 o_local_network.index
             )
-            # Procesar cada output signal
+            # Process each output signal
             for o_output_signal in l_output_edges:
                 signal_index = o_output_signal.index
                 signal_map[signal_index] = (
-                    o_output_signal  # Guardar referencia para actualizar luego
+                    o_output_signal  # Save reference for later update
                 )
                 l_attractors_input_0 = [
                     attr.g_index for attr in o_output_signal.d_out_value_to_attractor[0]
@@ -784,19 +812,19 @@ class CBN:
                 )
                 tasks.append(task_args)
 
-        logging.getLogger(__name__).info("Tareas creadas: %d", len(tasks))
+        logging.getLogger(__name__).info("Tasks created: %d", len(tasks))
 
-        # Ejecutar las tareas en paralelo
+        # Execute tasks in parallel
         with Pool(processes=num_cpus) as pool:
             results = pool.map(CBN.process_output_signal_mp, tasks)
 
-        logging.getLogger(__name__).info("Resultados obtenidos: %d", len(results))
+        logging.getLogger(__name__).info("Results obtained: %d", len(results))
         total_pairs = 0
-        # Actualizar los objetos de salida con los resultados obtenidos
+        # Update output objects with obtained results
         for signal_index, d_comp_pairs, n_signal_pairs in results:
             if signal_index not in signal_map:
                 logger.error(
-                    "Índice de señal %s no encontrado en signal_map", signal_index
+                    "Signal index %s not found in signal_map", signal_index
                 )
                 continue
             o_output_signal = signal_map[signal_index]
@@ -982,23 +1010,23 @@ class CBN:
         The edges are then reordered to keep adjacent edges (sharing networks) close together.
         """
 
-        # Paso 1: Calcular el grado de cada red local
+        # Step 1: Calculate the degree of each local network
         network_degrees = {net.index: 0 for net in self.l_local_networks}
 
         for edge in self.l_directed_edges:
             network_degrees[edge.input_local_network] += 1
             network_degrees[edge.output_local_network] += 1
 
-        # Paso 2: Calcular el "grado total" de cada arista
+        # Step 2: Calculate the "total grade" of each edge
         def calculate_edge_grade(edge):
             input_degree = network_degrees.get(edge.input_local_network, 0)
             output_degree = network_degrees.get(edge.output_local_network, 0)
             return input_degree + output_degree
 
-        # Paso 3: Ordenar aristas por el grado total en orden descendente
+        # Step 3: Sort edges by total grade in descending order
         self.l_directed_edges.sort(key=calculate_edge_grade, reverse=True)
 
-        # Paso 4: Reordenar para mantener aristas adyacentes juntas
+        # Step 4: Reorder to keep adjacent edges together
         def is_adjacent(edge1, edge2):
             return (
                 edge1.input_local_network == edge2.input_local_network
@@ -1009,7 +1037,7 @@ class CBN:
 
         ordered_edges = [
             self.l_directed_edges.pop(0)
-        ]  # Comenzamos con la arista de mayor grado
+        ]  # Start with the highest grade edge
 
         while self.l_directed_edges:
             for i, edge in enumerate(self.l_directed_edges):
@@ -1017,24 +1045,24 @@ class CBN:
                     ordered_edges.append(self.l_directed_edges.pop(i))
                     break
             else:
-                # Si no encontramos adyacente, agregamos la siguiente disponible
+                # If no adjacent edge found, add the next available one
                 ordered_edges.append(self.l_directed_edges.pop(0))
 
-        # Paso 5: Actualizar la lista de aristas
+        # Step 5: Update the list of edges
         self.l_directed_edges = ordered_edges
 
     def disorder_edges(self):
         """
-        Desordena aleatoriamente la lista de aristas dirigidas, asegurando que la primera
-        arista no tenga vértices en común con la segunda, y reasigna las aristas en la estructura.
+        Randomly shuffles the list of directed edges, ensuring that the first edge
+        does not share vertices with the second one, and reassigns the edges in the structure.
         """
         if len(self.l_directed_edges) < 2:
-            return  # No hay suficiente número de aristas para aplicar la condición
+            return  # Not enough edges to apply the condition
 
-        # Mezclar aleatoriamente las aristas
+        # Randomly shuffle the edges
         random.shuffle(self.l_directed_edges)
 
-        # Verificar si la primera y la segunda comparten algún vértice
+        # Check if the first and second edges share any vertex
         def have_common_vertex(edge1, edge2):
             return edge1.input_local_network in {
                 edge2.input_local_network,
@@ -1044,13 +1072,13 @@ class CBN:
                 edge2.output_local_network,
             }
 
-        # Si la primera y segunda arista tienen un vértice en común, buscar una nueva segunda arista
+        # If the first and second edges have a common vertex, find a new second edge
         if have_common_vertex(self.l_directed_edges[0], self.l_directed_edges[1]):
             for i in range(2, len(self.l_directed_edges)):
                 if not have_common_vertex(
                     self.l_directed_edges[0], self.l_directed_edges[i]
                 ):
-                    # Intercambiar la segunda arista con una que no comparta vértices
+                    # Swap the second edge with one that does not share vertices
                     self.l_directed_edges[1], self.l_directed_edges[i] = (
                         self.l_directed_edges[i],
                         self.l_directed_edges[1],
@@ -1356,83 +1384,82 @@ class CBN:
     # DASK FUNCTIONS
     def dask_find_local_attractors(self):
         """
-        Paraleliza el proceso de encontrar atractores locales utilizando Dask.
+        Parallelizes the process of finding local attractors using Dask.
 
-        Esta función divide el cálculo de atractores locales en subtareas paralelas y luego combina los resultados.
+        This function divides the calculation of local attractors into parallel subtasks and then combines the results.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS")
 
-        # Paso 1: Crear tareas paralelas para encontrar atractores locales
+        # Step 1: Create parallel tasks to find local attractors
         def process_local_network(o_local_network):
             """
-            Procesa una red local: genera escenas locales, encuentra atractores, y procesa señales.
+            Processes a local network: generates local scenes, finds attractors, and processes signals.
             """
-            # Generar escenas locales
+            # Generate local scenes
             local_scenes = CBN._generate_local_scenes(o_local_network)
 
-            # Encontrar atractores locales
+            # Find local attractors
             updated_network = LocalNetwork.find_local_attractors(
                 o_local_network=o_local_network, local_scenes=local_scenes
             )
 
             return updated_network
 
-        # Crear una lista de tareas usando dask.delayed
+        # Create a list of tasks using dask.delayed
         delayed_tasks = [
             delayed(process_local_network)(o_local_network)
             for o_local_network in self.l_local_networks
         ]
 
-        # Ejecutar todas las tareas en paralelo
+        # Execute all tasks in parallel
         updated_networks = compute(*delayed_tasks)
 
-        # Actualizar las redes locales con los resultados
+        # Update local networks with the results
         self.l_local_networks = list(
             updated_networks
-        )  # Convertimos la tupla a lista para mantener el formato original
+        )  # Convert tuple to list to maintain original format
 
-        # Procesar señales de acoplamiento
+        # Process coupling signals
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Paso 2: Asignar índices globales a cada atractor
+        # Step 2: Assign global indices to each attractor
         self._assign_global_indices_to_attractors()
 
-        # Paso 3: Generar el diccionario de atractores
+        # Step 3: Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
 
     def dask_find_local_attractors_weighted_balanced(self, num_workers):
         """
-        Paraleliza el proceso de encontrar atractores locales utilizando Dask,
-        alocando las tareas según un peso definido como:
+        Parallelizes the process of finding local attractors using Dask,
+        allocating tasks according to a weight defined as:
 
-             peso = (cantidad de variables) * 2^(número de señales de acoplamiento)
+             weight = (number of variables) * 2^(number of coupling signals)
 
-        Luego, las tareas se agrupan en 'num_workers' buckets de forma que el peso
-        total de cada bucket sea lo más equilibrado posible. Finalmente, se programan
-        todas las tareas al mismo tiempo para que se ejecuten concurrentemente, y se
-        actualiza la estructura del CBN.
+        Then, tasks are grouped into 'num_workers' buckets so that the total weight
+        of each bucket is as balanced as possible. Finally, all tasks are scheduled
+        simultaneously to run concurrently, and the CBN structure is updated.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
 
-        # Función que se ejecutará para cada red local
+        # Function to be executed for each local network
         def process_local_network(o_local_network):
-            # Genera las escenas locales usando el método (o función) estático de CBN
+            # Generates local scenes using the static CBN method
             local_scenes = CBN._generate_local_scenes(o_local_network)
-            # Encuentra los atractores locales para la red (se asume que este método actualiza internamente el objeto)
+            # Finds local attractors for the network (assumes this method internally updates the object)
             updated_network = LocalNetwork.find_local_attractors(
                 o_local_network=o_local_network, local_scenes=local_scenes
             )
             return updated_network
 
-        # Crear una lista de tareas junto con su peso
+        # Create a list of tasks along with their weight
         tasks_with_weight = []
         for o_local_network in self.l_local_networks:
-            # Se asume que cada red local tiene:
-            #  - total_variables: lista de variables (internas/externas/totales)
-            #  - input_signals: lista de señales de acoplamiento (o atributo similar)
+            # Assumes each local network has:
+            #  - total_variables: list of variables (internal/external/total)
+            #  - input_signals: list of coupling signals (or similar attribute)
             num_vars = (
                 len(o_local_network.total_variables)
                 if hasattr(o_local_network, "total_variables")
@@ -1447,18 +1474,18 @@ class CBN:
             delayed_task = delayed(process_local_network)(o_local_network)
             tasks_with_weight.append((weight, delayed_task))
 
-        # Ordenar las tareas por peso en orden descendente
+        # Sort tasks by weight in descending order
         tasks_with_weight.sort(key=lambda x: x[0], reverse=True)
 
-        # Crear buckets (grupos) para cada worker, para balancear la carga
+        # Create buckets (groups) for each worker to balance the load
         buckets = [{"total": 0, "tasks": []} for _ in range(num_workers)]
         for weight, task in tasks_with_weight:
-            # Asignar la tarea al bucket con menor peso acumulado
+            # Assign the task to the bucket with the lowest accumulated weight
             bucket = min(buckets, key=lambda b: b["total"])
             bucket["tasks"].append(task)
             bucket["total"] += weight
 
-        # Para depuración, imprimir los pesos acumulados de cada bucket
+        # For debugging, print the accumulated weights of each bucket
         for i, bucket in enumerate(buckets):
             logger.info(
                 "Bucket %d total weight: %d with %d tasks",
@@ -1467,52 +1494,52 @@ class CBN:
                 len(bucket["tasks"]),
             )
 
-        # En lugar de computar cada bucket secuencialmente, combinamos todas las tareas
+        # Instead of computing each bucket sequentially, combine all tasks
         all_tasks = []
         for bucket in buckets:
             all_tasks.extend(bucket["tasks"])
 
-        # Ejecutar todas las tareas al mismo tiempo
+        # Execute all tasks simultaneously
         results = compute(*all_tasks)
 
-        # Actualizar la lista de redes locales con los resultados combinados
+        # Update the list of local networks with the combined results
         self.l_local_networks = list(results)
 
-        # Procesar señales de acoplamiento para cada red local (paso adicional en el flujo)
+        # Process coupling signals for each local network (additional step in the flow)
         for o_local_network in self.l_local_networks:
             self.process_kind_signal(o_local_network)
 
-        # Paso 2: Asignar índices globales a cada atractor
+        # Step 2: Assign global indices to each attractor
         self._assign_global_indices_to_attractors()
 
-        # Paso 3: Generar el diccionario de atractores
+        # Step 3: Generate the attractor dictionary
         self.generate_attractor_dictionary()
 
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS WEIGHTED BALANCED")
 
     def dask_find_compatible_pairs(self) -> None:
         """
-        Paraleliza la generación de pares de atractores usando señales de salida.
+        Parallelizes the generation of attractor pairs using output signals.
 
-        Utiliza Dask para calcular pares compatibles y asegura que los resultados
-        se integren correctamente a los objetos originales.
+        Uses Dask to calculate compatible pairs and ensures that the results
+        are correctly integrated into the original objects.
         """
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS")
 
-        # Función auxiliar para encontrar pares de atractores
+        # Helper function to find attractor pairs
         def find_attractor_pairs(
             signal_value, o_output_signal_index_variable, l_attractors_input
         ):
             """
-            Encuentra pares de atractores basados en el valor de la señal de entrada.
+            Finds attractor pairs based on the input signal value.
 
             Args:
-                signal_value (int): El valor de la señal (0 o 1).
-                o_output_signal_index_variable: Indice de la variable del objeto de señal de salida.
-                l_attractors_input (list): Lista de índices de atractores para la señal de entrada.
+                signal_value (int): The signal value (0 or 1).
+                o_output_signal_index_variable: Variable index of the output signal object.
+                l_attractors_input (list): List of attractor indices for the input signal.
 
             Returns:
-                list: Lista de pares de atractores.
+                list: List of attractor pairs.
             """
             l_attractors_output = [
                 o_attractor.g_index
@@ -1522,34 +1549,34 @@ class CBN:
             ]
             return list(itertools.product(l_attractors_input, l_attractors_output))
 
-        # Función auxiliar para procesar una señal de salida
+        # Helper function to process an output signal
         def process_output_signal(
             signal_index, l_attractors_input_0, l_attractors_input_1, index_variable
         ):
             """
-            Procesa una señal de salida y encuentra pares compatibles.
+            Processes an output signal and finds compatible pairs.
 
             Args:
-                signal_index: Índice de la señal de salida.
-                l_attractors_input_0: Lista de atractores para valor 0.
-                l_attractors_input_1: Lista de atractores para valor 1.
-                index_variable: Variable de índice de la señal.
+                signal_index: Index of the output signal.
+                l_attractors_input_0: List of attractors for value 0.
+                l_attractors_input_1: List of attractors for value 1.
+                index_variable: Index variable of the signal.
 
             Returns:
-                dict: Diccionario con los pares de atractores.
+                dict: Dictionary with attractor pairs.
             """
             d_comp_pairs_attractors_by_value = {
                 0: find_attractor_pairs(0, index_variable, l_attractors_input_0),
                 1: find_attractor_pairs(1, index_variable, l_attractors_input_1),
             }
 
-            # Retorna el índice de la señal y el diccionario generado
+            # Returns the signal index and the generated dictionary
             n_pairs = len(d_comp_pairs_attractors_by_value[0]) + len(
                 d_comp_pairs_attractors_by_value[1]
             )
             return signal_index, d_comp_pairs_attractors_by_value, n_pairs
 
-        # Crear una lista de tareas paralelas
+        # Create a list of parallel tasks
         delayed_tasks = []
         signal_map = {}
         for o_local_network in self.l_local_networks:
@@ -1559,7 +1586,7 @@ class CBN:
             for o_output_signal in l_output_edges:
                 signal_index = o_output_signal.index
                 signal_map[signal_index] = (
-                    o_output_signal  # Mapeo para acceder a los objetos originales
+                    o_output_signal  # Mapping to access original objects
                 )
                 l_attractors_input_0 = [
                     attr.g_index for attr in o_output_signal.d_out_value_to_attractor[0]
@@ -1576,33 +1603,33 @@ class CBN:
                     )
                 )
 
-        # Antes de computar tareas
-        logger.info("Tareas creadas: %d", len(delayed_tasks))
-        for task in delayed_tasks[:5]:  # Muestra solo las primeras 5
+        # Before computing tasks
+        logger.info("Tasks created: %d", len(delayed_tasks))
+        for task in delayed_tasks[:5]:  # Show only the first 5
             logger.debug("%s", task)
 
-        # Ejecutar las tareas en paralelo
+        # Execute tasks in parallel
         results = compute(*delayed_tasks)
 
-        # Después de ejecutar compute
-        logger.info("Resultados obtenidos: %d", len(results))
+        # After executing compute
+        logger.info("Results obtained: %d", len(results))
         for result in results[:5]:
             logger.debug("%s", result)
 
         for idx, result in enumerate(
             results[:5]
-        ):  # Mostrar solo los primeros 5 para evitar demasiada información
-            logger.debug("Resultado %d: %s", idx, result)
+        ):  # Show only the first 5 to avoid too much information
+            logger.debug("Result %d: %s", idx, result)
 
-        # Actualizar los objetos originales con los resultados
+        # Update original objects with results
         n_pairs = 0
         for signal_index, d_comp_pairs_attractors_by_value, n_signal_pairs in results:
 
             if signal_index not in signal_map:
                 logger.error(
-                    "Índice de señal %s no encontrado en signal_map", signal_index
+                    "Signal index %s not found in signal_map", signal_index
                 )
-                continue  # Saltar este resultado si hay un problema
+                continue  # Skip this result if there is a problem
 
             o_output_signal = signal_map[signal_index]
             o_output_signal.d_comp_pairs_attractors_by_value = (
@@ -1610,7 +1637,7 @@ class CBN:
             )
             n_pairs += n_signal_pairs
 
-        # Mostrar el resultado final
+        # Show the final result
         # print(f"Number of attractor pairs: {n_pairs}")
         CustomText.make_sub_sub_title("END FIND ATTRACTOR PAIRS")
 
