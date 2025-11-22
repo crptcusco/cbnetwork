@@ -58,25 +58,25 @@ for i in range(1, 11):
         l_local_networks = []
         for o_local_network in o_cbn.l_local_networks:
             aux_local_network = LocalNetwork(num_local_network=o_local_network.index,
-                                             l_var_intern=o_local_network.l_var_intern)
+                                             internal_variables=o_local_network.internal_variables)
 
-            aux_local_network.des_funct_variables = o_local_network.des_funct_variables
-            aux_local_network.l_var_exterm = o_local_network.l_var_exterm
-            aux_local_network.l_var_total = o_local_network.l_var_total
-            aux_local_network.dic_var_cnf = o_local_network.dic_var_cnf
-            aux_local_network.l_input_signals = o_local_network.l_input_signals
-            aux_local_network.l_output_signals = o_local_network.l_output_signals
-            aux_local_network.num_var_total = o_local_network.num_var_total
+            aux_local_network.descriptive_function_variables = o_local_network.descriptive_function_variables
+            aux_local_network.external_variables = o_local_network.external_variables
+            aux_local_network.total_variables = o_local_network.total_variables
+            aux_local_network.cnf_variables_map = o_local_network.cnf_variables_map
+            aux_local_network.input_signals = o_local_network.input_signals
+            aux_local_network.output_signals = o_local_network.output_signals
+            aux_local_network.total_variables_count = o_local_network.total_variables_count
 
             # Fix the scenes
-            # aux_local_network.l_local_scenes = o_local_network.l_local_scenes
+            # aux_local_network.local_scenes = o_local_network.local_scenes
             l_scenes = []
-            for o_scene in o_local_network.l_local_scenes:
+            for o_scene in o_local_network.local_scenes:
                 aux_scene = LocalScene(index=o_scene.index,
                                        l_values=o_scene.l_values,
                                        l_index_signals=o_scene.l_index_signals)
                 l_scenes.append(aux_scene)
-            aux_local_network.l_local_scenes = l_scenes
+            aux_local_network.local_scenes = l_scenes
 
             # add the local network to the
             l_local_networks.append(aux_local_network)
@@ -89,7 +89,7 @@ for i in range(1, 11):
         # test attractors
         n_cbn_attractors = 0
         for o_local_network in o_cbn.l_local_networks:
-            for o_scene in o_local_network.l_local_scenes:
+            for o_scene in o_local_network.local_scenes:
                 for o_attractor in o_scene.l_attractors:
                     n_cbn_attractors += 1
 

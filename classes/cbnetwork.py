@@ -109,7 +109,7 @@ class CBN:
             source, destination = edge
             if destination in local_network_dict:
                 o_local_network = local_network_dict[destination]
-                o_local_network.l_output_signals.append(edge)
+                o_local_network.output_signals.append(edge)
                 # print(edge)
 
     def update_network_by_index(self, o_local_network_update) -> bool:
@@ -145,7 +145,7 @@ class CBN:
         Returns:
             Optional[List[str]]: A list of local scenes or None if there are no external variables.
         """
-        external_vars_count = len(o_local_network.l_var_exterm)
+        external_vars_count = len(o_local_network.external_variables)
         if external_vars_count > 0:
             # Generate binary combinations for the external variables
             return [
@@ -167,11 +167,11 @@ class CBN:
         """
         try:
             # Generate local scenes from the given local network
-            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            local_scenes = CBN._generate_local_scenes(o_local_network)
 
             # Find and update the local network's attractors
             updated_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network, l_local_scenes=l_local_scenes
+                o_local_network=o_local_network, local_scenes=local_scenes
             )
 
             # Return the updated network
@@ -399,10 +399,10 @@ class CBN:
 
         for o_local_network in self.l_local_networks:
             # Generate the local network scenes
-            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            local_scenes = CBN._generate_local_scenes(o_local_network)
             # Calculate the local attractors for the local network
             o_local_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network, l_local_scenes=l_local_scenes
+                o_local_network=o_local_network, local_scenes=local_scenes
             )
 
         # Update the coupling signals to be analyzed
@@ -470,13 +470,13 @@ class CBN:
         tasks_with_weight = []
         for o_local_network in self.l_local_networks:
             num_vars = (
-                len(o_local_network.l_var_total)
-                if hasattr(o_local_network, "l_var_total")
+                len(o_local_network.total_variables)
+                if hasattr(o_local_network, "total_variables")
                 else 0
             )
             num_coupling = (
-                len(o_local_network.l_input_signals)
-                if hasattr(o_local_network, "l_input_signals")
+                len(o_local_network.input_signals)
+                if hasattr(o_local_network, "input_signals")
                 else 0
             )
             weight = num_vars * (2**num_coupling)
@@ -555,7 +555,7 @@ class CBN:
         """
         i_attractor = 1
         for o_local_network in self.l_local_networks:
-            for o_local_scene in o_local_network.l_local_scenes:
+            for o_local_scene in o_local_network.local_scenes:
                 for o_attractor in o_local_scene.l_attractors:
                     o_attractor.g_index = i_attractor
                     i_attractor += 1
@@ -570,7 +570,7 @@ class CBN:
         """
         d_local_attractors = {}
         for o_local_network in self.l_local_networks:
-            for o_scene in o_local_network.l_local_scenes:
+            for o_scene in o_local_network.local_scenes:
                 for o_attractor in o_scene.l_attractors:
                     t_triple = (
                         o_local_network.index,
@@ -592,7 +592,7 @@ class CBN:
         def get_true_table_index(o_state, o_output_signal):
             true_table_index = ""
             for v_output_variable in o_output_signal.l_output_variables:
-                pos = o_local_network.l_var_total.index(v_output_variable)
+                pos = o_local_network.total_variables.index(v_output_variable)
                 value = o_state.l_variable_values[pos]
                 true_table_index += str(value)
             return true_table_index
@@ -610,7 +610,7 @@ class CBN:
 
         for o_output_signal in l_directed_edges:
             l_signals_for_output = []
-            for o_local_scene in o_local_network.l_local_scenes:
+            for o_local_scene in o_local_network.local_scenes:
                 l_signals_in_local_scene = []
                 for o_attractor in o_local_scene.l_attractors:
                     l_signals_in_attractor = [
@@ -652,7 +652,7 @@ class CBN:
         return sum(
             len(o_local_scene.l_attractors)
             for o_local_network in self.l_local_networks
-            for o_local_scene in o_local_network.l_local_scenes
+            for o_local_scene in o_local_network.local_scenes
         )
 
     def find_compatible_pairs(self, num_cpus: int = 2) -> None:
@@ -838,7 +838,7 @@ class CBN:
                 input_network = self.get_network_by_index(
                     output_signal.input_local_network
                 )
-                n_local_attractors = input_network.count_attractor
+                n_local_attractors = input_network.attractor_count
 
                 signal_index = output_signal.index
                 # Save the reference for later update
@@ -1368,11 +1368,11 @@ class CBN:
             Procesa una red local: genera escenas locales, encuentra atractores, y procesa señales.
             """
             # Generar escenas locales
-            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            local_scenes = CBN._generate_local_scenes(o_local_network)
 
             # Encontrar atractores locales
             updated_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network, l_local_scenes=l_local_scenes
+                o_local_network=o_local_network, local_scenes=local_scenes
             )
 
             return updated_network
@@ -1420,10 +1420,10 @@ class CBN:
         # Función que se ejecutará para cada red local
         def process_local_network(o_local_network):
             # Genera las escenas locales usando el método (o función) estático de CBN
-            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            local_scenes = CBN._generate_local_scenes(o_local_network)
             # Encuentra los atractores locales para la red (se asume que este método actualiza internamente el objeto)
             updated_network = LocalNetwork.find_local_attractors(
-                o_local_network=o_local_network, l_local_scenes=l_local_scenes
+                o_local_network=o_local_network, local_scenes=local_scenes
             )
             return updated_network
 
@@ -1431,16 +1431,16 @@ class CBN:
         tasks_with_weight = []
         for o_local_network in self.l_local_networks:
             # Se asume que cada red local tiene:
-            #  - l_var_total: lista de variables (internas/externas/totales)
-            #  - l_input_signals: lista de señales de acoplamiento (o atributo similar)
+            #  - total_variables: lista de variables (internas/externas/totales)
+            #  - input_signals: lista de señales de acoplamiento (o atributo similar)
             num_vars = (
-                len(o_local_network.l_var_total)
-                if hasattr(o_local_network, "l_var_total")
+                len(o_local_network.total_variables)
+                if hasattr(o_local_network, "total_variables")
                 else 0
             )
             num_coupling = (
-                len(o_local_network.l_input_signals)
-                if hasattr(o_local_network, "l_input_signals")
+                len(o_local_network.input_signals)
+                if hasattr(o_local_network, "input_signals")
                 else 0
             )
             weight = num_vars * (2**num_coupling)
@@ -1669,7 +1669,7 @@ class CBN:
         CustomText.make_title("Show local attractors")
         for o_local_network in self.l_local_networks:
             CustomText.make_sub_title(f"Network {o_local_network.index}")
-            for o_scene in o_local_network.l_local_scenes:
+            for o_scene in o_local_network.local_scenes:
                 title = (
                     f"Network: {o_local_network.index} - Scene: {o_scene.l_values} - "
                     f"N. of Attractors: {len(o_scene.l_attractors)}"
@@ -1961,9 +1961,9 @@ class CBN:
         v_cont_var = 1
         for v_num_network in range(1, n_local_networks + 1):
             # generate the variables of the networks
-            l_var_intern = list(range(v_cont_var, v_cont_var + n_vars_network))
+            internal_variables = list(range(v_cont_var, v_cont_var + n_vars_network))
             # create the Local Network object
-            o_local_network = LocalNetwork(v_num_network, l_var_intern)
+            o_local_network = LocalNetwork(index=v_num_network, internal_variables=internal_variables)
             # add the local network object to the list
             l_local_networks.append(o_local_network)
             # update the index of the variables
@@ -1997,7 +1997,7 @@ class CBN:
         l_directed_edges = []
 
         # Get the last index of the variables for the indexes of the directed edges
-        i_last_variable = l_local_networks[-1].l_var_intern[-1] + 1
+        i_last_variable = l_local_networks[-1].internal_variables[-1] + 1
 
         # Generate the directed edges using the last variable generated and the selected output variables
         i_directed_edge = 1
@@ -2031,11 +2031,11 @@ class CBN:
         # Process the coupling signals for every local network
         for o_local_network in l_local_networks:
             # Find the input signals for each local network
-            l_input_signals = CBN.find_input_edges_by_network_index(
+            input_signals = CBN.find_input_edges_by_network_index(
                 index=o_local_network.index, l_directed_edges=l_directed_edges
             )
             # Process the input signals of the local network
-            o_local_network.process_input_signals(l_input_signals=l_input_signals)
+            o_local_network.process_input_signals(input_signals=input_signals)
 
         # Generate the dynamics of the local networks using the template
         l_local_networks = CBN.generate_local_dynamic_with_template(
@@ -2084,10 +2084,10 @@ class CBN:
             # print("Local Network:", o_local_network.index)
 
             # List to hold the function descriptions for the variables
-            des_funct_variables = []
+            descriptive_function_variables = []
 
             # Generate clauses for each local network based on the template
-            for i_local_variable in o_local_network.l_var_intern:
+            for i_local_variable in o_local_network.internal_variables:
                 CustomText.print_simple_line()
                 # Adapt the clause template to the 5_specific variable
                 l_clauses_node = CBN.update_clause_from_template(
@@ -2103,10 +2103,10 @@ class CBN:
                     index=i_local_variable, cnf_function=l_clauses_node
                 )
                 # Add the variable model to the list
-                des_funct_variables.append(o_variable_model)
+                descriptive_function_variables.append(o_variable_model)
 
             # Update the local network with the function descriptions
-            o_local_network.des_funct_variables = des_funct_variables.copy()
+            o_local_network.descriptive_function_variables = descriptive_function_variables.copy()
             l_local_networks_updated.append(o_local_network)
             # print("Local network created:", o_local_network.index)
             # CustomText.print_simple_line()
@@ -2140,7 +2140,7 @@ class CBN:
         # l_indexes_directed_edges was previously computed but not used.
 
         # Determine the CNF function index for the variable in the template
-        n_local_variables = len(l_local_networks[0].l_var_intern)
+        n_local_variables = len(l_local_networks[0].internal_variables)
         i_template_variable = (
             i_local_variable
             - ((o_local_network.index - 1) * n_local_variables)
@@ -2171,9 +2171,9 @@ class CBN:
                 )
 
                 # Check if the variable is internal or external
-                if local_value not in o_local_network.l_var_intern:
+                if local_value not in o_local_network.internal_variables:
                     # Use external variables if the local variable is not found
-                    l_clause = o_local_network.l_var_exterm
+                    l_clause = o_local_network.external_variables
                     break
 
                 # Add the sign to the value
@@ -2208,7 +2208,7 @@ class CBN:
             Optional[LocalAttractor]: The corresponding attractor if found, otherwise None.
         """
         for o_local_network in self.l_local_networks:
-            for o_scene in o_local_network.l_local_scenes:
+            for o_scene in o_local_network.local_scenes:
                 for o_attractor in o_scene.l_attractors:
                     if o_attractor.g_index == i_attractor:
                         return o_attractor
@@ -2252,7 +2252,7 @@ class CBN:
     ) -> List[LocalAttractor]:
         l_attractors = []
         for o_local_network in self.l_local_networks:
-            for scene in o_local_network.l_local_scenes:
+            for scene in o_local_network.local_scenes:
                 if (
                     scene.l_values is not None
                     and index_variable_signal in scene.l_index_signals
@@ -2266,7 +2266,7 @@ class CBN:
         return sum(
             len(o_scene.l_attractors)
             for o_local_network in self.l_local_networks
-            for o_scene in o_local_network.l_local_scenes
+            for o_scene in o_local_network.local_scenes
         )
 
     def get_n_pair_attractors(self) -> int:
@@ -2281,7 +2281,7 @@ class CBN:
 
     def get_n_local_variables(self) -> int:
         return (
-            len(self.l_local_networks[0].l_var_intern) if self.l_local_networks else 0
+            len(self.l_local_networks[0].internal_variables) if self.l_local_networks else 0
         )
 
     def get_global_scene_attractor_fields(self):

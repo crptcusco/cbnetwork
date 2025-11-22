@@ -107,6 +107,6 @@ class LocalNetworkTemplate:
         for o_local_network in l_local_networks:
             if o_local_network.index == i_local_network:
                 for position in self.l_output_var_indexes:
-                    l_variables.append(o_local_network.l_var_intern[position - 1])
+                    l_variables.append(o_local_network.internal_variables[position - 1])
 
         return l_variables

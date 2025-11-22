@@ -29,8 +29,8 @@ print("---------------------------------")
 print("GENERATE A NEW NETWORK")
 l_internal_variables = [101, 102, 103, 104]
 o_local_network = LocalNetwork(100, l_internal_variables)
-o_local_network.l_var_total = l_internal_variables
-o_local_network.num_var_total = len(o_local_network.l_var_total)
+o_local_network.total_variables = l_internal_variables
+o_local_network.total_variables_count = len(o_local_network.total_variables)
 
 # generate the internal dynamic
 d_variable_cnf_function = {
@@ -40,11 +40,11 @@ d_variable_cnf_function = {
     104: [[101, -102]],
 }
 
-for i_local_variable in o_local_network.l_var_intern:
+for i_local_variable in o_local_network.internal_variables:
     o_variable_model = InternalVariable(
         i_local_variable, d_variable_cnf_function[i_local_variable]
     )
-    o_local_network.des_funct_variables.append(o_variable_model)
+    o_local_network.descriptive_function_variables.append(o_variable_model)
 o_cbn.l_local_networks.append(o_local_network)
 print("New network created")
 
@@ -63,24 +63,24 @@ o_cbn.l_directed_edges.append(o_directed_edge)
 
 # update the function of one variable in the first network
 o_local_network = o_cbn.get_network_by_index(1)
-o_local_network.l_var_exterm.append(105)
-o_local_network.l_var_total.append(105)
-o_local_network.l_input_signals.append(o_directed_edge)
-o_local_network.num_var_total += 1
+o_local_network.external_variables.append(105)
+o_local_network.total_variables.append(105)
+o_local_network.input_signals.append(o_directed_edge)
+o_local_network.total_variables_count += 1
 
 # # update one internal variable
-# o_internal_variable = l_var_intern.get_internal_variable(1)
+# o_internal_variable = internal_variables.get_internal_variable(1)
 # o_internal_variable.show()
 # o_internal_variable.cnf_function.append([105])
-# l_var_intern.update_internal_variable(o_internal_variable)
+# internal_variables.update_internal_variable(o_internal_variable)
 
 # # update all the internal variables with clause
-# for o_internal_variable in l_var_intern.des_funct_variables:
+# for o_internal_variable in internal_variables.descriptive_function_variables:
 #     o_internal_variable.cnf_function.append([105])
-#     l_var_intern.update_internal_variable(o_internal_variable)
+#     internal_variables.update_internal_variable(o_internal_variable)
 
 # update all the internal variables with literal
-for o_internal_variable in o_local_network.des_funct_variables:
+for o_internal_variable in o_local_network.descriptive_function_variables:
     o_internal_variable.cnf_function[0].append(-105)
     o_local_network.update_internal_variable(o_internal_variable)
 

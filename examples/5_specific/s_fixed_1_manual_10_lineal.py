@@ -106,15 +106,15 @@ d_var_cnf_func[64] = [[61, -62]]
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    l_input_signals = DirectedEdge.find_input_edges_by_network_index(
+    input_signals = DirectedEdge.find_input_edges_by_network_index(
         o_local_network.l_index, l_directed_edges
     )
-    o_local_network.process_input_signals(l_input_signals)
-    for i_local_variable in o_local_network.l_var_intern:
+    o_local_network.process_input_signals(input_signals)
+    for i_local_variable in o_local_network.internal_variables:
         o_variable_model = InternalVariable(
             i_local_variable, d_var_cnf_func[i_local_variable]
         )
-        o_local_network.des_funct_variables.append(o_variable_model)
+        o_local_network.descriptive_function_variables.append(o_variable_model)
 
 # generating the CBN network
 o_cbn = CBN(l_local_networks, l_directed_edges)
