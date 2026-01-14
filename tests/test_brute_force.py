@@ -4,6 +4,7 @@ from cbnetwork.localnetwork import LocalNetwork
 from cbnetwork.internalvariable import InternalVariable
 from cbnetwork.localscene import LocalScene
 
+
 class TestBruteForce:
     @pytest.fixture
     def simple_network(self):
@@ -74,10 +75,10 @@ class TestBruteForce:
         # We know the cycle contains (0,0), (1,0), (1,1), (0,1)
         # Let's verify the values
         values = [tuple(s.l_variable_values) for s in attractor.l_states]
-        assert (0,0) in values
-        assert (1,0) in values
-        assert (1,1) in values
-        assert (0,1) in values
+        assert (0, 0) in values
+        assert (1, 0) in values
+        assert (1, 1) in values
+        assert (0, 1) in values
 
     def test_find_local_attractors_brute_force_fixed_point(self):
         # Stable state: 1 = 1

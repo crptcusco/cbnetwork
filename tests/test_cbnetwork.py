@@ -4,6 +4,7 @@ from cbnetwork.cbnetwork import CBN
 from cbnetwork.localnetwork import LocalNetwork
 from cbnetwork.directededge import DirectedEdge
 
+
 class TestCBN:
     @pytest.fixture
     def cbn_setup(self):
@@ -84,16 +85,14 @@ class TestCBN:
 
         # Mock multiprocessing.Pool imported in cbnetwork.cbnetwork
         # (the module imports `Pool` directly, so patch that name)
-        with patch('cbnetwork.cbnetwork.Pool') as mock_pool:
+        with patch("cbnetwork.cbnetwork.Pool") as mock_pool:
             # Setup mock pool return
             mock_pool_instance = mock_pool.return_value
             mock_pool_instance.__enter__.return_value = mock_pool_instance
 
             # Mock map result
             # Expected result format: [(signal_index, d_comp_pairs, n_signal_pairs), ...]
-            mock_pool_instance.map.return_value = [
-                (1, {0: [(1, 2)], 1: [(3, 4)]}, 2)
-            ]
+            mock_pool_instance.map.return_value = [(1, {0: [(1, 2)], 1: [(3, 4)]}, 2)]
 
             cbn.find_compatible_pairs_parallel_with_weights(num_cpus=1)
 
@@ -116,7 +115,7 @@ class TestCBN:
         cbn = CBN(l_local_networks, l_directed_edges)
 
         # Mock multiprocessing.Pool imported in cbnetwork.cbnetwork
-        with patch('cbnetwork.cbnetwork.multiprocessing.Pool') as mock_pool:
+        with patch("cbnetwork.cbnetwork.multiprocessing.Pool") as mock_pool:
             # Setup mock pool return
             mock_pool_instance = mock_pool.return_value
             mock_pool_instance.__enter__.return_value = mock_pool_instance

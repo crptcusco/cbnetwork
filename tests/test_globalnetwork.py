@@ -1,4 +1,8 @@
-from cbnetwork.globalnetwork.globalnetwork import GlobalNetwork, GlobalState, GlobalAttractor
+from cbnetwork.globalnetwork.globalnetwork import (
+    GlobalNetwork,
+    GlobalState,
+    GlobalAttractor,
+)
 
 
 class DummyAttractor:
@@ -30,12 +34,12 @@ class DummyCBN:
 
 def test_generate_global_states_collects_states():
     # attractor 1 has states ['a'], attractor 2 has states ['b','c']
-    a1 = DummyAttractor(1, ['a'])
-    a2 = DummyAttractor(2, ['b', 'c'])
+    a1 = DummyAttractor(1, ["a"])
+    a2 = DummyAttractor(2, ["b", "c"])
     o_cbn = DummyCBN({1: a1, 2: a2})
     o_field = DummyAttractorField([1, 2])
     GlobalNetwork.generate_global_states(o_field, o_cbn)
-    assert o_field.l_global_states == ['a', 'b', 'c']
+    assert o_field.l_global_states == ["a", "b", "c"]
 
 
 def test_test_attractor_fields_returns_true_and_calls_methods(caplog):
@@ -48,6 +52,6 @@ def test_test_attractor_fields_returns_true_and_calls_methods(caplog):
 
 
 def test_globalstate_and_globalattractor_simple_storage():
-    gs = GlobalState(['x', 'y'])
+    gs = GlobalState(["x", "y"])
     ga = GlobalAttractor([gs])
-    assert ga.l_global_states[0].l_values == ['x', 'y']
+    assert ga.l_global_states[0].l_values == ["x", "y"]

@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 from cbnetwork.localnetwork import LocalNetwork
 from cbnetwork.internalvariable import InternalVariable
 
+
 class TestLocalNetwork:
     @pytest.fixture
     def local_network(self):
@@ -60,7 +61,7 @@ class TestLocalNetwork:
         local_network.descriptive_function_variables = [mock_var]
 
         new_var = MagicMock(spec=InternalVariable)
-        new_var.index = 99 # Not in the list
+        new_var.index = 99  # Not in the list
 
         updated = local_network.update_internal_variable(new_var)
 

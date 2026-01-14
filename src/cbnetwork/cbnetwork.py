@@ -4,17 +4,20 @@ import logging
 import multiprocessing  # Library for parallel execution using multiple processes
 import os
 import random  # Library for generating random numbers and shuffling data
-from itertools import \
-    product  # Function to generate Cartesian product of input iterables
-from math import \
-    ceil  # Provides mathematical functions, including rounding up values
-from multiprocessing import \
-    Pool  # Class to manage parallel execution of a function across multiple processes
+from itertools import product
+from math import ceil
+from multiprocessing import Pool
 from typing import (  # Type hints for better code readability and type safety
-    Any, Dict, List, Optional)
+    Any,
+    Dict,
+    List,
+    Optional,
+)
 
 from dask import (  # Library for parallel computing using task scheduling with Dask
-    compute, delayed)
+    compute,
+    delayed,
+)
 
 from .cbnetwork_utils import _convert_to_tuple as _convert_to_tuple
 from .cbnetwork_utils import (
@@ -24,6 +27,7 @@ from .cbnetwork_utils import (
     process_single_base_pair as _process_single_base_pair,
 )
 from .directededge import DirectedEdge
+
 # internal imports
 from .globalscene import GlobalScene
 from .globaltopology import GlobalTopology
@@ -195,7 +199,9 @@ class CBN:
             )
             return o_local_network
         except Exception as e:
-            print(f"Error processing (brute force) network {o_local_network.index}: {e}")
+            print(
+                f"Error processing (brute force) network {o_local_network.index}: {e}"
+            )
             return o_local_network
 
     @staticmethod
@@ -841,9 +847,7 @@ class CBN:
         # Update output objects with obtained results
         for signal_index, d_comp_pairs, n_signal_pairs in results:
             if signal_index not in signal_map:
-                logger.error(
-                    "Signal index %s not found in signal_map", signal_index
-                )
+                logger.error("Signal index %s not found in signal_map", signal_index)
                 continue
             o_output_signal = signal_map[signal_index]
             o_output_signal.d_comp_pairs_attractors_by_value = d_comp_pairs
@@ -1341,7 +1345,7 @@ class CBN:
                 break
             chunk_size = ceil(n / num_cpus)
             chunks = [
-                l_base_pairs_list[i:i + chunk_size] for i in range(0, n, chunk_size)
+                l_base_pairs_list[i : i + chunk_size] for i in range(0, n, chunk_size)
             ]
 
             logger.info(
@@ -1644,9 +1648,7 @@ class CBN:
         for signal_index, d_comp_pairs_attractors_by_value, n_signal_pairs in results:
 
             if signal_index not in signal_map:
-                logger.error(
-                    "Signal index %s not found in signal_map", signal_index
-                )
+                logger.error("Signal index %s not found in signal_map", signal_index)
                 continue  # Skip this result if there is a problem
 
             o_output_signal = signal_map[signal_index]
@@ -2008,7 +2010,9 @@ class CBN:
             # generate the variables of the networks
             internal_variables = list(range(v_cont_var, v_cont_var + n_vars_network))
             # create the Local Network object
-            o_local_network = LocalNetwork(index=v_num_network, internal_variables=internal_variables)
+            o_local_network = LocalNetwork(
+                index=v_num_network, internal_variables=internal_variables
+            )
             # add the local network object to the list
             l_local_networks.append(o_local_network)
             # update the index of the variables
@@ -2151,7 +2155,9 @@ class CBN:
                 descriptive_function_variables.append(o_variable_model)
 
             # Update the local network with the function descriptions
-            o_local_network.descriptive_function_variables = descriptive_function_variables.copy()
+            o_local_network.descriptive_function_variables = (
+                descriptive_function_variables.copy()
+            )
             l_local_networks_updated.append(o_local_network)
             # print("Local network created:", o_local_network.index)
             # CustomText.print_simple_line()
@@ -2326,7 +2332,9 @@ class CBN:
 
     def get_n_local_variables(self) -> int:
         return (
-            len(self.l_local_networks[0].internal_variables) if self.l_local_networks else 0
+            len(self.l_local_networks[0].internal_variables)
+            if self.l_local_networks
+            else 0
         )
 
     def get_global_scene_attractor_fields(self):
@@ -2340,5 +2348,5 @@ CBN.flatten = staticmethod(_flatten)
 CBN._convert_to_tuple = staticmethod(_convert_to_tuple)
 CBN.process_single_base_pair = staticmethod(_process_single_base_pair)
 # Backwards-compatible alias for legacy method name
-if not hasattr(CBN, 'show_attractors_fields'):
+if not hasattr(CBN, "show_attractors_fields"):
     CBN.show_attractors_fields = CBN.show_attractor_fields

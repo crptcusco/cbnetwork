@@ -43,5 +43,7 @@ def test_get_output_variables_from_template():
     target_index = 999
     dummy = DummyLocalNetwork(target_index, n_vars)
     result = template.get_output_variables_from_template(target_index, [dummy])
-    expected = [dummy.internal_variables[pos - 1] for pos in template.l_output_var_indexes]
+    expected = [
+        dummy.internal_variables[pos - 1] for pos in template.l_output_var_indexes
+    ]
     assert result == expected

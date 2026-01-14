@@ -43,7 +43,7 @@ def remap_location(mapping, parsl_file):
     # Below we rewrite .local_path when scheme != file only when the local_name
     # was given by the main parsl process.  This is the case when scheme !=
     # 'file' but .local_path (via filepath) is in mapping.
-    if parsl_file.scheme == 'file' or parsl_file.local_path:
+    if parsl_file.scheme == "file" or parsl_file.local_path:
         master_location = parsl_file.filepath
         if master_location in mapping:
             parsl_file.local_path = mapping[master_location]
@@ -94,8 +94,9 @@ def unpack_source_code_function(function_info, user_namespace):
 
 def unpack_byte_code_function(function_info, user_namespace):
     from parsl.serialize import unpack_apply_message
+
     func, args, kwargs = unpack_apply_message(function_info["byte code"])
-    return (func, 'parsl_function_name', args, kwargs)
+    return (func, "parsl_function_name", args, kwargs)
 
 
 def encode_function(user_namespace, fn, fn_name, fn_args, fn_kwargs):
@@ -107,24 +108,32 @@ def encode_function(user_namespace, fn, fn_name, fn_args, fn_kwargs):
     result_name = prefix + "result"
 
     # Add variables to the namespace to make function call
-    user_namespace.update({args_name: fn_args,
-                           kwargs_name: fn_kwargs,
-                           result_name: result_name})
+    user_namespace.update(
+        {args_name: fn_args, kwargs_name: fn_kwargs, result_name: result_name}
+    )
 
     if isinstance(fn, str):
-        code = encode_source_code_function(user_namespace, fn, fn_name, args_name, kwargs_name, result_name)
+        code = encode_source_code_function(
+            user_namespace, fn, fn_name, args_name, kwargs_name, result_name
+        )
     elif callable(fn):
-        code = encode_byte_code_function(user_namespace, fn, fn_name, args_name, kwargs_name, result_name)
+        code = encode_byte_code_function(
+            user_namespace, fn, fn_name, args_name, kwargs_name, result_name
+        )
     else:
         raise ValueError("Function object does not look like a function.")
 
     return (code, result_name)
 
 
-def encode_source_code_function(user_namespace, fn, fn_name, args_name, kwargs_name, result_name):
+def encode_source_code_function(
+    user_namespace, fn, fn_name, args_name, kwargs_name, result_name
+):
     # We drop the first line as it names the parsl decorator used (i.e., @python_app)
-    source = fn.split('\n')[1:]
-    fn_app = "{0} = {1}(*{2}, **{3})".format(result_name, fn_name, args_name, kwargs_name)
+    source = fn.split("\n")[1:]
+    fn_app = "{0} = {1}(*{2}, **{3})".format(
+        result_name, fn_name, args_name, kwargs_name
+    )
 
     source.append(fn_app)
 
@@ -132,7 +141,9 @@ def encode_source_code_function(user_namespace, fn, fn_name, args_name, kwargs_n
     return code
 
 
-def encode_byte_code_function(user_namespace, fn, fn_name, args_name, kwargs_name, result_name):
+def encode_byte_code_function(
+    user_namespace, fn, fn_name, args_name, kwargs_name, result_name
+):
     user_namespace.update({fn_name: fn})
     code = "{0} = {1}(*{2}, **{3})".format(result_name, fn_name, args_name, kwargs_name)
     return code
@@ -147,7 +158,7 @@ def load_function(map_file, function_file):
 
     # Create the namespace to isolate the function execution.
     user_ns = locals()
-    user_ns.update({'__builtins__': __builtins__})
+    user_ns.update({"__builtins__": __builtins__})
 
     function_info = load_pickled_file(function_file)
 
@@ -186,7 +197,9 @@ if __name__ == "__main__":
             raise
 
         try:
-            (namespace, function_code, result_name) = load_function(map_file, function_file)
+            (namespace, function_code, result_name) = load_function(
+                map_file, function_file
+            )
         except Exception:
             print("There was an error setting up the function for execution.")
             raise

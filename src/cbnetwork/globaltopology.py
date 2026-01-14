@@ -5,6 +5,7 @@ import time
 
 import matplotlib.colors as mco
 import matplotlib.pyplot as plt
+
 # External imports
 import networkx as nx
 
@@ -265,8 +266,6 @@ class AleatoryFixedDigraph(GlobalTopology):
         This implementation creates a spanning tree (to guarantee connectivity) and then adds
         additional random edges until reaching the desired number of edges.
         """
-        # import networkx as nx
-        # import random
 
         # check minimum edges!!!
         # minimun: bn - 1
@@ -537,8 +536,6 @@ class SmallWorldGraph(GlobalTopology):
             self.add_edge(new_node, neighbor)
 
         self.update_parent_graph()
-
-    import random
 
     def generate_edge(self):
         """

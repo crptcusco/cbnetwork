@@ -10,7 +10,7 @@ Estado actual generado: 2026-01-13
 - [x] Add unit tests for `globaltopology.py` (sample topology, plotting safety)
 - [x] Add tests for CBN ordering/mounting methods (`order_edges_by_grade`, `mount_stable_attractor_fields`)
 - [x] Add tests comparing brute-force vs SAT attractor finders for `LocalNetwork`
-- [ ] Run full test suite on clean environment / CI
+- [x] Run full test suite on clean environment / CI
 - [ ] Run linters and static analysis (`flake8`, `mypy`)
 - [ ] Apply code formatter (`black`) and ensure style consistency
 - [ ] Pin and freeze dependencies (`requirements.txt` / `pyproject.toml`)

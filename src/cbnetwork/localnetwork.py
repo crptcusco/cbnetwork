@@ -140,8 +140,8 @@ class LocalNetwork:
                             break
 
                     if not clause_satisfied:
-                        return 0 # One clause false -> entire CNF false
-                return 1 # All clauses satisfied
+                        return 0  # One clause false -> entire CNF false
+                return 1  # All clauses satisfied
             return 0
 
         # String evaluation (simple replacement)
@@ -152,7 +152,9 @@ class LocalNetwork:
         expression = cnf_function
         # Replace operators if needed (assuming python syntax for now: and, or, not)
         # If the string uses symbols like ∧, ∨, ~, we need to replace them.
-        expression = expression.replace("∧", " and ").replace("∨", " or ").replace("~", " not ")
+        expression = (
+            expression.replace("∧", " and ").replace("∨", " or ").replace("~", " not ")
+        )
 
         # Replace variables
         # We iterate through all known variables (internal + external)
@@ -164,14 +166,16 @@ class LocalNetwork:
 
         for var_index, val in all_vars.items():
             # Replace whole word var_index with val
-            pattern = r'\b' + str(var_index) + r'\b'
+            pattern = r"\b" + str(var_index) + r"\b"
             expression = re.sub(pattern, str(val), expression)
 
         try:
             result = eval(expression)
             return 1 if result else 0
         except Exception as e:
-            logging.getLogger(__name__).error(f"Error evaluating expression '{expression}': {e}")
+            logging.getLogger(__name__).error(
+                f"Error evaluating expression '{expression}': {e}"
+            )
             return 0
 
     @staticmethod
@@ -211,14 +215,19 @@ class LocalNetwork:
             # 2. Build State Transition Graph (STG)
             # Iterate over all 2^N states
             num_internal_vars = len(local_network.internal_variables)
-            state_map = {} # Map state (tuple) to next state (tuple)
+            state_map = {}  # Map state (tuple) to next state (tuple)
 
             for i in range(2**num_internal_vars):
                 # Convert integer i to binary list representing state
-                current_state_vals = [(i >> bit) & 1 for bit in range(num_internal_vars)]
+                current_state_vals = [
+                    (i >> bit) & 1 for bit in range(num_internal_vars)
+                ]
                 # Map internal variable indices to values
                 current_state_dict = {
-                    var: val for var, val in zip(local_network.internal_variables, current_state_vals)
+                    var: val
+                    for var, val in zip(
+                        local_network.internal_variables, current_state_vals
+                    )
                 }
 
                 # Calculate next state
@@ -259,11 +268,11 @@ class LocalNetwork:
                         # We need to convert tuples back to LocalState objects
                         l_states = [LocalState(list(state)) for state in cycle]
                         attractor = LocalAttractor(
-                            g_index=0, # Placeholder
+                            g_index=0,  # Placeholder
                             l_index=len(scene_attractors) + 1,
                             l_states=l_states,
                             network_index=local_network.index,
-                            local_scene="".join(scene)
+                            local_scene="".join(scene),
                         )
                         scene_attractors.append(attractor)
                         break
@@ -330,9 +339,7 @@ class LocalNetwork:
         return local_network
 
     @staticmethod
-    def gen_boolean_formulation(
-        local_network, n_transitions, attractor_clauses, scene
-    ):
+    def gen_boolean_formulation(local_network, n_transitions, attractor_clauses, scene):
         """
         Generate the boolean formulation for the given local network. This formulation includes:
         - CNF variable creation
@@ -350,8 +357,8 @@ class LocalNetwork:
         # Create dictionary of CNF variables for each transition
         for variable in local_network.total_variables:
             for transition_c in range(0, n_transitions):
-                local_network.cnf_variables_map[f"{variable}_{transition_c}"] = Variable(
-                    f"{variable}_{transition_c}"
+                local_network.cnf_variables_map[f"{variable}_{transition_c}"] = (
+                    Variable(f"{variable}_{transition_c}")
                 )
 
         transition_count = 0
@@ -373,9 +380,11 @@ class LocalNetwork:
                         term_aux = abs(int(term))
                         if term_count == 0:
                             if str(term)[0] != "-":
-                                boolean_expression_clause = local_network.cnf_variables_map[
-                                    f"{term_aux}_{transition - 1}"
-                                ]
+                                boolean_expression_clause = (
+                                    local_network.cnf_variables_map[
+                                        f"{term_aux}_{transition - 1}"
+                                    ]
+                                )
                             else:
                                 boolean_expression_clause = (
                                     -local_network.cnf_variables_map[
@@ -481,22 +490,30 @@ class LocalNetwork:
                     term_aux = abs(int(term))
                     if term_count == 0:
                         if term[0] != "-":
-                            bool_expr_clause_attractors = local_network.cnf_variables_map[
-                                f"{term_aux}_{n_transitions - 1}"
-                            ]
+                            bool_expr_clause_attractors = (
+                                local_network.cnf_variables_map[
+                                    f"{term_aux}_{n_transitions - 1}"
+                                ]
+                            )
                         else:
-                            bool_expr_clause_attractors = -local_network.cnf_variables_map[
-                                f"{term_aux}_{n_transitions - 1}"
-                            ]
+                            bool_expr_clause_attractors = (
+                                -local_network.cnf_variables_map[
+                                    f"{term_aux}_{n_transitions - 1}"
+                                ]
+                            )
                     else:
                         if term[0] != "-":
-                            bool_expr_clause_attractors &= local_network.cnf_variables_map[
-                                f"{term_aux}_{n_transitions - 1}"
-                            ]
+                            bool_expr_clause_attractors &= (
+                                local_network.cnf_variables_map[
+                                    f"{term_aux}_{n_transitions - 1}"
+                                ]
+                            )
                         else:
-                            bool_expr_clause_attractors &= -local_network.cnf_variables_map[
-                                f"{term_aux}_{n_transitions - 1}"
-                            ]
+                            bool_expr_clause_attractors &= (
+                                -local_network.cnf_variables_map[
+                                    f"{term_aux}_{n_transitions - 1}"
+                                ]
+                            )
 
                     term_count += 1
 

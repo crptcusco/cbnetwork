@@ -27,37 +27,39 @@ from parsl.serialize import serialize as serialize_object
 from parsl.utils import setproctitle
 from parsl.version import VERSION as PARSL_VERSION
 
-PKL_HEARTBEAT_CODE = pickle.dumps((2 ** 32) - 1)
-PKL_DRAINED_CODE = pickle.dumps((2 ** 32) - 2)
+PKL_HEARTBEAT_CODE = pickle.dumps((2**32) - 1)
+PKL_DRAINED_CODE = pickle.dumps((2**32) - 2)
 
 LOGGER_NAME = "interchange"
 logger = logging.getLogger(LOGGER_NAME)
 
 
 class Interchange:
-    """ Interchange is a task orchestrator for distributed systems.
+    """Interchange is a task orchestrator for distributed systems.
 
     1. Asynchronously queue large volume of tasks (>100K)
     2. Allow for workers to join and leave the union
     3. Detect workers that have failed using heartbeats
     """
-    def __init__(self,
-                 *,
-                 client_address: str,
-                 interchange_address: Optional[str],
-                 client_ports: Tuple[int, int, int],
-                 worker_ports: Optional[Tuple[int, int]],
-                 worker_port_range: Tuple[int, int],
-                 hub_address: Optional[str],
-                 hub_zmq_port: Optional[int],
-                 heartbeat_threshold: int,
-                 logdir: str,
-                 logging_level: int,
-                 poll_period: int,
-                 cert_dir: Optional[str],
-                 manager_selector: ManagerSelector,
-                 run_id: str,
-                 ) -> None:
+
+    def __init__(
+        self,
+        *,
+        client_address: str,
+        interchange_address: Optional[str],
+        client_ports: Tuple[int, int, int],
+        worker_ports: Optional[Tuple[int, int]],
+        worker_port_range: Tuple[int, int],
+        hub_address: Optional[str],
+        hub_zmq_port: Optional[int],
+        heartbeat_threshold: int,
+        logdir: str,
+        logging_level: int,
+        poll_period: int,
+        cert_dir: Optional[str],
+        manager_selector: ManagerSelector,
+        run_id: str,
+    ) -> None:
         """
         Parameters
         ----------
@@ -112,8 +114,11 @@ class Interchange:
         self.interchange_address: str = interchange_address or "*"
         self.poll_period = poll_period
 
-        logger.info("Attempting connection to client at {} on ports: {},{},{}".format(
-            client_address, client_ports[0], client_ports[1], client_ports[2]))
+        logger.info(
+            "Attempting connection to client at {} on ports: {},{},{}".format(
+                client_address, client_ports[0], client_ports[1], client_ports[2]
+            )
+        )
         self.zmq_context = curvezmq.ServerContext(self.cert_dir)
         self.task_incoming = self.zmq_context.socket(zmq.DEALER)
         self.task_incoming.set_hwm(0)
@@ -131,7 +136,7 @@ class Interchange:
         self.hub_address = hub_address
         self.hub_zmq_port = hub_zmq_port
 
-        self.pending_task_queue: queue.Queue[Any] = queue.Queue(maxsize=10 ** 6)
+        self.pending_task_queue: queue.Queue[Any] = queue.Queue(maxsize=10**6)
         self.count = 0
 
         self.worker_ports = worker_ports
@@ -146,19 +151,32 @@ class Interchange:
             self.worker_task_port = self.worker_ports[0]
             self.worker_result_port = self.worker_ports[1]
 
-            self.task_outgoing.bind(tcp_url(self.interchange_address, self.worker_task_port))
-            self.results_incoming.bind(tcp_url(self.interchange_address, self.worker_result_port))
+            self.task_outgoing.bind(
+                tcp_url(self.interchange_address, self.worker_task_port)
+            )
+            self.results_incoming.bind(
+                tcp_url(self.interchange_address, self.worker_result_port)
+            )
 
         else:
-            self.worker_task_port = self.task_outgoing.bind_to_random_port(tcp_url(self.interchange_address),
-                                                                           min_port=worker_port_range[0],
-                                                                           max_port=worker_port_range[1], max_tries=100)
-            self.worker_result_port = self.results_incoming.bind_to_random_port(tcp_url(self.interchange_address),
-                                                                                min_port=worker_port_range[0],
-                                                                                max_port=worker_port_range[1], max_tries=100)
+            self.worker_task_port = self.task_outgoing.bind_to_random_port(
+                tcp_url(self.interchange_address),
+                min_port=worker_port_range[0],
+                max_port=worker_port_range[1],
+                max_tries=100,
+            )
+            self.worker_result_port = self.results_incoming.bind_to_random_port(
+                tcp_url(self.interchange_address),
+                min_port=worker_port_range[0],
+                max_port=worker_port_range[1],
+                max_tries=100,
+            )
 
-        logger.info("Bound to ports {},{} for incoming worker connections".format(
-            self.worker_task_port, self.worker_result_port))
+        logger.info(
+            "Bound to ports {},{} for incoming worker connections".format(
+                self.worker_task_port, self.worker_result_port
+            )
+        )
 
         self._ready_managers: Dict[bytes, ManagerRecord] = {}
         self.connected_block_history: List[str] = []
@@ -167,18 +185,20 @@ class Interchange:
 
         self.manager_selector = manager_selector
 
-        self.current_platform = {'parsl_v': PARSL_VERSION,
-                                 'python_v': "{}.{}.{}".format(sys.version_info.major,
-                                                               sys.version_info.minor,
-                                                               sys.version_info.micro),
-                                 'os': platform.system(),
-                                 'hostname': platform.node(),
-                                 'dir': os.getcwd()}
+        self.current_platform = {
+            "parsl_v": PARSL_VERSION,
+            "python_v": "{}.{}.{}".format(
+                sys.version_info.major, sys.version_info.minor, sys.version_info.micro
+            ),
+            "os": platform.system(),
+            "hostname": platform.node(),
+            "dir": os.getcwd(),
+        }
 
         logger.info("Platform info: {}".format(self.current_platform))
 
     def get_tasks(self, count: int) -> Sequence[dict]:
-        """ Obtains a batch of tasks from the internal pending_task_queue
+        """Obtains a batch of tasks from the internal pending_task_queue
 
         Parameters
         ----------
@@ -215,7 +235,11 @@ class Interchange:
                 msg = self.task_incoming.recv_pyobj()
             except zmq.Again:
                 # We just timed out while attempting to receive
-                logger.debug("zmq.Again with {} tasks in internal queue".format(self.pending_task_queue.qsize()))
+                logger.debug(
+                    "zmq.Again with {} tasks in internal queue".format(
+                        self.pending_task_queue.qsize()
+                    )
+                )
                 continue
 
             logger.debug("putting message onto pending_task_queue")
@@ -223,25 +247,30 @@ class Interchange:
             task_counter += 1
             logger.debug(f"Fetched {task_counter} tasks so far")
 
-    def _send_monitoring_info(self, monitoring_radio: Optional[MonitoringRadioSender], manager: ManagerRecord) -> None:
+    def _send_monitoring_info(
+        self, monitoring_radio: Optional[MonitoringRadioSender], manager: ManagerRecord
+    ) -> None:
         if monitoring_radio:
             logger.info("Sending message {} to MonitoringHub".format(manager))
 
             d: Dict = cast(Dict, manager.copy())
-            d['timestamp'] = datetime.datetime.now()
-            d['last_heartbeat'] = datetime.datetime.fromtimestamp(d['last_heartbeat'])
-            d['run_id'] = self.run_id
+            d["timestamp"] = datetime.datetime.now()
+            d["last_heartbeat"] = datetime.datetime.fromtimestamp(d["last_heartbeat"])
+            d["run_id"] = self.run_id
 
             monitoring_radio.send((MessageType.NODE_INFO, d))
 
     @wrap_with_logs(target="interchange")
     def _command_server(self) -> NoReturn:
-        """ Command server to run async command to the interchange
-        """
+        """Command server to run async command to the interchange"""
         logger.debug("Command Server Starting")
 
         if self.hub_address is not None and self.hub_zmq_port is not None:
-            logger.debug("Creating monitoring radio to %s:%s", self.hub_address, self.hub_zmq_port)
+            logger.debug(
+                "Creating monitoring radio to %s:%s",
+                self.hub_address,
+                self.hub_zmq_port,
+            )
             monitoring_radio = ZMQRadioSender(self.hub_address, self.hub_zmq_port)
         else:
             monitoring_radio = None
@@ -258,36 +287,38 @@ class Interchange:
                 elif command_req == "WORKERS":
                     num_workers = 0
                     for manager in self._ready_managers.values():
-                        num_workers += manager['worker_count']
+                        num_workers += manager["worker_count"]
                     reply = num_workers
 
                 elif command_req == "MANAGERS":
                     reply = []
                     for manager_id in self._ready_managers:
                         m = self._ready_managers[manager_id]
-                        idle_since = m['idle_since']
+                        idle_since = m["idle_since"]
                         if idle_since is not None:
                             idle_duration = time.time() - idle_since
                         else:
                             idle_duration = 0.0
-                        resp = {'manager': manager_id.decode('utf-8'),
-                                'block_id': m['block_id'],
-                                'worker_count': m['worker_count'],
-                                'tasks': len(m['tasks']),
-                                'idle_duration': idle_duration,
-                                'active': m['active'],
-                                'parsl_version': m['parsl_version'],
-                                'python_version': m['python_version'],
-                                'draining': m['draining']}
+                        resp = {
+                            "manager": manager_id.decode("utf-8"),
+                            "block_id": m["block_id"],
+                            "worker_count": m["worker_count"],
+                            "tasks": len(m["tasks"]),
+                            "idle_duration": idle_duration,
+                            "active": m["active"],
+                            "parsl_version": m["parsl_version"],
+                            "python_version": m["python_version"],
+                            "draining": m["draining"],
+                        }
                         reply.append(resp)
 
                 elif command_req.startswith("HOLD_WORKER"):
-                    cmd, s_manager = command_req.split(';')
-                    manager_id = s_manager.encode('utf-8')
+                    cmd, s_manager = command_req.split(";")
+                    manager_id = s_manager.encode("utf-8")
                     logger.info("Received HOLD_WORKER for {!r}".format(manager_id))
                     if manager_id in self._ready_managers:
                         m = self._ready_managers[manager_id]
-                        m['active'] = False
+                        m["active"] = False
                         self._send_monitoring_info(monitoring_radio, m)
                     else:
                         logger.warning("Worker to hold was not in ready managers list")
@@ -310,13 +341,16 @@ class Interchange:
 
     @wrap_with_logs
     def start(self) -> None:
-        """ Start the interchange
-        """
+        """Start the interchange"""
 
         logger.info("Starting main interchange method")
 
         if self.hub_address is not None and self.hub_zmq_port is not None:
-            logger.debug("Creating monitoring radio to %s:%s", self.hub_address, self.hub_zmq_port)
+            logger.debug(
+                "Creating monitoring radio to %s:%s",
+                self.hub_address,
+                self.hub_zmq_port,
+            )
             monitoring_radio = ZMQRadioSender(self.hub_address, self.hub_zmq_port)
             logger.debug("Created monitoring radio")
         else:
@@ -326,14 +360,14 @@ class Interchange:
 
         start = time.time()
 
-        self._task_puller_thread = threading.Thread(target=self.task_puller,
-                                                    name="Interchange-Task-Puller",
-                                                    daemon=True)
+        self._task_puller_thread = threading.Thread(
+            target=self.task_puller, name="Interchange-Task-Puller", daemon=True
+        )
         self._task_puller_thread.start()
 
-        self._command_thread = threading.Thread(target=self._command_server,
-                                                name="Interchange-Command",
-                                                daemon=True)
+        self._command_thread = threading.Thread(
+            target=self._command_server, name="Interchange-Command", daemon=True
+        )
         self._command_thread.start()
 
         kill_event = threading.Event()
@@ -351,7 +385,9 @@ class Interchange:
         while not kill_event.is_set():
             self.socks = dict(poller.poll(timeout=poll_period))
 
-            self.process_task_outgoing_incoming(interesting_managers, monitoring_radio, kill_event)
+            self.process_task_outgoing_incoming(
+                interesting_managers, monitoring_radio, kill_event
+            )
             self.process_results_incoming(interesting_managers, monitoring_radio)
             self.expire_bad_managers(interesting_managers, monitoring_radio)
             self.expire_drained_managers(interesting_managers, monitoring_radio)
@@ -363,49 +399,59 @@ class Interchange:
         logger.warning("Exiting")
 
     def process_task_outgoing_incoming(
-            self,
-            interesting_managers: Set[bytes],
-            monitoring_radio: Optional[MonitoringRadioSender],
-            kill_event: threading.Event
+        self,
+        interesting_managers: Set[bytes],
+        monitoring_radio: Optional[MonitoringRadioSender],
+        kill_event: threading.Event,
     ) -> None:
         """Process one message from manager on the task_outgoing channel.
         Note that this message flow is in contradiction to the name of the
         channel - it is not an outgoing message and it is not a task.
         """
-        if self.task_outgoing in self.socks and self.socks[self.task_outgoing] == zmq.POLLIN:
+        if (
+            self.task_outgoing in self.socks
+            and self.socks[self.task_outgoing] == zmq.POLLIN
+        ):
             logger.debug("starting task_outgoing section")
             message = self.task_outgoing.recv_multipart()
             manager_id = message[0]
 
             try:
-                msg = json.loads(message[1].decode('utf-8'))
+                msg = json.loads(message[1].decode("utf-8"))
             except Exception:
-                logger.warning(f"Got Exception reading message from manager: {manager_id!r}", exc_info=True)
+                logger.warning(
+                    f"Got Exception reading message from manager: {manager_id!r}",
+                    exc_info=True,
+                )
                 logger.debug("Message:\n %r\n", message[1])
                 return
 
             # perform a bit of validation on the structure of the deserialized
             # object, at least enough to behave like a deserialization error
             # in obviously malformed cases
-            if not isinstance(msg, dict) or 'type' not in msg:
-                logger.error(f"JSON message was not correctly formatted from manager: {manager_id!r}")
+            if not isinstance(msg, dict) or "type" not in msg:
+                logger.error(
+                    f"JSON message was not correctly formatted from manager: {manager_id!r}"
+                )
                 logger.debug("Message:\n %r\n", message[1])
                 return
 
-            if msg['type'] == 'registration':
+            if msg["type"] == "registration":
                 # We set up an entry only if registration works correctly
-                self._ready_managers[manager_id] = {'last_heartbeat': time.time(),
-                                                    'idle_since': time.time(),
-                                                    'block_id': None,
-                                                    'start_time': msg['start_time'],
-                                                    'max_capacity': 0,
-                                                    'worker_count': 0,
-                                                    'active': True,
-                                                    'draining': False,
-                                                    'parsl_version': msg['parsl_v'],
-                                                    'python_version': msg['python_v'],
-                                                    'tasks': []}
-                self.connected_block_history.append(msg['block_id'])
+                self._ready_managers[manager_id] = {
+                    "last_heartbeat": time.time(),
+                    "idle_since": time.time(),
+                    "block_id": None,
+                    "start_time": msg["start_time"],
+                    "max_capacity": 0,
+                    "worker_count": 0,
+                    "active": True,
+                    "draining": False,
+                    "parsl_version": msg["parsl_v"],
+                    "python_version": msg["python_v"],
+                    "tasks": [],
+                }
+                self.connected_block_history.append(msg["block_id"])
 
                 interesting_managers.add(manager_id)
                 logger.info(f"Adding manager: {manager_id!r} to ready queue")
@@ -420,51 +466,83 @@ class Interchange:
                 logger.info(f"Registration info for manager {manager_id!r}: {msg}")
                 self._send_monitoring_info(monitoring_radio, m)
 
-                if (msg['python_v'].rsplit(".", 1)[0] != self.current_platform['python_v'].rsplit(".", 1)[0] or
-                    msg['parsl_v'] != self.current_platform['parsl_v']):
-                    logger.error(f"Manager {manager_id!r} has incompatible version info with the interchange")
+                if (
+                    msg["python_v"].rsplit(".", 1)[0]
+                    != self.current_platform["python_v"].rsplit(".", 1)[0]
+                    or msg["parsl_v"] != self.current_platform["parsl_v"]
+                ):
+                    logger.error(
+                        f"Manager {manager_id!r} has incompatible version info with the interchange"
+                    )
                     logger.debug("Setting kill event")
                     kill_event.set()
-                    e = VersionMismatch("py.v={} parsl.v={}".format(self.current_platform['python_v'].rsplit(".", 1)[0],
-                                                                    self.current_platform['parsl_v']),
-                                        "py.v={} parsl.v={}".format(msg['python_v'].rsplit(".", 1)[0],
-                                                                    msg['parsl_v'])
-                                        )
-                    result_package = {'type': 'result', 'task_id': -1, 'exception': serialize_object(e)}
+                    e = VersionMismatch(
+                        "py.v={} parsl.v={}".format(
+                            self.current_platform["python_v"].rsplit(".", 1)[0],
+                            self.current_platform["parsl_v"],
+                        ),
+                        "py.v={} parsl.v={}".format(
+                            msg["python_v"].rsplit(".", 1)[0], msg["parsl_v"]
+                        ),
+                    )
+                    result_package = {
+                        "type": "result",
+                        "task_id": -1,
+                        "exception": serialize_object(e),
+                    }
                     pkl_package = pickle.dumps(result_package)
                     self.results_outgoing.send(pkl_package)
                     logger.error("Sent failure reports, shutting down interchange")
                 else:
-                    logger.info(f"Manager {manager_id!r} has compatible Parsl version {msg['parsl_v']}")
-                    logger.info(f"Manager {manager_id!r} has compatible Python version {msg['python_v'].rsplit('.', 1)[0]}")
-            elif msg['type'] == 'heartbeat':
+                    logger.info(
+                        f"Manager {manager_id!r} has compatible Parsl version {msg['parsl_v']}"
+                    )
+                    logger.info(
+                        f"Manager {manager_id!r} has compatible Python version {msg['python_v'].rsplit('.', 1)[0]}"
+                    )
+            elif msg["type"] == "heartbeat":
                 manager = self._ready_managers.get(manager_id)
                 if manager:
-                    manager['last_heartbeat'] = time.time()
-                    logger.debug("Manager %r sent heartbeat via tasks connection", manager_id)
-                    self.task_outgoing.send_multipart([manager_id, b'', PKL_HEARTBEAT_CODE])
+                    manager["last_heartbeat"] = time.time()
+                    logger.debug(
+                        "Manager %r sent heartbeat via tasks connection", manager_id
+                    )
+                    self.task_outgoing.send_multipart(
+                        [manager_id, b"", PKL_HEARTBEAT_CODE]
+                    )
                 else:
-                    logger.warning("Received heartbeat via tasks connection for not-registered manager %r", manager_id)
-            elif msg['type'] == 'drain':
-                self._ready_managers[manager_id]['draining'] = True
+                    logger.warning(
+                        "Received heartbeat via tasks connection for not-registered manager %r",
+                        manager_id,
+                    )
+            elif msg["type"] == "drain":
+                self._ready_managers[manager_id]["draining"] = True
                 logger.debug("Manager %r requested drain", manager_id)
             else:
-                logger.error(f"Unexpected message type received from manager: {msg['type']}")
+                logger.error(
+                    f"Unexpected message type received from manager: {msg['type']}"
+                )
             logger.debug("leaving task_outgoing section")
 
-    def expire_drained_managers(self, interesting_managers: Set[bytes], monitoring_radio: Optional[MonitoringRadioSender]) -> None:
+    def expire_drained_managers(
+        self,
+        interesting_managers: Set[bytes],
+        monitoring_radio: Optional[MonitoringRadioSender],
+    ) -> None:
 
         for manager_id in list(interesting_managers):
             # is it always true that a draining manager will be in interesting managers?
             # i think so because it will have outstanding capacity?
             m = self._ready_managers[manager_id]
-            if m['draining'] and len(m['tasks']) == 0:
-                logger.info(f"Manager {manager_id!r} is drained - sending drained message to manager")
-                self.task_outgoing.send_multipart([manager_id, b'', PKL_DRAINED_CODE])
+            if m["draining"] and len(m["tasks"]) == 0:
+                logger.info(
+                    f"Manager {manager_id!r} is drained - sending drained message to manager"
+                )
+                self.task_outgoing.send_multipart([manager_id, b"", PKL_DRAINED_CODE])
                 interesting_managers.remove(manager_id)
                 self._ready_managers.pop(manager_id)
 
-                m['active'] = False
+                m["active"] = False
                 self._send_monitoring_info(monitoring_radio, m)
 
     def process_tasks_to_send(self, interesting_managers: Set[bytes]) -> None:
@@ -473,32 +551,42 @@ class Interchange:
         logger.debug(
             "Managers count (interesting/total): %d/%d",
             len(interesting_managers),
-            len(self._ready_managers)
+            len(self._ready_managers),
         )
 
         if interesting_managers and not self.pending_task_queue.empty():
-            shuffled_managers = self.manager_selector.sort_managers(self._ready_managers, interesting_managers)
+            shuffled_managers = self.manager_selector.sort_managers(
+                self._ready_managers, interesting_managers
+            )
 
-            while shuffled_managers and not self.pending_task_queue.empty():  # cf. the if statement above...
+            while (
+                shuffled_managers and not self.pending_task_queue.empty()
+            ):  # cf. the if statement above...
                 manager_id = shuffled_managers.pop()
                 m = self._ready_managers[manager_id]
-                tasks_inflight = len(m['tasks'])
-                real_capacity = m['max_capacity'] - tasks_inflight
+                tasks_inflight = len(m["tasks"])
+                real_capacity = m["max_capacity"] - tasks_inflight
 
                 if real_capacity and m["active"] and not m["draining"]:
                     tasks = self.get_tasks(real_capacity)
                     if tasks:
-                        self.task_outgoing.send_multipart([manager_id, b'', pickle.dumps(tasks)])
+                        self.task_outgoing.send_multipart(
+                            [manager_id, b"", pickle.dumps(tasks)]
+                        )
                         task_count = len(tasks)
                         self.count += task_count
-                        tids = [t['task_id'] for t in tasks]
-                        m['tasks'].extend(tids)
-                        m['idle_since'] = None
+                        tids = [t["task_id"] for t in tasks]
+                        m["tasks"].extend(tids)
+                        m["idle_since"] = None
                         logger.debug("Sent tasks: %s to manager %r", tids, manager_id)
                         # recompute real_capacity after sending tasks
-                        real_capacity = m['max_capacity'] - tasks_inflight
+                        real_capacity = m["max_capacity"] - tasks_inflight
                         if real_capacity > 0:
-                            logger.debug("Manager %r has free capacity %s", manager_id, real_capacity)
+                            logger.debug(
+                                "Manager %r has free capacity %s",
+                                manager_id,
+                                real_capacity,
+                            )
                             # ... so keep it in the interesting_managers list
                         else:
                             logger.debug("Manager %r is now saturated", manager_id)
@@ -506,60 +594,88 @@ class Interchange:
                 else:
                     interesting_managers.remove(manager_id)
                     # logger.debug("Nothing to send to manager {}".format(manager_id))
-            logger.debug("leaving _ready_managers section, with %s managers still interesting", len(interesting_managers))
+            logger.debug(
+                "leaving _ready_managers section, with %s managers still interesting",
+                len(interesting_managers),
+            )
         else:
-            logger.debug("either no interesting managers or no tasks, so skipping manager pass")
+            logger.debug(
+                "either no interesting managers or no tasks, so skipping manager pass"
+            )
 
-    def process_results_incoming(self, interesting_managers: Set[bytes], monitoring_radio: Optional[MonitoringRadioSender]) -> None:
+    def process_results_incoming(
+        self,
+        interesting_managers: Set[bytes],
+        monitoring_radio: Optional[MonitoringRadioSender],
+    ) -> None:
         # Receive any results and forward to client
-        if self.results_incoming in self.socks and self.socks[self.results_incoming] == zmq.POLLIN:
+        if (
+            self.results_incoming in self.socks
+            and self.socks[self.results_incoming] == zmq.POLLIN
+        ):
             logger.debug("entering results_incoming section")
             manager_id, *all_messages = self.results_incoming.recv_multipart()
             if manager_id not in self._ready_managers:
-                logger.warning(f"Received a result from a un-registered manager: {manager_id!r}")
+                logger.warning(
+                    f"Received a result from a un-registered manager: {manager_id!r}"
+                )
             else:
-                logger.debug("Got %s result items in batch from manager %r", len(all_messages), manager_id)
+                logger.debug(
+                    "Got %s result items in batch from manager %r",
+                    len(all_messages),
+                    manager_id,
+                )
 
                 b_messages = []
 
                 for p_message in all_messages:
                     r = pickle.loads(p_message)
-                    if r['type'] == 'result':
+                    if r["type"] == "result":
                         # process this for task ID and forward to executor
                         b_messages.append((p_message, r))
-                    elif r['type'] == 'monitoring':
+                    elif r["type"] == "monitoring":
                         # the monitoring code makes the assumption that no
                         # monitoring messages will be received if monitoring
                         # is not configured, and that monitoring_radio will only
                         # be None when monitoring is not configurated.
                         assert monitoring_radio is not None
 
-                        monitoring_radio.send(r['payload'])
-                    elif r['type'] == 'heartbeat':
-                        logger.debug("Manager %r sent heartbeat via results connection", manager_id)
+                        monitoring_radio.send(r["payload"])
+                    elif r["type"] == "heartbeat":
+                        logger.debug(
+                            "Manager %r sent heartbeat via results connection",
+                            manager_id,
+                        )
                     else:
-                        logger.error("Interchange discarding result_queue message of unknown type: %s", r["type"])
+                        logger.error(
+                            "Interchange discarding result_queue message of unknown type: %s",
+                            r["type"],
+                        )
 
                 got_result = False
                 m = self._ready_managers[manager_id]
-                for (_, r) in b_messages:
-                    assert 'type' in r, f"Message is missing type entry: {r}"
-                    if r['type'] == 'result':
+                for _, r in b_messages:
+                    assert "type" in r, f"Message is missing type entry: {r}"
+                    if r["type"] == "result":
                         got_result = True
                         try:
-                            logger.debug("Removing task %s from manager record %r", r["task_id"], manager_id)
-                            m['tasks'].remove(r['task_id'])
+                            logger.debug(
+                                "Removing task %s from manager record %r",
+                                r["task_id"],
+                                manager_id,
+                            )
+                            m["tasks"].remove(r["task_id"])
                         except Exception:
                             # If we reach here, there's something very wrong.
                             logger.exception(
                                 "Ignoring exception removing task_id %s for manager %r with task list %s",
-                                r['task_id'],
+                                r["task_id"],
                                 manager_id,
-                                m["tasks"]
+                                m["tasks"],
                             )
 
                 b_messages_to_send = []
-                for (b_message, _) in b_messages:
+                for b_message, _ in b_messages:
                     b_messages_to_send.append(b_message)
 
                 if b_messages_to_send:
@@ -568,8 +684,8 @@ class Interchange:
                     logger.debug("Sent messages on results_outgoing")
 
                 logger.debug("Current tasks on manager %r: %s", manager_id, m["tasks"])
-                if len(m['tasks']) == 0 and m['idle_since'] is None:
-                    m['idle_since'] = time.time()
+                if len(m["tasks"]) == 0 and m["idle_since"] is None:
+                    m["idle_since"] = time.time()
 
                 # A manager is only made interesting here if a result was
                 # received, which means there should be capacity for a new
@@ -579,31 +695,50 @@ class Interchange:
                     interesting_managers.add(manager_id)
             logger.debug("leaving results_incoming section")
 
-    def expire_bad_managers(self, interesting_managers: Set[bytes], monitoring_radio: Optional[MonitoringRadioSender]) -> None:
-        bad_managers = [(manager_id, m) for (manager_id, m) in self._ready_managers.items() if
-                        time.time() - m['last_heartbeat'] > self.heartbeat_threshold]
-        for (manager_id, m) in bad_managers:
-            logger.debug("Last: {} Current: {}".format(m['last_heartbeat'], time.time()))
-            logger.warning(f"Too many heartbeats missed for manager {manager_id!r} - removing manager")
-            if m['active']:
-                m['active'] = False
+    def expire_bad_managers(
+        self,
+        interesting_managers: Set[bytes],
+        monitoring_radio: Optional[MonitoringRadioSender],
+    ) -> None:
+        bad_managers = [
+            (manager_id, m)
+            for (manager_id, m) in self._ready_managers.items()
+            if time.time() - m["last_heartbeat"] > self.heartbeat_threshold
+        ]
+        for manager_id, m in bad_managers:
+            logger.debug(
+                "Last: {} Current: {}".format(m["last_heartbeat"], time.time())
+            )
+            logger.warning(
+                f"Too many heartbeats missed for manager {manager_id!r} - removing manager"
+            )
+            if m["active"]:
+                m["active"] = False
                 self._send_monitoring_info(monitoring_radio, m)
 
             logger.warning(f"Cancelling htex tasks {m['tasks']} on removed manager")
-            for tid in m['tasks']:
+            for tid in m["tasks"]:
                 try:
-                    raise ManagerLost(manager_id, m['hostname'])
+                    raise ManagerLost(manager_id, m["hostname"])
                 except Exception:
-                    result_package = {'type': 'result', 'task_id': tid, 'exception': serialize_object(RemoteExceptionWrapper(*sys.exc_info()))}
+                    result_package = {
+                        "type": "result",
+                        "task_id": tid,
+                        "exception": serialize_object(
+                            RemoteExceptionWrapper(*sys.exc_info())
+                        ),
+                    }
                     pkl_package = pickle.dumps(result_package)
                     self.results_outgoing.send(pkl_package)
             logger.warning("Sent failure reports, unregistering manager")
-            self._ready_managers.pop(manager_id, 'None')
+            self._ready_managers.pop(manager_id, "None")
             if manager_id in interesting_managers:
                 interesting_managers.remove(manager_id)
 
 
-def start_file_logger(filename: str, level: int = logging.DEBUG, format_string: Optional[str] = None) -> None:
+def start_file_logger(
+    filename: str, level: int = logging.DEBUG, format_string: Optional[str] = None
+) -> None:
     """Add a stream log handler.
 
     Parameters
@@ -623,11 +758,9 @@ def start_file_logger(filename: str, level: int = logging.DEBUG, format_string: 
     """
     if format_string is None:
         format_string = (
-
             "%(asctime)s.%(msecs)03d %(name)s:%(lineno)d "
             "%(processName)s(%(process)d) %(threadName)s "
             "%(funcName)s [%(levelname)s] %(message)s"
-
         )
 
     global logger
@@ -635,7 +768,7 @@ def start_file_logger(filename: str, level: int = logging.DEBUG, format_string: 
     logger.setLevel(level)
     handler = logging.FileHandler(filename)
     handler.setLevel(level)
-    formatter = logging.Formatter(format_string, datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(format_string, datefmt="%Y-%m-%d %H:%M:%S")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 

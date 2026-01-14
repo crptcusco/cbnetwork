@@ -9,7 +9,9 @@ def extract_attractor_signatures(local_network):
         scene_sigs = []
         for attr in scene.l_attractors:
             # Normalize values to ints for apples-to-apples comparison
-            states = tuple(tuple(int(v) for v in s.l_variable_values) for s in attr.l_states)
+            states = tuple(
+                tuple(int(v) for v in s.l_variable_values) for s in attr.l_states
+            )
             # Canonicalize cycle by rotation so lexicographically smallest state comes first
             if len(states) > 1:
                 rotations = [tuple(states[i:] + states[:i]) for i in range(len(states))]

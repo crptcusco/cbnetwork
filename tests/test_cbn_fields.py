@@ -69,4 +69,6 @@ def test_mount_stable_attractor_fields_basic_combination():
         if set(field) >= {1, 2, 3}:
             found = True
             break
-    assert found, f"Expected an attractor field containing 1,2,3, got {cbn.d_attractor_fields}"
+    assert (
+        found
+    ), f"Expected an attractor field containing 1,2,3, got {cbn.d_attractor_fields}"

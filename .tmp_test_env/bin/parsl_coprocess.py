@@ -8,6 +8,7 @@ import sys
 # If enabled, coprocess will print to stdout
 debug_mode = False
 
+
 # Send a message on a binary I/O stream by sending the message length and then the (string) message.
 def send_message(stream, data):
     size = len(data)
@@ -15,11 +16,13 @@ def send_message(stream, data):
     stream.write(size_msg)
     stream.write(data)
 
+
 # Receive a standard message from a binary I/O stream by reading length and then returning the (string) message
 def recv_message(stream):
     line = stream.readline()
     length = int(line)
     return stream.read(length)
+
 
 # Decorator for remotely execution functions to package things as json.
 def remote_execute(func):
@@ -27,24 +30,20 @@ def remote_execute(func):
         kwargs = event["fn_kwargs"]
         args = event["fn_args"]
         try:
-            response = {
-                "Result": func(*args, **kwargs),
-                "StatusCode": 200
-            }
+            response = {"Result": func(*args, **kwargs), "StatusCode": 200}
         except Exception as e:
-            response = {
-                "Result": str(e),
-                "StatusCode": 500
-            }
+            response = {"Result": str(e), "StatusCode": 500}
         return response
+
     return remote_wrapper
+
 
 # Main loop of coprocess for executing network functions.
 def main():
     # Listen on an arbitrary port to be reported to the worker.
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        s.bind(('localhost', 0))
+        s.bind(("localhost", 0))
     except Exception as e:
         s.close()
         print(e, file=sys.stderr)
@@ -71,7 +70,7 @@ def main():
         connstream = conn.makefile("rw", encoding="utf-8")
 
         if debug_mode:
-            print('Network function: connection from {}'.format(addr), file=sys.stderr)
+            print("Network function: connection from {}".format(addr), file=sys.stderr)
 
         while True:
             # Read the invocation header from the worker
@@ -94,7 +93,7 @@ def main():
 
             try:
                 # First move to target directory (is undone in finally block)
-                os.chdir(os.path.join(abs_working_dir, f't.{task_id}'))
+                os.chdir(os.path.join(abs_working_dir, f"t.{task_id}"))
 
                 # Then invoke function by desired method, resulting in
                 # response containing the text representation of the result.
@@ -111,11 +110,11 @@ def main():
                         os._exit(0)
                     elif p < 0:
                         if debug_mode:
-                            print(f'Network function: unable to fork to execute {function_name}', file=sys.stderr)
-                        response = {
-                            "Result": "unable to fork",
-                            "StatusCode": 500
-                        }
+                            print(
+                                f"Network function: unable to fork to execute {function_name}",
+                                file=sys.stderr,
+                            )
+                        response = {"Result": "unable to fork", "StatusCode": 500}
                         response = json.dumps(response)
                     else:
                         # Get response string from child process.
@@ -127,10 +126,14 @@ def main():
 
             except Exception as e:
                 if debug_mode:
-                    print("Network function encountered exception ", str(e), file=sys.stderr)
+                    print(
+                        "Network function encountered exception ",
+                        str(e),
+                        file=sys.stderr,
+                    )
                 response = {
-                    'Result': f'network function encountered exception {e}',
-                    'Status Code': 500
+                    "Result": f"network function encountered exception {e}",
+                    "Status Code": 500,
                 }
                 response = json.dumps(response)
             finally:
@@ -142,15 +145,22 @@ def main():
             connstream.flush()
 
     return 0
+
+
 def name():
-    return 'parsl_coprocess'
+    return "parsl_coprocess"
+
+
 @remote_execute
 def run_parsl_task(a, b, c):
     import parsl.executors.workqueue.exec_parsl_function as epf
+
     try:
         (map_file, function_file, result_file) = (a, b, c)
         try:
-            (namespace, function_code, result_name) = epf.load_function(map_file, function_file)
+            (namespace, function_code, result_name) = epf.load_function(
+                map_file, function_file
+            )
         except Exception:
             raise
         try:
@@ -161,6 +171,7 @@ def run_parsl_task(a, b, c):
         result = RemoteExceptionWrapper(*sys.exc_info())
     epf.dump_result_to_file(result_file, result)
     return None
+
+
 if __name__ == "__main__":
     main()
-
