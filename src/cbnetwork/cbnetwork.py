@@ -181,6 +181,24 @@ class CBN:
             return o_local_network
 
     @staticmethod
+    def process_local_network_brute_force_mp(o_local_network):
+        """
+        Processes a local network to find its attractors using the brute-force routine.
+
+        This mirrors `process_local_network_mp` but calls
+        `LocalNetwork.find_local_attractors_brute_force` instead.
+        """
+        try:
+            l_local_scenes = CBN._generate_local_scenes(o_local_network)
+            o_local_network = LocalNetwork.find_local_attractors_brute_force(
+                o_local_network, l_local_scenes
+            )
+            return o_local_network
+        except Exception as e:
+            print(f"Error processing (brute force) network {o_local_network.index}: {e}")
+            return o_local_network
+
+    @staticmethod
     def process_output_signal_mp(args):
         """
         Processes an output signal to compute compatible attractor pairs.

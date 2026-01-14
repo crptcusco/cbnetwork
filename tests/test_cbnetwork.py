@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from classes.cbnetwork import CBN
-from classes.localnetwork import LocalNetwork
-from classes.directededge import DirectedEdge
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.directededge import DirectedEdge
 
 class TestCBN:
     @pytest.fixture
@@ -82,8 +82,9 @@ class TestCBN:
         # Mock process_kind_signal
         cbn.process_kind_signal = MagicMock()
 
-        # Mock multiprocessing.Pool imported in classes.cbnetwork
-        with patch('classes.cbnetwork.Pool') as mock_pool:
+        # Mock multiprocessing.Pool imported in cbnetwork.cbnetwork
+        # (the module imports `Pool` directly, so patch that name)
+        with patch('cbnetwork.cbnetwork.Pool') as mock_pool:
             # Setup mock pool return
             mock_pool_instance = mock_pool.return_value
             mock_pool_instance.__enter__.return_value = mock_pool_instance
@@ -114,8 +115,8 @@ class TestCBN:
         l_local_networks, l_directed_edges = cbn_setup
         cbn = CBN(l_local_networks, l_directed_edges)
 
-        # Mock multiprocessing.Pool imported in classes.cbnetwork
-        with patch('classes.cbnetwork.Pool') as mock_pool:
+        # Mock multiprocessing.Pool imported in cbnetwork.cbnetwork
+        with patch('cbnetwork.cbnetwork.multiprocessing.Pool') as mock_pool:
             # Setup mock pool return
             mock_pool_instance = mock_pool.return_value
             mock_pool_instance.__enter__.return_value = mock_pool_instance

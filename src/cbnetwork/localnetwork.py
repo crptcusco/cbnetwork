@@ -519,6 +519,31 @@ class LocalNetwork:
         return boolean_function
 
     @staticmethod
+    def _execute_sat_solver(local_network, num_transitions, attractor_clauses, scene):
+        """
+        Helper method to generate the boolean formulation, solve it, and return the response matrix.
+        """
+        boolean_formulation = LocalNetwork.gen_boolean_formulation(
+            local_network=local_network,
+            n_transitions=num_transitions,
+            attractor_clauses=attractor_clauses,
+            scene=scene,
+        )
+
+        solver = Minisat()
+        solution = solver.solve(boolean_formulation)
+
+        aux_sat_matrix = []
+        if solution.success:
+            for j in range(num_transitions):
+                aux_sat_row = []
+                for i in local_network.total_variables:
+                    val = solution[local_network.cnf_variables_map[f"{i}_{j}"]]
+                    aux_sat_row.append("1" if val else "0")
+                aux_sat_matrix.append(aux_sat_row)
+        return aux_sat_matrix
+
+    @staticmethod
     def find_local_scene_attractors(local_network, scene=None):
         def count_state_repeat(target_state, path_candidate):
             # input type [[],[],...[]]
@@ -537,39 +562,10 @@ class LocalNetwork:
         attractors = []
         attractor_clauses = []
 
-        # create boolean expression initial with 3 transitions
-        boolean_formulation = local_network.gen_boolean_formulation(
-            local_network=local_network,
-            n_transitions=num_transitions,
-            attractor_clauses=attractor_clauses,
-            scene=scene,
+        # First execution using the helper method
+        boolean_response_matrix = LocalNetwork._execute_sat_solver(
+            local_network, num_transitions, attractor_clauses, scene
         )
-        sat_response_matrix = []
-        # Solve with SAT the boolean formulation
-        solver = Minisat()
-        solution = solver.solve(boolean_formulation)
-
-        if solution.success:
-            for j in range(0, num_transitions):
-                sat_response_matrix.append([])
-                for i in local_network.total_variables:
-                    sat_response_matrix[j].append(
-                        solution[local_network.cnf_variables_map[f"{i}_{j}"]]
-                    )
-
-        aux_sat_matrix = []
-        if len(sat_response_matrix) != 0:
-            # TRANSFORM BOOLEAN TO MATRIZ BOOLEAN RESPONSE
-            for j in range(0, num_transitions):
-                aux_sat_row = []
-                for i in range(0, local_network.total_variables_count):
-                    if sat_response_matrix[j][i]:
-                        aux_sat_row.append("1")
-                    else:
-                        aux_sat_row.append("0")
-                aux_sat_matrix.append(aux_sat_row)
-            # m_resp_boolean = aux_sat_matrix
-        boolean_response_matrix = aux_sat_matrix
         # BLOCK ATTRACTORS
         # REPEAT CODE
 
@@ -616,42 +612,10 @@ class LocalNetwork:
                 attractor_clauses.append(clause_variable)
 
             # print attractor_clauses
-            # REPEAT CODE
-            boolean_formulation = local_network.gen_boolean_formulation(
-                local_network=local_network,
-                n_transitions=num_transitions,
-                attractor_clauses=attractor_clauses,
-                scene=scene,
+            # REPEAT CODE using the helper method
+            boolean_response_matrix = LocalNetwork._execute_sat_solver(
+                local_network, num_transitions, attractor_clauses, scene
             )
-            sat_response_matrix = []
-            solver = Minisat()
-            solution = solver.solve(boolean_formulation)
-
-            if solution.success:
-                for j in range(0, num_transitions):
-                    sat_response_matrix.append([])
-                    for i in local_network.total_variables:
-                        sat_response_matrix[j].append(
-                            solution[local_network.cnf_variables_map[f"{i}_{j}"]]
-                        )
-            # else:
-            #     # print(" ")
-            #     print("The expression cannot be satisfied")
-
-            # BLOCK ATTRACTORS
-            aux_sat_matrix = []
-            if len(sat_response_matrix) != 0:
-                # TRANSFORM BOOLEAN TO MATRIZ BOOLEAN RESPONSE
-                for j in range(0, num_transitions):
-                    aux_sat_row = []
-                    for i in range(0, local_network.total_variables_count):
-                        if sat_response_matrix[j][i]:
-                            aux_sat_row.append("1")
-                        else:
-                            aux_sat_row.append("0")
-                    aux_sat_matrix.append(aux_sat_row)
-                # boolean_response_matrix = aux_sat_matrix
-            boolean_response_matrix = aux_sat_matrix
             # BLOCK ATTRACTORS
             # REPEAT CODE
 

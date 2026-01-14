@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from classes.localnetwork import LocalNetwork
-from classes.internalvariable import InternalVariable
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.internalvariable import InternalVariable
 
 class TestLocalNetwork:
     @pytest.fixture

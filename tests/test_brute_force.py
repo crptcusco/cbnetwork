@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import MagicMock
-from classes.localnetwork import LocalNetwork
-from classes.internalvariable import InternalVariable
-from classes.localscene import LocalScene
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.localscene import LocalScene
 
 class TestBruteForce:
     @pytest.fixture

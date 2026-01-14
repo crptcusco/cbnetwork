@@ -1,6 +1,6 @@
 import pytest
 
-from classes.cbnetwork import CBN
+from cbnetwork.cbnetwork import CBN
 
 
 def test_evaluate_pair_accepts_new_networks():
