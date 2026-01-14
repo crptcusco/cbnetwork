@@ -1,6 +1,6 @@
 # local imports
-from classes.cbnetwork import CBN
-from classes.utils.customtext import CustomText
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.utils.customtext import CustomText
 
 CustomText.make_principal_title("SCRIPT TO TEST ALL THE FUNCTIONALITIES")
 

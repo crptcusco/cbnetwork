@@ -1,9 +1,9 @@
 # internal imports
-from classes.cbnetwork import CBN
-from classes.directededge import DirectedEdge
-from classes.internalvariable import InternalVariable
-from classes.localnetwork import LocalNetwork
-from classes.utils.customtext import CustomText
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.directededge import DirectedEdge
+from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.utils.customtext import CustomText
 
 # script to put a manual parameters for the example of 4 networks
 CustomText.print_duplex_line()

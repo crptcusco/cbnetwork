@@ -1,5 +1,12 @@
+from pathlib import Path
+import sys
+
+# Agregar el directorio src al path para poder importar el paquete localmente
+# Calcula la ruta del repositorio y añade `src` de forma robusta
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+
 # internal imports
-from classes.cbnetwork import CBN
+from cbnetwork.cbnetwork import CBN
 
 # external imports
 

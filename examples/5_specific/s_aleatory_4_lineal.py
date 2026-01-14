@@ -1,6 +1,6 @@
 # import libraries
-from classes.cbnetwork import CBN
-from classes.utils.customtext import CustomText
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.utils.customtext import CustomText
 
 # script to put a manual parameters for the example of 4 networks
 print("LINEAL CBN ALEATORY SCRIPT EXAMPLE")

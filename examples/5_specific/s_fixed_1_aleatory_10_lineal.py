@@ -1,10 +1,10 @@
 # LINEAL CBN ALEATORY SCRIPT EXAMPLE
 
 # import libraries
-from classes.cbnetwork import CBN
-from classes.directededge import DirectedEdge
-from classes.internalvariable import InternalVariable
-from classes.localnetwork import LocalNetwork
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.directededge import DirectedEdge
+from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.localnetwork import LocalNetwork
 
 # pass the parameters
 n_local_networks = 10
