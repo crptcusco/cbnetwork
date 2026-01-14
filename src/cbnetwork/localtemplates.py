@@ -110,3 +110,33 @@ class LocalNetworkTemplate:
                     l_variables.append(o_local_network.internal_variables[position - 1])
 
         return l_variables
+
+
+class PathCircleTemplate(LocalNetworkTemplate):
+    @staticmethod
+    def generate_path_circle_template(n_var_network, n_input_variables=2, n_output_variables=2, n_max_of_clauses=2, n_max_of_literals=3):
+        return PathCircleTemplate(
+            n_vars_network=n_var_network,
+            n_input_variables=n_input_variables,
+            n_output_variables=n_output_variables,
+            n_max_of_clauses=n_max_of_clauses,
+            n_max_of_literals=n_max_of_literals
+        )
+
+    def generate_cbn_from_template(self, v_topology, n_local_networks):
+        # Local import to avoid circular dependency
+        from .cbnetwork import CBN
+        from .globaltopology import GlobalTopology
+
+        # Generate topology to get edges
+        o_global_topology = GlobalTopology.generate_sample_topology(
+             v_topology=v_topology, n_nodes=n_local_networks
+        )
+
+        return CBN.generate_cbn_from_template(
+            v_topology=v_topology,
+            n_local_networks=n_local_networks,
+            n_vars_network=self.n_vars_network,
+            o_template=self,
+            l_global_edges=o_global_topology.l_edges
+        )

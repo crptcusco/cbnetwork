@@ -555,7 +555,11 @@ class LocalNetwork:
             for j in range(num_transitions):
                 aux_sat_row = []
                 for i in local_network.total_variables:
-                    val = solution[local_network.cnf_variables_map[f"{i}_{j}"]]
+                    try:
+                        val = solution[local_network.cnf_variables_map[f"{i}_{j}"]]
+                    except KeyError:
+                         # Variable optimized out or not participating; default to False (0)
+                        val = False
                     aux_sat_row.append("1" if val else "0")
                 aux_sat_matrix.append(aux_sat_row)
         return aux_sat_matrix
