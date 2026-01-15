@@ -1,10 +1,12 @@
 # LINEAL CBN ALEATORY SCRIPT EXAMPLE
 
 # import libraries
-from classes.cbnetwork import CBN
-from classes.directededge import DirectedEdge
-from classes.internalvariable import InternalVariable
-from classes.localnetwork import LocalNetwork
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.directededge import DirectedEdge
+from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.localtemplates import LocalNetworkTemplate
+from cbnetwork.globaltopology import GlobalTopology
 
 # pass the parameters
 n_local_networks = 10
@@ -13,14 +15,28 @@ n_output_variables = 2
 n_clauses_function = 2
 v_topology = 4
 
-CBN.show_allowed_topologies()
+GlobalTopology.show_allowed_topologies()
 
 # create a Coupled Boolean Network with the parameters
-o_cbn = CBN.generate_aleatory_cbn_by_topology(
-    n_local_networks=n_local_networks,
-    n_var_network=n_var_network,
-    v_topology=v_topology,
+o_template = LocalNetworkTemplate(
+    n_vars_network=n_var_network,
+    n_input_variables=n_output_variables,
     n_output_variables=n_output_variables,
+    n_max_of_clauses=n_clauses_function,
+    n_max_of_literals=3
+)
+
+# Generate topology to get edges
+o_temp_topology = GlobalTopology.generate_sample_topology(
+    v_topology=v_topology, n_nodes=n_local_networks
+)
+
+o_cbn = CBN.generate_cbn_from_template(
+    v_topology=v_topology,
+    n_local_networks=n_local_networks,
+    n_vars_network=n_var_network,
+    o_template=o_template,
+    l_global_edges=o_temp_topology.l_edges
 )
 
 # Adding a network to make restricted the signals
@@ -56,6 +72,7 @@ t_edge = (1, 100)
 l_output_variables = [103, 104]
 coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
 o_directed_edge = DirectedEdge(
+    len(o_cbn.l_directed_edges) + 1,
     i_variable_signal, t_edge[0], t_edge[1], l_output_variables, coupling_function
 )
 o_cbn.l_directed_edges.append(o_directed_edge)
@@ -84,7 +101,7 @@ for o_internal_variable in o_local_network.descriptive_function_variables:
     o_internal_variable.cnf_function[0].append(-105)
     o_local_network.update_internal_variable(o_internal_variable)
 
-o_cbn.update_network_by_index(1, o_local_network)
+o_cbn.update_network_by_index(o_local_network)
 
 # show the kind of the edges
 o_cbn.show_directed_edges()

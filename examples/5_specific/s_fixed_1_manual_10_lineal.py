@@ -1,8 +1,10 @@
 # import libraries
-from classes.cbnetwork import CBN
-from classes.directededge import DirectedEdge
-from classes.internalvariable import InternalVariable
-from classes.localnetwork import LocalNetwork
+from cbnetwork.cbnetwork import CBN
+from cbnetwork.directededge import DirectedEdge
+from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.localnetwork import LocalNetwork
+from cbnetwork.localtemplates import LocalNetworkTemplate
+from cbnetwork.globaltopology import GlobalTopology
 
 # script to put a manual parameters for the example of 4 networks
 print("MESSAGE:", "1 FIXED 10 LINEAL CBN MANUAL SCRIPT EXAMPLE")
@@ -41,18 +43,21 @@ print("Generate Directed Edges")
 l_directed_edges = []
 cont_output_variable = 0
 index_variable_signal = (n_local_nets * n_var_net) + 1
+i_directed_edge_index = 1
 for t_edge in l_edges[:-1]:
     l_output_variables = [4 + cont_output_variable, 5 + cont_output_variable]
     # generate coupling function
     coupling_function = " " + " ∧ ".join(map(str, l_output_variables)) + " "
     # generate the Directed Edge object
     o_directed_edge = DirectedEdge(
+        i_directed_edge_index,
         index_variable_signal,
         t_edge[1],
         t_edge[0],
         l_output_variables,
         coupling_function,
     )
+    i_directed_edge_index += 1
     # add the directed object to list
     l_directed_edges.append(o_directed_edge)
     # updating the count of variables
@@ -64,7 +69,7 @@ t_edge = l_edges[-1]
 l_output_variables = [63, 64]
 coupling_function = " " + " ∨ ".join(map(str, l_output_variables)) + " "
 o_directed_edge = DirectedEdge(
-    65, t_edge[1], t_edge[0], l_output_variables, coupling_function
+    i_directed_edge_index, 65, t_edge[1], t_edge[0], l_output_variables, coupling_function
 )
 l_directed_edges.append(o_directed_edge)
 o_directed_edge.show()
@@ -106,8 +111,8 @@ d_var_cnf_func[64] = [[61, -62]]
 
 # generating the local network dynamic
 for o_local_network in l_local_networks:
-    input_signals = DirectedEdge.find_input_edges_by_network_index(
-        o_local_network.l_index, l_directed_edges
+    input_signals = CBN.find_input_edges_by_network_index(
+        o_local_network.index, l_directed_edges
     )
     o_local_network.process_input_signals(input_signals)
     for i_local_variable in o_local_network.internal_variables:
@@ -137,3 +142,4 @@ o_cbn.show_stable_attractor_fields()
 
 # show the kind of every coupled signal
 o_cbn.show_coupled_signals_kind()
+
