@@ -437,6 +437,38 @@ class CBN:
         logger.info("Number of local attractors: %d", self._count_total_attractors())
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS")
 
+    def find_local_attractors_brute_force_sequential(self):
+        """
+        Finds local attractors using brute force sequentially and updates the list of local attractors.
+
+        This method calculates the local attractors using the brute-force engine
+        for each local network, updates the coupling signals, assigns global indices,
+        and generates the attractor dictionary.
+        """
+        CustomText.make_title("FIND LOCAL ATTRACTORS (BRUTE FORCE)")
+
+        for o_local_network in self.l_local_networks:
+            # Generate the local network scenes
+            local_scenes = CBN._generate_local_scenes(o_local_network)
+            # Calculate the local attractors using brute force
+            o_local_network = LocalNetwork.find_local_attractors_brute_force(
+                o_local_network, local_scenes=local_scenes
+            )
+
+        # Update the coupling signals
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
+        # Assign global indices
+        self._assign_global_indices_to_attractors()
+
+        # Generate the attractor dictionary
+        self.generate_attractor_dictionary()
+
+        logger = logging.getLogger(__name__)
+        logger.info("Number of local attractors (BF): %d", self._count_total_attractors())
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS (BRUTE FORCE)")
+
     def find_local_attractors_parallel(self, num_cpus=None):
         """
         Parallelizes the process of finding local attractors using multiprocessing.

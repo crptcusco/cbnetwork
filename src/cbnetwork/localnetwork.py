@@ -361,105 +361,62 @@ class LocalNetwork:
                     Variable(f"{variable}_{transition_c}")
                 )
 
-        transition_count = 0
-        boolean_function = Variable("0_0")
+        import itertools
+        boolean_function = (
+            local_network.cnf_variables_map[f"{local_network.total_variables[0]}_0"]
+            | -local_network.cnf_variables_map[f"{local_network.total_variables[0]}_0"]
+        )
 
         for transition in range(1, n_transitions):
-            global_clause_count = 0
-            boolean_expression_equivalence = Variable("0_0")
-
             for variable_model in local_network.descriptive_function_variables:
-                clause_count = 0
-                boolean_expression_clause_global = Variable("0_0")
+                v_t = local_network.cnf_variables_map[
+                    f"{variable_model.index}_{transition}"
+                ]
 
+                # 1. (v_t => f) <=> (v_t => C1 & C2 ...) <=> (-v_t | C1) & (-v_t | C2) ...
                 for clause in variable_model.cnf_function:
-                    boolean_expression_clause = Variable("0_0")
-                    term_count = 0
-
+                    clause_expr = -v_t
                     for term in clause:
                         term_aux = abs(int(term))
-                        if term_count == 0:
-                            if str(term)[0] != "-":
-                                boolean_expression_clause = (
-                                    local_network.cnf_variables_map[
-                                        f"{term_aux}_{transition - 1}"
-                                    ]
-                                )
-                            else:
-                                boolean_expression_clause = (
-                                    -local_network.cnf_variables_map[
-                                        f"{term_aux}_{transition - 1}"
-                                    ]
-                                )
-                        else:
-                            if str(term)[0] != "-":
-                                boolean_expression_clause |= (
-                                    local_network.cnf_variables_map[
-                                        f"{term_aux}_{transition - 1}"
-                                    ]
-                                )
-                            else:
-                                boolean_expression_clause |= (
-                                    -local_network.cnf_variables_map[
-                                        f"{term_aux}_{transition - 1}"
-                                    ]
-                                )
-
-                        term_count += 1
-
-                    if clause_count == 0:
-                        boolean_expression_clause_global = boolean_expression_clause
-                    else:
-                        boolean_expression_clause_global &= boolean_expression_clause
-
-                    clause_count += 1
-
-                if global_clause_count == 0:
-                    boolean_expression_equivalence = (
-                        local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
+                        lit = local_network.cnf_variables_map[
+                            f"{term_aux}_{transition - 1}"
                         ]
-                        >> boolean_expression_clause_global
-                    )
-                    boolean_expression_equivalence &= (
-                        boolean_expression_clause_global
-                        >> local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
+                        if str(term)[0] == "-":
+                            lit = -lit
+                        clause_expr |= lit
+                    boolean_function &= clause_expr
+
+                # 2. (f => v_t) <=> (~C1 | ~C2 ... | v_t)
+                # Expanded via Cartesian product
+                for combination in itertools.product(*variable_model.cnf_function):
+                    # combination is a tuple of literals, one from each clause
+                    # we negate them and OR them with v_t: (-L1 | -L2 | ... | v_t)
+                    clause_expr = v_t
+                    is_tautology = False
+                    literals_seen = set()
+
+                    for term in combination:
+                        neg_term = -int(term)
+                        # Tautology check: if both L and -L are in the same clause
+                        if -neg_term in literals_seen:
+                            is_tautology = True
+                            break
+                        literals_seen.add(neg_term)
+
+                        term_aux = abs(neg_term)
+                        lit = local_network.cnf_variables_map[
+                            f"{term_aux}_{transition - 1}"
                         ]
-                    )
-                else:
-                    boolean_expression_equivalence &= (
-                        local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
-                        ]
-                        >> boolean_expression_clause_global
-                    )
-                    boolean_expression_equivalence &= (
-                        boolean_expression_clause_global
-                        >> local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
-                        ]
-                    )
+                        if str(neg_term)[0] == "-":
+                            lit = -lit
+                        clause_expr |= lit
+
+                    if not is_tautology:
+                        boolean_function &= clause_expr
 
                 if not variable_model.cnf_function:
-                    logging.getLogger(__name__).warning("ENTER ATYPICAL CASE!!!")
-                    boolean_function &= (
-                        local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
-                        ]
-                        | -local_network.cnf_variables_map[
-                            f"{variable_model.index}_{transition}"
-                        ]
-                    )
-
-                global_clause_count += 1
-
-            if transition_count == 0:
-                boolean_function = boolean_expression_equivalence
-            else:
-                boolean_function &= boolean_expression_equivalence
-
-            transition_count += 1
+                    # Atypical case: variable is unconstrained (tautology already added by initialization or Skip)
+                    pass
 
         # Assign values for permutations if a scene is provided
         if scene is not None:
@@ -474,64 +431,32 @@ class LocalNetwork:
                         boolean_function &= local_network.cnf_variables_map[
                             f"{element}_{v_transition}"
                         ]
-
                 permutation_count += 1
 
         # Add attractors to the boolean function
         if attractor_clauses:
-            boolean_function_of_attractors = Variable("0_0")
-            clause_count = 0
-
             for clause in attractor_clauses:
-                bool_expr_clause_attractors = Variable("0_0")
-                term_count = 0
-
+                # To block a state S, we want: NOT (v_i == Si for all i)
+                # which is: OR (v_i != Si)
+                blocking_clause = None
                 for term in clause:
                     term_aux = abs(int(term))
-                    if term_count == 0:
-                        if term[0] != "-":
-                            bool_expr_clause_attractors = (
-                                local_network.cnf_variables_map[
-                                    f"{term_aux}_{n_transitions - 1}"
-                                ]
-                            )
-                        else:
-                            bool_expr_clause_attractors = (
-                                -local_network.cnf_variables_map[
-                                    f"{term_aux}_{n_transitions - 1}"
-                                ]
-                            )
+                    # If term is "1", we want -v; if "-1", we want v.
+                    # This is exactly -int(term).
+                    neg_term = -int(term)
+                    lit = local_network.cnf_variables_map[
+                        f"{term_aux}_{n_transitions - 1}"
+                    ]
+                    if str(neg_term)[0] == "-":
+                        lit = -lit
+                    
+                    if blocking_clause is None:
+                        blocking_clause = lit
                     else:
-                        if term[0] != "-":
-                            bool_expr_clause_attractors &= (
-                                local_network.cnf_variables_map[
-                                    f"{term_aux}_{n_transitions - 1}"
-                                ]
-                            )
-                        else:
-                            bool_expr_clause_attractors &= (
-                                -local_network.cnf_variables_map[
-                                    f"{term_aux}_{n_transitions - 1}"
-                                ]
-                            )
-
-                    term_count += 1
-
-                if clause_count == 0:
-                    boolean_function_of_attractors = -bool_expr_clause_attractors
-                else:
-                    boolean_function_of_attractors &= -bool_expr_clause_attractors
-
-                clause_count += 1
-
-            boolean_function &= boolean_function_of_attractors
-
-        # Ensure all variables are included in the boolean function
-        for variable in local_network.total_variables:
-            boolean_function &= (
-                local_network.cnf_variables_map[f"{variable}_0"]
-                | -local_network.cnf_variables_map[f"{variable}_0"]
-            )
+                        blocking_clause |= lit
+                
+                if blocking_clause is not None:
+                    boolean_function &= blocking_clause
 
         return boolean_function
 

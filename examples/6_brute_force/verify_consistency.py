@@ -1,7 +1,15 @@
-# Example comparing brute-force and SAT-based attractor finders
+import logging
+import sys
 from cbnetwork.localnetwork import LocalNetwork
 from cbnetwork.internalvariable import InternalVariable
+from cbnetwork.utils.customtext import CustomText
 
+# 1. Setup Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    stream=sys.stdout
+)
 
 def extract_attractor_signatures(local_network):
     """Return a list of scenes where each scene is a sorted set of attractor tuples."""
@@ -23,7 +31,9 @@ def extract_attractor_signatures(local_network):
     return tuple(sigs)
 
 
-def compare_network(net_builder):
+def compare_network(net_builder, network_name):
+    CustomText.make_sub_sub_title(f"Comparing: {network_name}")
+    
     # Build two fresh instances for each method
     net_a = net_builder()
     net_b = net_builder()
@@ -34,24 +44,28 @@ def compare_network(net_builder):
         net.total_variables_count = len(net.total_variables)
         net.cnf_variables_map = {}
 
+    # Brute Force
     LocalNetwork.find_local_attractors_brute_force(net_a)
+    # SAT-based
     LocalNetwork.find_local_attractors(net_b)
 
     sig_a = extract_attractor_signatures(net_a)
     sig_b = extract_attractor_signatures(net_b)
 
-    print("Brute-force signatures:", sig_a)
-    print("SAT-based signatures:", sig_b)
-    print("Equal:", sig_a == sig_b)
-    return sig_a == sig_b
+    logging.info(f"  Brute-force signatures: {sig_a}")
+    logging.info(f"  SAT-based signatures:   {sig_b}")
+    
+    if sig_a == sig_b:
+        logging.info("  [MATCH] Methods yielded identical attractors.")
+        return True
+    else:
+        logging.info("  [ERROR] Mismatch between methods!")
+        return False
 
 
 def build_cycle_network():
-    # 2-variable network that produces a 4-cycle (see tests)
+    # 2-variable network that produces a 4-cycle
     net = LocalNetwork(index=1, internal_variables=[1, 2])
-    # Represent functions in CNF-list form compatible with SAT formulation
-    # var1 = not 2  -> CNF: [[-2]]
-    # var2 = 1 (means var2_next = var1) -> CNF: [[1]]
     var1 = InternalVariable(index=1, cnf_function=[[-2]])
     var2 = InternalVariable(index=2, cnf_function=[[1]])
     net.descriptive_function_variables = [var1, var2]
@@ -61,20 +75,21 @@ def build_cycle_network():
 def build_fixed_network():
     # 1-variable network with fixed point(s)
     net = LocalNetwork(index=2, internal_variables=[1])
-    # var1_next = var1 (identity) -> CNF: [[1]]
     var1 = InternalVariable(index=1, cnf_function=[[1]])
     net.descriptive_function_variables = [var1]
     return net
 
 
 if __name__ == "__main__":
-    print("Comparing 2-variable cycle network:")
-    ok1 = compare_network(build_cycle_network)
+    CustomText.make_principal_title("CROSS-METHOD ATTRACTOR COMPARISON")
+    
+    ok1 = compare_network(build_cycle_network, "2-variable cycle network")
+    ok2 = compare_network(build_fixed_network, "1-variable fixed network")
 
-    print("\nComparing 1-variable fixed network:")
-    ok2 = compare_network(build_fixed_network)
-
+    print("\n" + "="*80)
     if ok1 and ok2:
-        print("All comparisons matched.")
+        print(" FINAL VERIFICATION SUCCESS: All signatures matched perfectly.")
     else:
-        print("Discrepancy found. See outputs above.")
+        print(" FINAL VERIFICATION FAILURE: Discrepancies found.")
+        sys.exit(1)
+    print("="*80 + "\n")
