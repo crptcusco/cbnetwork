@@ -324,9 +324,24 @@ class AleatoryFixedDigraph(GlobalTopology):
         self.l_edges = list(G.edges())
         return G
 
-    def add_edge(self):
+    def add_edge(self, u, v):
         """
-        Adds a new edge to the graph while maintaining constraints.
+        Adds a specific edge (u, v) to the graph.
+        """
+        if u in self.l_nodes and v in self.l_nodes:
+            G = nx.DiGraph()
+            G.add_nodes_from(self.l_nodes)
+            G.add_edges_from(self.l_edges)
+
+            if not G.has_edge(u, v):
+                G.add_edge(u, v)
+                self.l_edges.append((u, v))
+                self.n_edges = len(self.l_edges)
+                self.update_parent_graph()
+
+    def generate_edge(self):
+        """
+        Generates a new random edge to the graph while maintaining constraints.
         """
         G = nx.DiGraph()
         G.add_nodes_from(self.l_nodes)
