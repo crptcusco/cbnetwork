@@ -6,3 +6,4 @@ numpy~=1.26.4
 dask~=2025.1.0
 parsl~=2024.12.16
 seaborn~=0.13.2
+numba~=0.60.0

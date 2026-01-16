@@ -2,6 +2,7 @@
 import itertools  # Provides functions for efficient looping and combination generation
 import logging
 import multiprocessing  # Library for parallel execution using multiple processes
+import numpy as np
 import os
 import random  # Library for generating random numbers and shuffling data
 from itertools import product
@@ -230,37 +231,31 @@ class CBN:
             signal_index,
             l_attractors_input_0,
             l_attractors_input_1,
-            index_variable,
-            get_attractors_func,
+            d_var_attractors,
         ) = args
 
         def find_attractor_pairs(
-            signal_value: int, index_variable: Any, l_attractors_input: list
+            signal_value: int, l_attractors_input: list, l_attractors_output: list
         ):
             """
             Finds compatible attractor pairs for a given signal value.
 
             Args:
                 signal_value (int): The value of the signal (0 or 1).
-                index_variable (Any): The variable used to retrieve attractors.
                 l_attractors_input (list): List of input attractor indices.
+                l_attractors_output (list): List of output attractor indices.
 
             Returns:
                 list: A list of compatible attractor pairs as tuples.
             """
-            # Retrieve the output attractors corresponding to the given signal value
-            l_attractors_output = [
-                o_attractor.g_index
-                for o_attractor in get_attractors_func(index_variable, signal_value)
-            ]
-
-            # Generate all possible pairs between input and output attractors
-            return list(itertools.product(l_attractors_input, l_attractors_output))
+            # Generate unique pairs between input and output attractors
+            unique_pairs = set(itertools.product(l_attractors_input, l_attractors_output))
+            return list(unique_pairs)
 
         # Compute compatible pairs for both signal values (0 and 1)
         d_comp_pairs = {
-            0: find_attractor_pairs(0, index_variable, l_attractors_input_0),
-            1: find_attractor_pairs(1, index_variable, l_attractors_input_1),
+            0: find_attractor_pairs(0, l_attractors_input_0, d_var_attractors[0]),
+            1: find_attractor_pairs(1, l_attractors_input_1, d_var_attractors[1]),
         }
 
         # Count the total number of attractor pairs
@@ -468,6 +463,33 @@ class CBN:
         logger = logging.getLogger(__name__)
         logger.info("Number of local attractors (BF): %d", self._count_total_attractors())
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS (BRUTE FORCE)")
+
+    def find_local_attractors_brute_force_turbo_sequential(self):
+        """
+        Finds local attractors using Numba-accelerated brute force sequentially.
+        """
+        CustomText.make_title("FIND LOCAL ATTRACTORS (TURBO BRUTE FORCE)")
+
+        for o_local_network in self.l_local_networks:
+            # Generate the local network scenes
+            local_scenes = CBN._generate_local_scenes(o_local_network)
+            LocalNetwork.find_local_attractors_brute_force_turbo(
+                o_local_network, local_scenes=local_scenes
+            )
+
+        # Update the coupling signals
+        for o_local_network in self.l_local_networks:
+            self.process_kind_signal(o_local_network)
+
+        # Assign global indices
+        self._assign_global_indices_to_attractors()
+
+        # Generate the attractor dictionary
+        self.generate_attractor_dictionary()
+
+        logger = logging.getLogger(__name__)
+        logger.info("Number of local attractors (Turbo): %d", self._count_total_attractors())
+        CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS (TURBO BRUTE FORCE)")
 
     def find_local_attractors_parallel(self, num_cpus=None):
         """
@@ -693,6 +715,10 @@ class CBN:
         )
 
         for o_output_signal in l_directed_edges:
+            # Reset lists to avoid accumulation
+            o_output_signal.d_out_value_to_attractor[0] = []
+            o_output_signal.d_out_value_to_attractor[1] = []
+            
             l_signals_for_output = []
             for o_local_scene in o_local_network.local_scenes:
                 l_signals_in_local_scene = []
@@ -840,6 +866,22 @@ class CBN:
         if num_cpus is None or num_cpus <= 0:
             num_cpus = multiprocessing.cpu_count()
 
+        # Create a variable to attractor map to avoid pickling self or repeating searches
+        # variable_index -> {0: [g_indices], 1: [g_indices]}
+        var_to_attractors = {}
+        
+        # Pre-collect all necessary attractor mappings
+        all_index_vars = set()
+        for o_local_network in self.l_local_networks:
+            for o_output_signal in self.get_output_edges_by_network_index(o_local_network.index):
+                all_index_vars.add(o_output_signal.index_variable)
+                
+        for idx_var in all_index_vars:
+            var_to_attractors[idx_var] = {
+                0: [a.g_index for a in self.get_attractors_by_input_signal_value(idx_var, 0)],
+                1: [a.g_index for a in self.get_attractors_by_input_signal_value(idx_var, 1)]
+            }
+
         tasks = []
         signal_map = {}
         # Iterate over all local networks
@@ -859,19 +901,20 @@ class CBN:
                 l_attractors_input_1 = [
                     attr.g_index for attr in o_output_signal.d_out_value_to_attractor[1]
                 ]
+                
+                # Pass only the relevant attractor lists for this specific index_variable
                 task_args = (
                     signal_index,
                     l_attractors_input_0,
                     l_attractors_input_1,
-                    o_output_signal.index_variable,
-                    self.get_attractors_by_input_signal_value,
+                    var_to_attractors[o_output_signal.index_variable]
                 )
                 tasks.append(task_args)
 
         logging.getLogger(__name__).info("Tasks created: %d", len(tasks))
 
         # Execute tasks in parallel
-        with Pool(processes=num_cpus) as pool:
+        with multiprocessing.Pool(processes=num_cpus) as pool:
             results = pool.map(CBN.process_output_signal_mp, tasks)
 
         logging.getLogger(__name__).info("Results obtained: %d", len(results))
@@ -879,7 +922,7 @@ class CBN:
         # Update output objects with obtained results
         for signal_index, d_comp_pairs, n_signal_pairs in results:
             if signal_index not in signal_map:
-                logger.error("Signal index %s not found in signal_map", signal_index)
+                logging.getLogger(__name__).error("Signal index %s not found in signal_map", signal_index)
                 continue
             o_output_signal = signal_map[signal_index]
             o_output_signal.d_comp_pairs_attractors_by_value = d_comp_pairs
@@ -888,6 +931,137 @@ class CBN:
         CustomText.make_sub_sub_title(
             f"END FIND COMPATIBLE ATTRACTOR PAIRS (Total pairs: {total_pairs})"
         )
+
+    def find_compatible_pairs_turbo(self) -> None:
+        """
+        Numba-accelerated version of Step 2: Compatible Attractor Pairs.
+        """
+        from cbnetwork.acceleration import evaluate_attractors_signal_kernel, find_compatible_pairs_kernel, HAS_NUMBA
+        if not HAS_NUMBA:
+            return self.find_compatible_pairs()
+
+        CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (TURBO)")
+        
+        # 1. Numerical attractor database
+        # Mapping: network_index -> {
+        #   states: NP array, 
+        #   offsets: NP array, 
+        #   lengths: NP array, 
+        #   objs: list of LocalAttractor
+        # }
+        db = {}
+        for net in self.l_local_networks:
+            all_states = []
+            offsets = []
+            lengths = []
+            objs = []
+            curr_off = 0
+            for scene in net.local_scenes:
+                for attr in scene.l_attractors:
+                    for state_obj in attr.l_states:
+                        # Pack state as integer
+                        state_int = 0
+                        for bit_idx, val in enumerate(state_obj.l_variable_values):
+                            if val:
+                                state_int |= (1 << bit_idx)
+                        all_states.append(state_int)
+                    offsets.append(curr_off)
+                    lengths.append(len(attr.l_states))
+                    objs.append(attr)
+                    curr_off += len(attr.l_states)
+            
+            if all_states:
+                db[net.index] = {
+                    'states': np.array(all_states, dtype=np.int64),  # 1D array of packed ints
+                    'offsets': np.array(offsets, dtype=np.int64),
+                    'lengths': np.array(lengths, dtype=np.int64),
+                    'objs': objs
+                }
+
+        # 2. Process Kind Signal (Numerical)
+        for net in self.l_local_networks:
+            if net.index not in db: continue
+            
+            net_db = db[net.index]
+            l_directed_edges = self.get_output_edges_by_network_index(net.index)
+            
+            for edge in l_directed_edges:
+                edge.d_out_value_to_attractor[0] = []
+                edge.d_out_value_to_attractor[1] = []
+                
+                # Prepare truth table
+                n_bits = len(edge.l_output_variables)
+                tt_arr = np.zeros(1 << n_bits, dtype=np.int8)
+                for bit_str, val in edge.true_table.items():
+                    idx = int(bit_str, 2)
+                    tt_arr[idx] = val
+                
+                # Bit positions of output variables in the state integer
+                bit_positions = np.array([
+                    net.total_variables.index(v) for v in edge.l_output_variables
+                ], dtype=np.int64)
+                
+                # Call Kernel
+                attr_values = evaluate_attractors_signal_kernel(
+                    net_db['states'],
+                    net_db['offsets'],
+                    net_db['lengths'],
+                    bit_positions,
+                    tt_arr
+                )
+                
+                # Distribute results
+                stable_values = []
+                for i, val in enumerate(attr_values):
+                    attr_obj = net_db['objs'][i]
+                    if val == 0:
+                        edge.d_out_value_to_attractor[0].append(attr_obj)
+                        stable_values.append(0)
+                    elif val == 1:
+                        edge.d_out_value_to_attractor[1].append(attr_obj)
+                        stable_values.append(1)
+                    else:
+                        stable_values.append(-2) # placeholder
+
+                # Update kind_signal
+                unique_vals = set(stable_values)
+                if -2 in unique_vals:
+                    edge.kind_signal = 4
+                elif len(unique_vals) == 1:
+                    edge.kind_signal = 1
+                else:
+                    edge.kind_signal = 3
+
+        # 3. Find Compatible Pairs (Numerical)
+        # Pre-collect destination attractors mapping: variable_index -> value -> [g_indices]
+        dest_map = {}
+        for net in self.l_local_networks:
+            for scene in net.local_scenes:
+                if scene.l_values is None: continue
+                for i, idx_var in enumerate(scene.l_index_signals):
+                    val = int(scene.l_values[i])
+                    if idx_var not in dest_map: dest_map[idx_var] = {0: [], 1: []}
+                    dest_map[idx_var][val].extend([a.g_index for a in scene.l_attractors])
+
+        total_pairs = 0
+        for edge in self.l_directed_edges:
+            idx_var = edge.index_variable
+            if idx_var not in dest_map: continue
+            
+            dest_info = dest_map[idx_var]
+            for val in [0, 1]:
+                src_indices = np.array([a.g_index for a in edge.d_out_value_to_attractor[val]], dtype=np.int32)
+                dst_indices = np.array(dest_info[val], dtype=np.int32)
+                
+                if len(src_indices) > 0 and len(dst_indices) > 0:
+                    pairs_arr = find_compatible_pairs_kernel(src_indices, dst_indices)
+                    # Convert back to list of tuples for compatibility
+                    edge.d_comp_pairs_attractors_by_value[val] = [tuple(p) for p in pairs_arr]
+                    total_pairs += len(pairs_arr)
+                else:
+                    edge.d_comp_pairs_attractors_by_value[val] = []
+
+        logging.getLogger(__name__).info("END FIND ATTRACTOR PAIRS (TURBO) (Total pairs: %d)", total_pairs)
 
     def find_compatible_pairs_parallel_with_weights(self, num_cpus=None):
         """
@@ -1235,6 +1409,113 @@ class CBN:
 
         # print("Number of attractor fields found:", len(l_base_pairs))
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
+
+    def mount_stable_attractor_fields_turbo(self) -> None:
+        """
+        Numba-accelerated version of Step 3: Mount Stable Attractor Fields.
+        Uses numerical arrays and JIT-compiled kernels for faster field assembly.
+        """
+        from cbnetwork.acceleration import filter_compatible_pairs_kernel, HAS_NUMBA
+        if not HAS_NUMBA:
+            return self.mount_stable_attractor_fields()
+
+        CustomText.make_title("FIND ATTRACTOR FIELDS (TURBO)")
+        
+        # Order edges by compatibility
+        self.order_edges_by_compatibility()
+        
+        # Build attractor-to-network mapping
+        max_attr_idx = max(self.d_local_attractors.keys())
+        attr_to_network = np.zeros(max_attr_idx + 1, dtype=np.int32)
+        for attr_idx, attr_data in self.d_local_attractors.items():
+            # d_local_attractors[idx] = (network_idx, scene_idx, attractor_obj)
+            net_idx = attr_data[0]
+            attr_to_network[attr_idx] = net_idx
+        
+        # Initialize with first edge
+        first_edge = self.l_directed_edges[0]
+        base_pairs_list = (
+            first_edge.d_comp_pairs_attractors_by_value[0] +
+            first_edge.d_comp_pairs_attractors_by_value[1]
+        )
+        
+        if not base_pairs_list:
+            self.d_attractor_fields = {}
+            CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS (TURBO)")
+            return
+        
+        # Convert base pairs to numerical format
+        # Each field is represented as a list of attractor indices
+        current_fields = []
+        for pair in base_pairs_list:
+            current_fields.append(list(pair))
+        
+        # Process each remaining edge
+        for edge_idx, o_directed_edge in enumerate(self.l_directed_edges[1:], start=1):
+            candidate_pairs_list = (
+                o_directed_edge.d_comp_pairs_attractors_by_value[0] +
+                o_directed_edge.d_comp_pairs_attractors_by_value[1]
+            )
+            
+            if not candidate_pairs_list or not current_fields:
+                current_fields = []
+                break
+            
+            # Prepare data for Numba kernel
+            n_fields = len(current_fields)
+            n_pairs = len(candidate_pairs_list)
+            
+            # Find max field size for padding
+            max_field_size = max(len(f) for f in current_fields)
+            
+            # Create padded arrays
+            fields_array = np.full((n_fields, max_field_size), -1, dtype=np.int32)
+            field_sizes = np.zeros(n_fields, dtype=np.int32)
+            field_networks = np.full((n_fields, max_field_size), -1, dtype=np.int32)
+            
+            for i, field in enumerate(current_fields):
+                field_sizes[i] = len(field)
+                for j, attr_idx in enumerate(field):
+                    fields_array[i, j] = attr_idx
+                    field_networks[i, j] = attr_to_network[attr_idx]
+            
+            # Candidate pairs array
+            pairs_array = np.array(candidate_pairs_list, dtype=np.int32)
+            
+            # Call Numba kernel
+            compatible_matrix = filter_compatible_pairs_kernel(
+                fields_array,
+                field_sizes,
+                field_networks,
+                pairs_array,
+                attr_to_network
+            )
+            
+            # Build new fields from compatibility matrix
+            new_fields = []
+            for i in range(n_fields):
+                for j in range(n_pairs):
+                    if compatible_matrix[i, j]:
+                        # Combine field with pair
+                        new_field = current_fields[i] + list(candidate_pairs_list[j])
+                        new_fields.append(new_field)
+            
+            current_fields = new_fields
+            
+            if not current_fields:
+                break
+        
+        # Generate final attractor fields dictionary
+        self.d_attractor_fields = {}
+        for i, field in enumerate(current_fields, start=1):
+            # Remove duplicates and convert to list
+            self.d_attractor_fields[i] = list(set(field))
+        
+        logging.getLogger(__name__).info(
+            "END MOUNT ATTRACTOR FIELDS (TURBO) (Total fields: %d)", 
+            len(self.d_attractor_fields)
+        )
+        CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS (TURBO)")
 
     def mount_stable_attractor_fields_parallel(self, num_cpus=None):
         """Assemble stable attractor fields in parallel using multiprocessing.
