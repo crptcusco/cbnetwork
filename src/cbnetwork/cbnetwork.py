@@ -1314,7 +1314,7 @@ class CBN:
                     )
                     break
 
-    def mount_stable_attractor_fields(self, n_cpus: int = 2) -> None:
+    def mount_stable_attractor_fields(self) -> None:
         """
         Assembles compatible attractor fields.
 
