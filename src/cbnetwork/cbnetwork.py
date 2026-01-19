@@ -86,11 +86,11 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Data structures for attractor and field calculations
-        self.d_local_attractors = {}  # Stores attractors for each local network
-        self.d_attractor_pair = {}  # Stores compatible attractor pairs
-        self.d_attractor_fields = {}  # Stores attractor field mappings
-        self.l_global_scenes = []  # Stores global network states
-        self.d_global_scenes_count = {}  # Tracks frequency of global scenes
+        self.d_local_attractors: dict = {}  # Stores attractors for each local network
+        self.d_attractor_pair: dict = {}  # Stores compatible attractor pairs
+        self.d_attractor_fields: dict = {}  # Stores attractor field mappings
+        self.l_global_scenes: list = []  # Stores global network states
+        self.d_global_scenes_count: dict = {}  # Tracks frequency of global scenes
 
         # Placeholder for the global topology (to be initialized later)
         self.o_global_topology = None

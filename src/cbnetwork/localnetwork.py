@@ -27,18 +27,18 @@ class LocalNetwork:
         self.internal_variables = internal_variables
 
         # Processed properties
-        self.descriptive_function_variables = []  # List of desired function variables
-        self.external_variables = []  # List of external variables
-        self.total_variables = []  # List of all variables
+        self.descriptive_function_variables: list = []  # List of desired function variables
+        self.external_variables: list = []  # List of external variables
+        self.total_variables: list = []  # List of all variables
         self.total_variables_count = 0  # Total number of variables
-        self.cnf_variables_map = {}  # Dictionary of CNF variables
+        self.cnf_variables_map: dict = {}  # Dictionary of CNF variables
 
-        self.input_signals = []  # List of input signals
-        self.output_signals = []  # List of output signals
+        self.input_signals: list = []  # List of input signals
+        self.output_signals: list = []  # List of output signals
 
         # Calculated properties
         self.attractor_count = 1  # Counter for attractors
-        self.local_scenes = []  # List of local scenes
+        self.local_scenes: list = []  # List of local scenes
 
     def show(self):
         """
