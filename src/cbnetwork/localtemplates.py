@@ -52,8 +52,11 @@ class LocalNetworkTemplate:
             range(self.n_vars_network + 1, (self.n_vars_network * 2) + 1)
         )
 
-        # Indices for input coupling signals
-        l_input_coupling_signal_indexes = [self.n_vars_network * 2 + 1]
+        # Indices for input coupling signals, now supports multiple
+        l_input_coupling_signal_indexes = list(
+            range(self.n_vars_network * 2 + 1, self.n_vars_network * 2 + 1 + self.n_input_variables)
+        )
+
 
         # Generate CNF function for each internal variable
         l_input_variables = random.sample(
