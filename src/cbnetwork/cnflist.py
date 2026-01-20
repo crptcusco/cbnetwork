@@ -29,7 +29,7 @@ class CNFList:
             l_cnf.append([var])
 
         for _ in range(num_clauses):
-            clause = []
+            clause: list = []
             while len(clause) < max_literals:
                 var = random.choice(l_inter_vars)
                 if var != input_coup_sig_index and -var != input_coup_sig_index:
@@ -52,14 +52,7 @@ class CNFList:
 
         # Ensure there's at least one non-empty clause
         if not l_cnf:
-            # If all generated clauses are empty, add at least one valid clause
-            clause = []
-            while len(clause) < max_literals:
-                var = random.choice(l_inter_vars)
-                if random.choice([True, False]):
-                    var = -var
-                clause.append(var)
-            l_cnf.append(clause)
+            raise RuntimeError("Failed to generate a valid CNF function. All clauses were empty or tautological.")
 
         return l_cnf
 

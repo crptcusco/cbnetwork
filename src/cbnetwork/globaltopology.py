@@ -60,8 +60,9 @@ class GlobalTopology:
         :return: Instance of the 5_specific topology class.
         """
         if v_topology not in cls.allowed_topologies:
-            logging.getLogger(__name__).error("ERROR: Not permitted option")
-            return NullTopology(message="Not permitted option: %s" % v_topology)
+            msg = f"Invalid topology option: {v_topology}. Valid options are: {list(cls.allowed_topologies.keys())}"
+            logging.getLogger(__name__).error(msg)
+            raise ValueError(msg)
         if n_nodes <= 1:
             logging.getLogger(__name__).error(
                 "ERROR: Number of nodes must be greater than 1"
