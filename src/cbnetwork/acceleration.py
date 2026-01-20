@@ -12,7 +12,7 @@ except ImportError:
 
 if HAS_NUMBA:
     @njit(parallel=True)
-    def evaluate_all_states_kernel(num_vars, num_ext_vars, cnf_data, 
+    def evaluate_all_states_kernel(num_vars, cnf_data,
                                  clause_lengths, literal_lengths, 
                                  external_values):
         """
@@ -267,20 +267,20 @@ if HAS_NUMBA:
         
         return compatible
 else:
-    def evaluate_all_states_kernel(*args, **kwargs):
+    def evaluate_all_states_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
         
-    def find_attractors_from_map(*args, **kwargs):
+    def find_attractors_from_map(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
 
-    def evaluate_attractors_signal_kernel(*args, **kwargs):
+    def evaluate_attractors_signal_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
 
-    def find_compatible_pairs_kernel(*args, **kwargs):
+    def find_compatible_pairs_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
     
-    def evaluate_field_pair_kernel(*args, **kwargs):
+    def evaluate_field_pair_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
     
-    def filter_compatible_pairs_kernel(*args, **kwargs):
+    def filter_compatible_pairs_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")

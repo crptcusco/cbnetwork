@@ -27,6 +27,7 @@ from .cbnetwork_utils import (
     flatten as _flatten,
     process_single_base_pair as _process_single_base_pair,
 )
+from .coupling import CouplingStrategy, OrCoupling
 from .directededge import DirectedEdge
 
 # internal imports
@@ -85,11 +86,11 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Data structures for attractor and field calculations
-        self.d_local_attractors = {}  # Stores attractors for each local network
-        self.d_attractor_pair = {}  # Stores compatible attractor pairs
-        self.d_attractor_fields = {}  # Stores attractor field mappings
-        self.l_global_scenes = []  # Stores global network states
-        self.d_global_scenes_count = {}  # Tracks frequency of global scenes
+        self.d_local_attractors: dict = {}  # Stores attractors for each local network
+        self.d_attractor_pair: dict = {}  # Stores compatible attractor pairs
+        self.d_attractor_fields: dict = {}  # Stores attractor field mappings
+        self.l_global_scenes: list = []  # Stores global network states
+        self.d_global_scenes_count: dict = {}  # Tracks frequency of global scenes
 
         # Placeholder for the global topology (to be initialized later)
         self.o_global_topology = None
@@ -1313,7 +1314,7 @@ class CBN:
                     )
                     break
 
-    def mount_stable_attractor_fields(self, n_cpus: int = 2) -> None:
+    def mount_stable_attractor_fields(self) -> None:
         """
         Assembles compatible attractor fields.
 
@@ -2231,6 +2232,7 @@ class CBN:
         n_max_of_clauses: Optional[int] = None,
         n_max_of_literals: Optional[int] = None,
         n_edges: Optional[int] = None,
+        coupling_strategy: CouplingStrategy = OrCoupling(),
     ) -> "CBN":
         """
         Generates a special CBN based on the provided parameters.
@@ -2244,6 +2246,7 @@ class CBN:
             n_max_of_clauses (Optional[int]): The maximum number of clauses for the local networks. Defaults to None.
             n_max_of_literals (Optional[int]): The maximum number of literals for the local networks. Defaults to None.
             n_edges (Optional[int]): The number of edges between local networks. Defaults to None.
+            coupling_strategy (CouplingStrategy): The coupling strategy to use. Defaults to OrCoupling().
 
         Returns:
             CBN: A CBN instance generated based on the given parameters.
@@ -2271,6 +2274,7 @@ class CBN:
             n_vars_network=n_vars_network,
             o_template=o_template,
             l_global_edges=o_global_topology.l_edges,
+            coupling_strategy=coupling_strategy,
         )
 
         return o_cbn
@@ -2334,7 +2338,7 @@ class CBN:
 
     @staticmethod
     def generate_cbn_from_template(
-        v_topology, n_local_networks, n_vars_network, o_template, l_global_edges
+        v_topology, n_local_networks, n_vars_network, o_template, l_global_edges, coupling_strategy: CouplingStrategy
     ):
         """
         Generates a CBN (Coupled Boolean Network) using a given template and global edges.
@@ -2345,6 +2349,7 @@ class CBN:
             n_vars_network (int): Number of variables per network.
             o_template: Template for local networks.
             l_global_edges (list): List of tuples representing the global edges between local networks.
+            coupling_strategy (CouplingStrategy): The coupling strategy to use.
 
         Returns:
             A CBN object generated from the provided template and global edges.
@@ -2373,9 +2378,7 @@ class CBN:
             )
 
             # Generate the coupling function
-            coupling_function = (
-                " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
-            )
+            coupling_function = coupling_strategy.generate_coupling_function(l_output_variables)
             # Create the DirectedEdge object
             o_directed_edge = DirectedEdge(
                 index=i_directed_edge,
@@ -2405,6 +2408,20 @@ class CBN:
             l_local_networks=l_local_networks,
             l_directed_edges=l_directed_edges,
         )
+
+        # Integrate the CNF for the coupling logic
+        for edge in l_directed_edges:
+            # Generate the CNF clauses for the coupling function
+            coupling_cnf = coupling_strategy.to_cnf(edge.l_output_variables, edge.index_variable)
+
+            # Create an InternalVariable for the coupling signal
+            coupling_variable = InternalVariable(index=edge.index_variable, cnf_function=coupling_cnf)
+
+            # Find the source network and add the coupling logic to it
+            for net in l_local_networks:
+                if net.index == edge.output_local_network:
+                    net.descriptive_function_variables.append(coupling_variable)
+                    break
 
         # Generate the special Coupled Boolean Network (CBN)
         o_cbn = CBN(
