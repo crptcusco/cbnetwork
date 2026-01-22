@@ -27,6 +27,7 @@ from .cbnetwork_utils import (
     flatten as _flatten,
     process_single_base_pair as _process_single_base_pair,
 )
+from .coupling import CouplingStrategy, OrCoupling
 from .directededge import DirectedEdge
 
 # internal imports
@@ -85,11 +86,11 @@ class CBN:
         self.l_directed_edges = l_directed_edges
 
         # Data structures for attractor and field calculations
-        self.d_local_attractors = {}  # Stores attractors for each local network
-        self.d_attractor_pair = {}  # Stores compatible attractor pairs
-        self.d_attractor_fields = {}  # Stores attractor field mappings
-        self.l_global_scenes = []  # Stores global network states
-        self.d_global_scenes_count = {}  # Tracks frequency of global scenes
+        self.d_local_attractors: dict = {}  # Stores attractors for each local network
+        self.d_attractor_pair: dict = {}  # Stores compatible attractor pairs
+        self.d_attractor_fields: dict = {}  # Stores attractor field mappings
+        self.l_global_scenes: list = []  # Stores global network states
+        self.d_global_scenes_count: dict = {}  # Tracks frequency of global scenes
 
         # Placeholder for the global topology (to be initialized later)
         self.o_global_topology = None
@@ -492,18 +493,19 @@ class CBN:
         CustomText.make_sub_sub_title("END FIND LOCAL ATTRACTORS (TURBO BRUTE FORCE)")
 
     def find_local_attractors_parallel(self, num_cpus=None):
-        """
-        Parallelizes the process of finding local attractors using multiprocessing.
+        """Finds the attractors for each local network in parallel.
 
-        For each local network in self.l_local_networks:
-          1. Generate its local scenes.
-          2. Calculate its local attractors.
+        This is the first major step in analyzing the CBN. It iterates through
+        each `LocalNetwork`, considering all possible input signal combinations
+        (scenes), and calculates the attractors (fixed points or cycles) for
+        each scenario. This process is parallelized across multiple CPU cores.
 
-        Then, in the main process, each network is updated with its respective signal processing,
-        global indices are assigned to each attractor, and the attractor dictionary is generated.
+        The results are stored internally in the `l_local_networks` and
+        `d_local_attractors` attributes.
 
-        This function is equivalent to the sequential version but distributes the calculation of each
-        local network into independent processes.
+        Args:
+            num_cpus: The number of CPU cores to use for parallel execution.
+                If `None`, it defaults to the total number of available cores.
         """
         CustomText.make_title("FIND LOCAL ATTRACTORS PARALLEL")
 
@@ -844,18 +846,20 @@ class CBN:
         logger.info("END FIND ATTRACTOR PAIRS (Total pairs: %d)", n_pairs)
 
     def find_compatible_pairs_parallel(self, num_cpus=None):
-        """
-        Parallelizes the generation of compatible pairs using multiprocessing,
-        processing each output signal in an independent process.
+        """Finds compatible attractor pairs between connected networks in parallel.
 
-        For each local network, its output edges are obtained and, for each output signal:
-          - Input attractor lists (for 0 and 1) are extracted.
-          - The signal is processed to compute compatible pairs using the helper function.
+        This is the second major step. After finding all local attractors, this
+        method examines each directed edge connecting two networks. It determines
+        which pairs of attractors (one from the source network, one from the
+        destination) are compatible, meaning the output signal from the source's
+        attractor matches the input signal expected by the destination's
+        attractor.
 
-        Upon completion, the signal objects are updated with the pair dictionaries and
-        the total number of pairs found is printed.
+        The results are stored within each `DirectedEdge` object.
 
-        Updates the internal state of the object (self.l_local_networks) with the modified signals.
+        Args:
+            num_cpus: The number of CPU cores to use for parallel execution.
+                If `None`, it defaults to the total number of available cores.
         """
         CustomText.make_title("FIND COMPATIBLE ATTRACTOR PAIRS (PARALLEL)")
 
@@ -1313,101 +1317,65 @@ class CBN:
                     )
                     break
 
-    def mount_stable_attractor_fields(self, n_cpus: int = 2) -> None:
+    def mount_stable_attractor_fields(self) -> None:
+        """Assembles the global attractors (Attractor Fields) of the CBN.
+
+        This is the final analysis step. It takes the compatible pairs found in
+        the previous step and chains them together to build "Attractor Fields".
+        An attractor field represents a stable global state of the entire
+        Coupled Boolean Network, where every local network is in a stable
+        attractor and all coupling signals between them are consistent.
+
+        This implementation uses a fusion-based approach, starting with
+        individual compatible pairs and iteratively merging them into larger fields
+        if they share a common local attractor.
+
+        The results are stored in the `d_attractor_fields` dictionary.
         """
-        Assembles compatible attractor fields.
-
-        This function assembles fields of attractors that are compatible with each other.
-        """
-
-        def evaluate_pair(base_pairs: list, candidate_pair: tuple) -> bool:
-            """
-            Checks if a candidate attractor pair is compatible with a base attractor pair.
-
-            Args:
-                base_pairs (list): List of base attractor pairs.
-                candidate_pair (tuple): Candidate attractor pair.
-
-            Returns:
-                bool: True if the candidate pair is compatible with the base pairs, False otherwise.
-            """
-
-            # Extract the indices of local networks from each attractor pair
-            base_attractor_indices = {
-                attractor for pair in base_pairs for attractor in pair
-            }
-
-            # Generate the list of already visited networks
-            already_visited_networks = {
-                self.d_local_attractors[idx][0] for idx in base_attractor_indices
-            }
-
-            double_check = 0
-            for candidate_idx in candidate_pair:
-                if (
-                    self.d_local_attractors[candidate_idx][0]
-                    in already_visited_networks
-                ):
-                    if candidate_idx in base_attractor_indices:
-                        double_check += 1
-                else:
-                    double_check += 1
-
-            return double_check == 2
-
-        def cartesian_product_mod(base_pairs: list, candidate_pairs: list) -> list:
-            """
-            Performs the modified Cartesian product of the attractor pairs lists.
-
-            Args:
-                base_pairs (list): List of base attractor pairs.
-                candidate_pairs (list): List of candidate attractor pairs.
-
-            Returns:
-                list: List of candidate attractor fields.
-            """
-            field_pair_list = []
-
-            for base_pair in base_pairs:
-                for candidate_pair in candidate_pairs:
-                    if isinstance(base_pair, tuple):
-                        base_pair = [base_pair]
-                    if evaluate_pair(base_pair, candidate_pair):
-                        new_pair = base_pair + [candidate_pair]
-                        field_pair_list.append(new_pair)
-
-            return field_pair_list
-
         CustomText.make_title("FIND ATTRACTOR FIELDS")
 
-        # Order the edges by compatibility
-        self.order_edges_by_compatibility()
+        # 1. Collect all compatible pairs from all edges into a single list
+        all_pairs = []
+        for edge in self.l_directed_edges:
+            all_pairs.extend(edge.d_comp_pairs_attractors_by_value.get(0, []))
+            all_pairs.extend(edge.d_comp_pairs_attractors_by_value.get(1, []))
 
-        # Generate the base list of pairs made with 0 or 1 coupling signal
-        l_base_pairs = set(
-            self.l_directed_edges[0].d_comp_pairs_attractors_by_value[0]
-            + self.l_directed_edges[0].d_comp_pairs_attractors_by_value[1]
-        )
+        if not all_pairs:
+            self.d_attractor_fields = {}
+            CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
+            return
 
-        # Iterate over each edge to form unions with the base
-        for o_directed_edge in self.l_directed_edges[1:]:
-            l_candidate_pairs = (
-                o_directed_edge.d_comp_pairs_attractors_by_value[0]
-                + o_directed_edge.d_comp_pairs_attractors_by_value[1]
-            )
-            l_base_pairs = cartesian_product_mod(l_base_pairs, l_candidate_pairs)
+        # 2. Initialize fields, where each field is initially a single pair
+        fields = [set(pair) for pair in all_pairs]
 
-            if not l_base_pairs:
-                break
+        # 3. Iteratively merge fields that have a non-empty intersection
+        merged = True
+        while merged:
+            merged = False
+            i = 0
+            while i < len(fields):
+                j = i + 1
+                while j < len(fields):
+                    # If two fields share any attractor, merge them
+                    if fields[i].intersection(fields[j]):
+                        fields[i].update(fields[j])
+                        fields.pop(j)
+                        merged = True
+                    else:
+                        j += 1
+                i += 1
 
-        # Generate a dictionary of attractor fields
-        self.d_attractor_fields = {}
-        for i, base_element in enumerate(l_base_pairs, start=1):
-            self.d_attractor_fields[i] = list(
-                {item for pair in base_element for item in pair}
-            )
+        # 4. Remove duplicate fields
+        unique_fields = []
+        for field in fields:
+            if field not in unique_fields:
+                unique_fields.append(field)
 
-        # print("Number of attractor fields found:", len(l_base_pairs))
+        # 5. Generate the final dictionary of attractor fields
+        self.d_attractor_fields = {
+            i + 1: sorted(list(field)) for i, field in enumerate(unique_fields)
+        }
+
         CustomText.make_sub_sub_title("END MOUNT ATTRACTOR FIELDS")
 
     def mount_stable_attractor_fields_turbo(self) -> None:
@@ -2231,22 +2199,37 @@ class CBN:
         n_max_of_clauses: Optional[int] = None,
         n_max_of_literals: Optional[int] = None,
         n_edges: Optional[int] = None,
+        coupling_strategy: CouplingStrategy = OrCoupling(),
     ) -> "CBN":
-        """
-        Generates a special CBN based on the provided parameters.
+        """Factory method to generate a complete CBN from high-level parameters.
+
+        This is the primary entry point for creating a CBN. It automates the
+        entire construction process, including:
+        1. Generating the global network topology (e.g., complete graph, cycle).
+        2. Creating a template for the local networks' dynamics.
+        3. Assembling the final CBN object with the specified coupling logic.
 
         Args:
-            v_topology (str): The topology of the CBN. Can be 'aleatory' or other valid types.
-            n_local_networks (int): The number of local networks in the CBN.
-            n_vars_network (int): The number of variables per local network.
-            n_input_variables (int): The number of input variables in the CBN.
-            n_output_variables (int): The number of output variables in the CBN.
-            n_max_of_clauses (Optional[int]): The maximum number of clauses for the local networks. Defaults to None.
-            n_max_of_literals (Optional[int]): The maximum number of literals for the local networks. Defaults to None.
-            n_edges (Optional[int]): The number of edges between local networks. Defaults to None.
+            v_topology: An integer ID specifying the global network topology
+                (e.g., 1 for 'complete', 3 for 'cycle').
+            n_local_networks: The number of local networks in the CBN.
+            n_vars_network: The number of variables within each local network.
+            n_input_variables: The number of input signals each local network
+                can receive.
+            n_output_variables: The number of variables from a local network
+                that are used to compute an output signal.
+            n_max_of_clauses: The maximum number of clauses in the random
+                CNF functions for local dynamics. Defaults to 2.
+            n_max_of_literals: The maximum number of literals per clause in
+                the random CNF functions. Defaults to 3.
+            n_edges: The number of edges for topologies that require it (e.g.,
+                aleatory graphs). Defaults to None.
+            coupling_strategy: An instance of a `CouplingStrategy` subclass
+                that defines the logic for combining output signals (e.g.,
+                `OrCoupling()`, `AndCoupling()`). Defaults to `OrCoupling()`.
 
         Returns:
-            CBN: A CBN instance generated based on the given parameters.
+            An initialized `CBN` object ready for analysis.
         """
 
         # GENERATE THE GLOBAL TOPOLOGY
@@ -2271,6 +2254,7 @@ class CBN:
             n_vars_network=n_vars_network,
             o_template=o_template,
             l_global_edges=o_global_topology.l_edges,
+            coupling_strategy=coupling_strategy,
         )
 
         return o_cbn
@@ -2334,7 +2318,7 @@ class CBN:
 
     @staticmethod
     def generate_cbn_from_template(
-        v_topology, n_local_networks, n_vars_network, o_template, l_global_edges
+        v_topology, n_local_networks, n_vars_network, o_template, l_global_edges, coupling_strategy: CouplingStrategy
     ):
         """
         Generates a CBN (Coupled Boolean Network) using a given template and global edges.
@@ -2345,6 +2329,7 @@ class CBN:
             n_vars_network (int): Number of variables per network.
             o_template: Template for local networks.
             l_global_edges (list): List of tuples representing the global edges between local networks.
+            coupling_strategy (CouplingStrategy): The coupling strategy to use.
 
         Returns:
             A CBN object generated from the provided template and global edges.
@@ -2363,9 +2348,25 @@ class CBN:
 
         # Generate the directed edges using the last variable generated and the selected output variables
         i_directed_edge = 1
+
+        # Create a set of valid network indices for quick validation
+        valid_network_indices = {net.index for net in l_local_networks}
+
         for relation in l_global_edges:
             output_local_network = relation[0]
             input_local_network = relation[1]
+
+            # Validate that the network indices from the global edges are valid
+            if output_local_network not in valid_network_indices:
+                raise IndexError(
+                    f"Invalid output_local_network index {output_local_network} in global_edges. "
+                    f"Valid indices are: {sorted(list(valid_network_indices))}"
+                )
+            if input_local_network not in valid_network_indices:
+                raise IndexError(
+                    f"Invalid input_local_network index {input_local_network} in global_edges. "
+                    f"Valid indices are: {sorted(list(valid_network_indices))}"
+                )
 
             # Get the output variables from the template
             l_output_variables = o_template.get_output_variables_from_template(
@@ -2373,9 +2374,7 @@ class CBN:
             )
 
             # Generate the coupling function
-            coupling_function = (
-                " " + " ∨ ".join(list(map(str, l_output_variables))) + " "
-            )
+            coupling_function = coupling_strategy.generate_coupling_function(l_output_variables)
             # Create the DirectedEdge object
             o_directed_edge = DirectedEdge(
                 index=i_directed_edge,
@@ -2405,6 +2404,20 @@ class CBN:
             l_local_networks=l_local_networks,
             l_directed_edges=l_directed_edges,
         )
+
+        # Integrate the CNF for the coupling logic
+        for edge in l_directed_edges:
+            # Generate the CNF clauses for the coupling function
+            coupling_cnf = coupling_strategy.to_cnf(edge.l_output_variables, edge.index_variable)
+
+            # Create an InternalVariable for the coupling signal
+            coupling_variable = InternalVariable(index=edge.index_variable, cnf_function=coupling_cnf)
+
+            # Find the source network and add the coupling logic to it
+            for net in l_local_networks:
+                if net.index == edge.output_local_network:
+                    net.descriptive_function_variables.append(coupling_variable)
+                    break
 
         # Generate the special Coupled Boolean Network (CBN)
         o_cbn = CBN(

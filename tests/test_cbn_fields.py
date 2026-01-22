@@ -61,7 +61,7 @@ def test_mount_stable_attractor_fields_basic_combination():
     }
 
     # Run the mounting algorithm
-    cbn.mount_stable_attractor_fields(n_cpus=1)
+    cbn.mount_stable_attractor_fields()
 
     # After mounting, expect at least one attractor field containing 1,2,3
     found = False

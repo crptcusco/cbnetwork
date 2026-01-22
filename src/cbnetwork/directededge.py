@@ -54,9 +54,9 @@ class DirectedEdge:
         # Define the initial kind for every coupling signal
         self.kind_signal = 2
         # Dictionary for grouping attractors by their output signal value
-        self.d_out_value_to_attractor = {1: [], 0: []}
+        self.d_out_value_to_attractor: dict = {1: [], 0: []}
         # List of compatible pair attractors
-        self.d_comp_pairs_attractors_by_value = {0: [], 1: []}
+        self.d_comp_pairs_attractors_by_value: dict = {0: [], 1: []}
 
     def show(self):
         """

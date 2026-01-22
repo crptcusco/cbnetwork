@@ -16,14 +16,15 @@ def test_generate_sample_topology_valid_complete():
     assert isinstance(edges, list)
 
 
-def test_generate_sample_topology_invalid_topology_returns_null():
-    msg = "Not permitted option: 999"
-    o = GlobalTopology.generate_sample_topology(999, 4)
-    assert isinstance(o, NullTopology)
-    # plotting should place the message text on the axis
-    fig, ax = plt.subplots()
-    o.plot_topology(ax=ax)
-    assert any(msg in t.get_text() for t in ax.texts)
+import pytest
+
+def test_generate_sample_topology_invalid_topology_raises_error():
+    """
+    Tests that providing an invalid topology ID to the generator
+    correctly raises a ValueError.
+    """
+    with pytest.raises(ValueError, match="Invalid topology option: 999"):
+        GlobalTopology.generate_sample_topology(999, 4)
 
 
 def test_plot_topology_on_empty_nulltopology_and_nonempty():

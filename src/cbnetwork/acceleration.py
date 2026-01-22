@@ -12,7 +12,7 @@ except ImportError:
 
 if HAS_NUMBA:
     @njit(parallel=True)
-    def evaluate_all_states_kernel(num_vars, num_ext_vars, cnf_data, 
+    def evaluate_all_states_kernel(num_vars, cnf_data,
                                  clause_lengths, literal_lengths, 
                                  external_values):
         """
@@ -93,6 +93,80 @@ if HAS_NUMBA:
                 
         return attractors
 
+def _prepare_numerical_data(local_network):
+    """
+    Converts the local network logic into numerical matrices for Numba.
+    Ensures consistency with the bit order of local_network.internal_variables.
+    """
+    num_vars = len(local_network.internal_variables)
+    num_ext = len(local_network.external_variables)
+
+    mapping = {idx: i for i, idx in enumerate(local_network.internal_variables)}
+    for i, idx in enumerate(local_network.external_variables):
+        mapping[idx] = num_vars + i
+
+    max_clauses = 0
+    max_literals = 0
+    var_obj_map = {v.index: v for v in local_network.descriptive_function_variables}
+
+    for idx in local_network.internal_variables:
+        var = var_obj_map.get(idx)
+        if var:
+            max_clauses = max(max_clauses, len(var.cnf_function))
+            for clause in var.cnf_function:
+                max_literals = max(max_literals, len(clause))
+
+    cnf_data = np.zeros((num_vars, max_clauses, max_literals), dtype=np.int32)
+    clause_lengths = np.zeros(num_vars, dtype=np.int32)
+    literal_lengths = np.zeros((num_vars, max_clauses), dtype=np.int32)
+
+    for i, idx in enumerate(local_network.internal_variables):
+        var = var_obj_map.get(idx)
+        if not var:
+            continue
+
+        clause_lengths[i] = len(var.cnf_function)
+        for j, clause in enumerate(var.cnf_function):
+            literal_lengths[i, j] = len(clause)
+            for k, lit in enumerate(clause):
+                global_idx = abs(int(lit))
+                is_neg = (str(lit)[0] == "-")
+                local_idx = mapping.get(global_idx)
+                if local_idx is None:
+                    logger.error(f"Variable {global_idx} not found in network {local_network.index}")
+                    continue
+                lit_encoded = (local_idx + 1)
+                if is_neg:
+                    lit_encoded = -lit_encoded
+                cnf_data[i, j, k] = lit_encoded
+
+    return cnf_data, clause_lengths, literal_lengths
+
+def find_attractors_turbo(local_network, scene_obj):
+    """
+    Orchestrates the high-performance attractor finding process for a single scene.
+    """
+    num_vars = len(local_network.internal_variables)
+    num_ext = len(local_network.external_variables)
+
+    cnf_data, clause_lengths, literal_lengths = _prepare_numerical_data(local_network)
+
+    if scene_obj is None:
+        scene_values = np.array([], dtype=np.int8)
+    elif isinstance(scene_obj, str):
+        scene_values = np.array([int(v) for v in scene_obj], dtype=np.int8)
+    else:
+        scene_values = np.array(scene_obj.l_values, dtype=np.int8)
+
+    next_map = evaluate_all_states_kernel(
+        num_vars, cnf_data,
+        clause_lengths, literal_lengths,
+        scene_values
+    )
+
+    return find_attractors_from_map(next_map)
+
+if HAS_NUMBA:
     @njit
     def evaluate_attractors_signal_kernel(
         attractor_state_ints, # 1D array: packed integer states (all attractors flattened)
@@ -267,20 +341,20 @@ if HAS_NUMBA:
         
         return compatible
 else:
-    def evaluate_all_states_kernel(*args, **kwargs):
+    def evaluate_all_states_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
         
-    def find_attractors_from_map(*args, **kwargs):
+    def find_attractors_from_map(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
 
-    def evaluate_attractors_signal_kernel(*args, **kwargs):
+    def evaluate_attractors_signal_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
 
-    def find_compatible_pairs_kernel(*args, **kwargs):
+    def find_compatible_pairs_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
     
-    def evaluate_field_pair_kernel(*args, **kwargs):
+    def evaluate_field_pair_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")
     
-    def filter_compatible_pairs_kernel(*args, **kwargs):
+    def filter_compatible_pairs_kernel(*args):
         raise ImportError("Numba is required for Turbo acceleration.")

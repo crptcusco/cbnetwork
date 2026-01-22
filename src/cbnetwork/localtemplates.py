@@ -35,8 +35,9 @@ class LocalNetworkTemplate:
         self.n_vars_network = n_vars_network
         self.n_input_variables = n_input_variables
         self.n_output_variables = n_output_variables
-        self.n_max_of_clauses = n_max_of_clauses
-        self.n_max_of_literals = n_max_of_literals
+        # Provide default values if None is passed
+        self.n_max_of_clauses = n_max_of_clauses if n_max_of_clauses is not None else 2
+        self.n_max_of_literals = n_max_of_literals if n_max_of_literals is not None else 3
 
         # Calculated Parameters
         self.l_output_var_indexes = []
@@ -52,8 +53,11 @@ class LocalNetworkTemplate:
             range(self.n_vars_network + 1, (self.n_vars_network * 2) + 1)
         )
 
-        # Indices for input coupling signals
-        l_input_coupling_signal_indexes = [self.n_vars_network * 2 + 1]
+        # Indices for input coupling signals, now supports multiple
+        l_input_coupling_signal_indexes = list(
+            range(self.n_vars_network * 2 + 1, self.n_vars_network * 2 + 1 + self.n_input_variables)
+        )
+
 
         # Generate CNF function for each internal variable
         l_input_variables = random.sample(
@@ -123,10 +127,14 @@ class PathCircleTemplate(LocalNetworkTemplate):
             n_max_of_literals=n_max_of_literals
         )
 
-    def generate_cbn_from_template(self, v_topology, n_local_networks):
+    def generate_cbn_from_template(self, v_topology, n_local_networks, coupling_strategy=None):
         # Local import to avoid circular dependency
         from .cbnetwork import CBN
+        from .coupling import OrCoupling
         from .globaltopology import GlobalTopology
+
+        if coupling_strategy is None:
+            coupling_strategy = OrCoupling()
 
         # Generate topology to get edges
         o_global_topology = GlobalTopology.generate_sample_topology(
@@ -138,5 +146,6 @@ class PathCircleTemplate(LocalNetworkTemplate):
             n_local_networks=n_local_networks,
             n_vars_network=self.n_vars_network,
             o_template=self,
-            l_global_edges=o_global_topology.l_edges
+            l_global_edges=o_global_topology.l_edges,
+            coupling_strategy=coupling_strategy,
         )

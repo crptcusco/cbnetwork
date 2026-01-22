@@ -5,7 +5,10 @@ class CNFList:
     @staticmethod
     def generate_cnf(l_inter_vars, input_coup_sig_index, max_clauses=2, max_literals=3):
         """
-        Generates a CNF (Conjunctive Normal Form) list with random clauses.
+        Generates a robust CNF (Conjunctive Normal Form) list with random clauses.
+
+        This function includes a retry mechanism to ensure that it always returns a
+        valid, non-empty CNF list, preventing runtime errors from failed generation.
 
         Args:
             l_inter_vars (list): List of internal variables.
@@ -15,53 +18,59 @@ class CNFList:
 
         Returns:
             list: List of clauses in CNF format.
+
+        Raises:
+            RuntimeError: If a valid CNF function cannot be generated after a
+                          set number of attempts.
         """
-        num_clauses = random.randint(
-            1, max_clauses
-        )  # Ensure at least one clause is generated
-        l_cnf = []
+        max_attempts = 100  # Safety break to prevent potential infinite loops
+        for _ in range(max_attempts):
+            num_clauses = random.randint(
+                1, max_clauses
+            )
+            l_cnf = []
 
-        # Generate the clause for external signals
-        if input_coup_sig_index is not None:
-            var = input_coup_sig_index
-            if random.choice([True, False]):
-                var = -var
-            l_cnf.append([var])
-
-        for _ in range(num_clauses):
-            clause = []
-            while len(clause) < max_literals:
-                var = random.choice(l_inter_vars)
-                if var != input_coup_sig_index and -var != input_coup_sig_index:
-                    if random.choice([True, False]):
-                        var = -var
-                    clause.append(var)
-
-            # Remove redundant literals within the clause
-            clause = CNFList.simplify_clause(clause)
-
-            # Ensure the clause is not empty and has at least one literal
-            if clause:
-                l_cnf.append(clause)
-
-        # Remove empty clauses
-        l_cnf = [clause for clause in l_cnf if clause]
-
-        # Remove duplicate clauses
-        l_cnf = CNFList.remove_duplicates(l_cnf)
-
-        # Ensure there's at least one non-empty clause
-        if not l_cnf:
-            # If all generated clauses are empty, add at least one valid clause
-            clause = []
-            while len(clause) < max_literals:
-                var = random.choice(l_inter_vars)
+            # Generate the clause for external signals
+            if input_coup_sig_index is not None:
+                var = input_coup_sig_index
                 if random.choice([True, False]):
                     var = -var
-                clause.append(var)
-            l_cnf.append(clause)
+                l_cnf.append([var])
 
-        return l_cnf
+            for _ in range(num_clauses):
+                clause: list = []
+                # Ensure max_literals does not exceed available variables
+                effective_max_literals = min(max_literals, len(l_inter_vars))
+
+                # Prevent empty l_inter_vars from causing an infinite loop
+                if not l_inter_vars:
+                    break
+
+                # Use random.sample to avoid duplicate variables in a clause from the start
+                num_literals = random.randint(1, effective_max_literals)
+                clause_vars = random.sample(l_inter_vars, num_literals)
+
+                clause = [
+                    -var if random.choice([True, False]) else var
+                    for var in clause_vars
+                ]
+
+                # Remove redundant literals within the clause (e.g., [A, -A])
+                clause = CNFList.simplify_clause(clause)
+
+                if clause:
+                    l_cnf.append(clause)
+
+            # Post-processing
+            l_cnf = [c for c in l_cnf if c]  # Remove any empty clauses that slipped through
+            l_cnf = CNFList.remove_duplicates(l_cnf)
+
+            # If we have a valid CNF, return it
+            if l_cnf:
+                return l_cnf
+
+        # If we've exhausted all attempts and still have no CNF, raise an error
+        raise RuntimeError(f"Failed to generate a valid CNF function after {max_attempts} attempts.")
 
     @staticmethod
     def simplify_clause(clause):
