@@ -35,8 +35,9 @@ class LocalNetworkTemplate:
         self.n_vars_network = n_vars_network
         self.n_input_variables = n_input_variables
         self.n_output_variables = n_output_variables
-        self.n_max_of_clauses = n_max_of_clauses
-        self.n_max_of_literals = n_max_of_literals
+        # Provide default values if None is passed
+        self.n_max_of_clauses = n_max_of_clauses if n_max_of_clauses is not None else 2
+        self.n_max_of_literals = n_max_of_literals if n_max_of_literals is not None else 3
 
         # Calculated Parameters
         self.l_output_var_indexes = []

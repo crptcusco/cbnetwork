@@ -179,155 +179,66 @@ class LocalNetwork:
             return 0
 
     @staticmethod
-    def _prepare_numerical_data(local_network):
-        """
-        Converts the local network logic into numerical matrices for Numba.
-        Ensures consistency with the bit order of local_network.internal_variables.
-        """
-        import numpy as np
-        num_vars = len(local_network.internal_variables)
-        num_ext = len(local_network.external_variables)
-        
-        # Mapping from global index to local 0-indexed bit position
-        mapping = {idx: i for i, idx in enumerate(local_network.internal_variables)}
-        for i, idx in enumerate(local_network.external_variables):
-            mapping[idx] = num_vars + i
-            
-        # Determine dimensions for padding
-        max_clauses = 0
-        max_literals = 0
-        # Map variables to their objects for easy access
-        var_obj_map = {v.index: v for v in local_network.descriptive_function_variables}
-        
-        for idx in local_network.internal_variables:
-            var = var_obj_map.get(idx)
-            if var:
-                max_clauses = max(max_clauses, len(var.cnf_function))
-                for clause in var.cnf_function:
-                    max_literals = max(max_literals, len(clause))
-        
-        # Initialize matrices
-        cnf_data = np.zeros((num_vars, max_clauses, max_literals), dtype=np.int32)
-        clause_lengths = np.zeros(num_vars, dtype=np.int32)
-        literal_lengths = np.zeros((num_vars, max_clauses), dtype=np.int32)
-        
-        # Fill matrices based on the order of internal_variables
-        for i, idx in enumerate(local_network.internal_variables):
-            var = var_obj_map.get(idx)
-            if not var:
-                continue
-                
-            clause_lengths[i] = len(var.cnf_function)
-            for j, clause in enumerate(var.cnf_function):
-                literal_lengths[i, j] = len(clause)
-                for k, lit in enumerate(clause):
-                    global_idx = abs(int(lit))
-                    is_neg = (str(lit)[0] == "-")
-                    
-                    local_idx = mapping.get(global_idx)
-                    if local_idx is None:
-                        logger.error(f"Variable {global_idx} not found in network {local_network.index}")
-                        continue
-                        
-                    lit_encoded = (local_idx + 1)
-                    if is_neg:
-                        lit_encoded = -lit_encoded
-                    cnf_data[i, j, k] = lit_encoded
-                    
-        return cnf_data, clause_lengths, literal_lengths
-
-    @staticmethod
     def find_local_attractors_brute_force_turbo(local_network, local_scenes=None):
         """
         High-performance brute-force attractor finding using Numba.
+        This method orchestrates calls to the accelerated functions in `acceleration.py`.
         """
-        from .acceleration import evaluate_all_states_kernel, find_attractors_from_map, HAS_NUMBA
+        from .acceleration import find_attractors_turbo, HAS_NUMBA
         import numpy as np
-        
+
         if not HAS_NUMBA:
             logger.warning("Numba not available. Falling back to sequential brute force.")
             return LocalNetwork.find_local_attractors_brute_force(local_network, local_scenes)
 
-        # Clear existing scenes to avoid accumulation
         local_network.local_scenes = []
-
         CustomText.make_sub_sub_title(f"FIND ATTRACTORS (TURBO) FOR NETWORK: {local_network.index}")
         
-        num_vars = len(local_network.internal_variables)
-        num_ext = len(local_network.external_variables)
-        
-        # 1. Prepare numerical data
-        cnf_data, clause_lengths, literal_lengths = LocalNetwork._prepare_numerical_data(local_network)
-        
-        # 2. Process Scenes
-        if local_scenes is None:
-            # Create a default "None" scene if no scenes exist
-            scenes_to_process = [None]
-        else:
-            scenes_to_process = local_scenes
-
+        scenes_to_process = [None] if local_scenes is None else local_scenes
         total_attractor_count = 0
-        for scene_obj in scenes_to_process:
-            if scene_obj is None:
-                scene_values = np.array([], dtype=np.int8)
-                scene_label = "None"
-            elif isinstance(scene_obj, str):
-                scene_values = np.array([int(v) for v in scene_obj], dtype=np.int8)
-                scene_label = scene_obj
-            else:
-                scene_values = np.array(scene_obj.l_values, dtype=np.int8)
-                scene_label = "".join(map(str, scene_obj.l_values))
 
-            logger.info(f"Network: {local_network.index}  Local Scene: {scene_label} (Turbo)")
+        for scene_obj in scenes_to_process:
+            # The acceleration module handles scene processing and attractor finding
+            cycles = find_attractors_turbo(local_network, scene_obj)
+
+            if isinstance(scene_obj, str):
+                scene_label = scene_obj
+            elif hasattr(scene_obj, 'l_values'):
+                scene_label = "".join(map(str, scene_obj.l_values))
+            else:
+                scene_label = "None"
             
-            # A. Evaluate state-transition map
-            next_map = evaluate_all_states_kernel(
-                num_vars, num_ext, cnf_data, 
-                clause_lengths, literal_lengths, 
-                scene_values
-            )
-            
-            # B. Find attractors in the map
-            cycles = find_attractors_from_map(next_map)
-            
-            # C. Create LocalAttractor objects
+            # Convert numerical cycles back to LocalAttractor objects
             scene_attractors = []
+            num_vars = len(local_network.internal_variables)
             for i, cycle in enumerate(cycles):
                 local_states = []
                 for state_int in cycle:
-                    # Internal bit string
-                    state_bits = ["0"] * num_vars
-                    for b in range(num_vars):
-                        if (state_int >> b) & 1:
-                            state_bits[b] = "1"
-                    
-                    # External bit string should match the scene
-                    ext_bits = list(scene_label) if scene_label != "None" else []
-                    
-                    state_full = "".join(state_bits) + "".join(ext_bits)
-                    local_states.append(LocalState(state_full))
-                
-                la = LocalAttractor(
+                    # Reconstruct the state's variable values from the integer representation
+                    state_bits = [str((state_int >> b) & 1) for b in range(num_vars)]
+                    local_states.append(LocalState(state_bits))
+
+                attractor = LocalAttractor(
                     g_index=None,
                     l_index=i + 1,
                     l_states=local_states,
                     network_index=local_network.index,
                     relation_index=local_network.external_variables,
-                    local_scene=scene_label
+                    local_scene=scene_label,
                 )
-                scene_attractors.append(la)
+                scene_attractors.append(attractor)
             
-            # Store scene results
+            # Store results in the corresponding scene object
             if isinstance(scene_obj, LocalScene):
                 scene_obj.l_attractors = scene_attractors
                 local_network.local_scenes.append(scene_obj)
             else:
-                new_scene = LocalScene(len(local_network.local_scenes)+1, scene_label, local_network.external_variables)
+                new_scene = LocalScene(len(local_network.local_scenes) + 1, scene_label, local_network.external_variables)
                 new_scene.l_attractors = scene_attractors
                 local_network.local_scenes.append(new_scene)
-            
+
             total_attractor_count += len(scene_attractors)
-            
+
         local_network.attractor_count = total_attractor_count
         return local_network
 
